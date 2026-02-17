@@ -237,6 +237,13 @@ async def execute_plan_stream(
 
     # Call the LLM to synthesize all agent results
     user_message = plan.get("user_message", plan.get("summary", ""))
+    # Include multimodal context so synthesis knows about images/audio
+    image_analysis = plan.get("image_analysis")
+    audio_transcript = plan.get("audio_transcript")
+    if image_analysis:
+        user_message += f"\n\n[User also provided an image. Image analysis: {image_analysis}]"
+    if audio_transcript and audio_transcript != user_message:
+        user_message += f"\n\n[Transcribed from voice: {audio_transcript}]"
     plan_summary = plan.get("summary", "")
     client = OpenAI(api_key=api_key)
 

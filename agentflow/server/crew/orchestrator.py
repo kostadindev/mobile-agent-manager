@@ -107,6 +107,10 @@ Rules:
         task_id = str(uuid.uuid4())[:8]
         plan["id"] = task_id
         plan["user_message"] = user_message
+        if image_analysis:
+            plan["image_analysis"] = image_analysis
+        if audio_transcript:
+            plan["audio_transcript"] = audio_transcript
 
         graph = self._build_graph(plan, user_message, input_modality)
         graph["taskId"] = task_id
