@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Navbar, Messages, Message, Block, List, ListItem, Link } from 'konsta/react';
 import { useStore } from '../../state/store';
-import { Sparkles, ArrowUp, BookOpen, Lightbulb, Globe, Loader2, Settings, Volume2, VolumeX, Mic, Camera } from 'lucide-react';
+import { Sparkles, ArrowUp, BookOpen, Lightbulb, Globe, Loader2, Settings, Volume2, VolumeX, Mic, Camera, Trash2 } from 'lucide-react';
 import Markdown from 'react-markdown';
 import TaskPlanCard from '../TaskPlan/TaskPlanCard';
 import ExecutionGraph from '../Graph/ExecutionGraph';
@@ -16,7 +16,7 @@ const suggestions = [
 ];
 
 export default function ChatView() {
-  const { messages, isLoading, sendChat, isExecuting, imagePreview, transparencyLevel, setShowSettings } = useStore();
+  const { messages, isLoading, sendChat, isExecuting, imagePreview, transparencyLevel, setShowSettings, clearHistory } = useStore();
   const [text, setText] = useState('');
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -88,9 +88,16 @@ export default function ChatView() {
         title="AgentFlow"
         subtitle="AI Agent Orchestrator"
         right={
-          <Link onClick={() => setShowSettings(true)} navbar>
-            <Settings className="w-5 h-5 text-slate-400" aria-label="Settings" />
-          </Link>
+          <div className="flex items-center gap-1">
+            {messages.length > 0 && (
+              <Link onClick={clearHistory} navbar>
+                <Trash2 className="w-5 h-5 text-slate-400" aria-label="Clear chat" />
+              </Link>
+            )}
+            <Link onClick={() => setShowSettings(true)} navbar>
+              <Settings className="w-5 h-5 text-slate-400" aria-label="Settings" />
+            </Link>
+          </div>
         }
       />
 
