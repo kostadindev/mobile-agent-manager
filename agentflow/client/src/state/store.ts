@@ -191,6 +191,7 @@ export const useStore = create<AppState>((set, get) => ({
         taskPlan = {
           id: data.plan.id || crypto.randomUUID(),
           summary: data.plan.summary,
+          userMessage: data.plan.user_message,
           steps: data.plan.steps.map((s: Record<string, unknown>) => ({
             id: s.id,
             agentId: s.agent_id,
@@ -248,6 +249,7 @@ export const useStore = create<AppState>((set, get) => ({
     try {
       const backendPlan = {
         ...state.currentPlan,
+        user_message: state.currentPlan.userMessage,
         steps: state.currentPlan.steps.map((s) => ({
           id: s.id,
           agent_id: s.agentId,

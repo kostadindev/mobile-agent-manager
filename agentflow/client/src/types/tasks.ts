@@ -13,6 +13,7 @@ export interface TaskStep {
 export interface TaskPlan {
   id: string;
   summary: string;
+  userMessage?: string;
   steps: TaskStep[];
   status: 'proposed' | 'approved' | 'executing' | 'completed' | 'failed';
   createdAt: string;

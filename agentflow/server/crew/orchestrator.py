@@ -115,6 +115,7 @@ Rules:
 
         task_id = str(uuid.uuid4())[:8]
         plan["id"] = task_id
+        plan["user_message"] = user_message
 
         graph = self._build_graph(plan, user_message, input_modality)
         graph["taskId"] = task_id

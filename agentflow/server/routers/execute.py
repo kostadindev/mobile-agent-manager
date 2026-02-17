@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 
 from services.execution_tracker import execute_plan_stream
+from config import settings
 
 router = APIRouter()
 
@@ -14,7 +15,7 @@ async def execute_plan(request: Request):
     graph = body["graph"]
 
     return StreamingResponse(
-        execute_plan_stream(plan, graph),
+        execute_plan_stream(plan, graph, api_key=settings.openai_api_key),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

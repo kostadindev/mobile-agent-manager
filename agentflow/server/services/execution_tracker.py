@@ -5,6 +5,8 @@ import time
 import inspect
 from typing import AsyncGenerator
 
+from openai import OpenAI
+
 from crew.tools import TOOL_FUNCTIONS
 
 
@@ -34,15 +36,12 @@ def _call_tool(
 
     func = TOOL_FUNCTIONS.get(action)
     if not func:
-        # Try fuzzy match
         for name, fn in TOOL_FUNCTIONS.items():
             if action.replace(" ", "_").lower() in name:
                 func = fn
                 break
 
     if not func:
-        # No matching tool — pick default based on agent_id and whether
-        # we have previous results to summarize or search fresh
         defaults = {
             "arxiv": "arxiv_search",
             "proposal": "generate_proposal",
@@ -56,15 +55,13 @@ def _call_tool(
     sig = inspect.signature(func)
     param_names = list(sig.parameters.keys())
 
-    # Build kwargs from explicit step params
     kwargs = {}
     for k, v in params.items():
         if k in param_names:
             kwargs[k] = v
 
-    # ── Handle dependent steps with incomplete params ──
+    # Handle dependent steps with incomplete params
     if not kwargs and prev_results:
-        # arxiv_summarize: extract URLs from previous search results, summarize each
         if action == "arxiv_summarize":
             urls = _extract_arxiv_urls(prev_text)
             if urls:
@@ -72,10 +69,8 @@ def _call_tool(
                 for url in urls:
                     parts.append(TOOL_FUNCTIONS["arxiv_summarize"](url))
                 return "\n\n---\n\n".join(parts)
-            # If no URLs found, return the search results as-is
             return prev_text
 
-        # wiki_summarize: extract titles from previous search results, summarize each
         if action == "wiki_summarize":
             titles = _extract_wiki_titles(prev_text)[:3]
             if titles:
@@ -85,7 +80,6 @@ def _call_tool(
                 return "\n\n---\n\n".join(parts)
             return prev_text
 
-        # generate_proposal / outline_methodology: use description as topic, prev as context
         if action in ("generate_proposal", "outline_methodology"):
             first_param = param_names[0] if param_names else None
             if first_param:
@@ -93,13 +87,11 @@ def _call_tool(
             if "context" in param_names:
                 kwargs["context"] = prev_text[:1000]
 
-    # ── Fallback: use description for the first param if still empty ──
     if not kwargs:
         first_param = param_names[0] if param_names else None
         if first_param:
             kwargs[first_param] = description
 
-    # Inject previous results as context for any tool that accepts it
     if prev_results and "context" in param_names and "context" not in kwargs:
         kwargs["context"] = prev_text[:1000]
 
@@ -109,17 +101,65 @@ def _call_tool(
         return f"Tool execution failed ({action}): {e}"
 
 
+def _synthesize(
+    client: OpenAI,
+    user_message: str,
+    plan_summary: str,
+    step_results: list[dict],
+) -> str:
+    """
+    Call the LLM as the orchestrator to synthesize all agent results
+    into a single coherent response for the user.
+    """
+    results_block = "\n\n".join(
+        f"### Agent step: {s['description']}\n{s['result']}"
+        for s in step_results
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-4.1",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a research orchestrator. Your specialized agents have "
+                    "completed their tasks and returned raw results. Your job is to "
+                    "synthesize these results into a clear, well-structured response "
+                    "that directly addresses the user's original request.\n\n"
+                    "Guidelines:\n"
+                    "- Combine and organize the information coherently\n"
+                    "- Highlight the most relevant findings\n"
+                    "- Use markdown formatting (headings, bold, lists)\n"
+                    "- Keep URLs and citations from the agent results\n"
+                    "- Be thorough but concise — focus on what the user asked for\n"
+                    "- Do NOT mention the agents or the internal execution process"
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    f"**User request:** {user_message}\n\n"
+                    f"**Plan summary:** {plan_summary}\n\n"
+                    f"**Agent results:**\n\n{results_block}"
+                ),
+            },
+        ],
+        max_tokens=2000,
+    )
+    return response.choices[0].message.content
+
+
 async def execute_plan_stream(
-    plan: dict, graph: dict
+    plan: dict, graph: dict, api_key: str
 ) -> AsyncGenerator[str, None]:
     """
-    Execute a plan step by step, calling real tools and yielding SSE events
-    for real-time graph updates. Steps respect dependency ordering.
+    Execute a plan step by step, calling real tools and yielding SSE events.
+    After all agent steps complete, the orchestrator synthesizes a final response.
     """
     yield f"data: {json.dumps({'type': 'graph_init', 'graph': graph})}\n\n"
 
-    completed_steps: dict[str, str] = {}  # step_id -> result text
-    steps_by_id = {s["id"]: s for s in plan["steps"]}
+    completed_steps: dict[str, str] = {}
+    step_results: list[dict] = []
 
     while len(completed_steps) < len(plan["steps"]):
         ready = [
@@ -135,24 +175,20 @@ async def execute_plan_stream(
         for step in ready:
             step_id = step["id"]
 
-            # Activate incoming edges
             incoming_edges = [
                 e for e in graph["edges"] if e["target"] == step_id
             ]
             for e in incoming_edges:
                 yield f"data: {json.dumps({'type': 'edge_status', 'edgeId': e['id'], 'status': 'active'})}\n\n"
 
-            # Node running
             yield f"data: {json.dumps({'type': 'node_status', 'nodeId': step_id, 'status': 'running'})}\n\n"
 
-            # Gather results from dependencies
             prev_results = {
                 dep_id: completed_steps[dep_id]
                 for dep_id in step.get("depends_on", [])
                 if dep_id in completed_steps
             }
 
-            # Call the real tool
             start = time.time()
             result = await asyncio.to_thread(
                 _call_tool,
@@ -164,22 +200,17 @@ async def execute_plan_stream(
             )
             duration = int((time.time() - start) * 1000)
 
-            # Node completed with real result
             yield f"data: {json.dumps({'type': 'node_status', 'nodeId': step_id, 'status': 'completed', 'result': result, 'duration': duration})}\n\n"
 
             for e in incoming_edges:
                 yield f"data: {json.dumps({'type': 'edge_status', 'edgeId': e['id'], 'status': 'completed'})}\n\n"
 
-            # Checkpoint handling
             if step.get("requires_approval"):
                 cp_id = f"checkpoint_{step_id}"
                 yield f"data: {json.dumps({'type': 'node_status', 'nodeId': cp_id, 'status': 'awaiting_approval'})}\n\n"
                 yield f"data: {json.dumps({'type': 'checkpoint_reached', 'nodeId': cp_id, 'stepId': step_id})}\n\n"
-
                 await asyncio.sleep(2)
-
                 yield f"data: {json.dumps({'type': 'node_status', 'nodeId': cp_id, 'status': 'approved'})}\n\n"
-
                 cp_edges = [
                     e for e in graph["edges"] if e["source"] == cp_id
                 ]
@@ -187,25 +218,34 @@ async def execute_plan_stream(
                     yield f"data: {json.dumps({'type': 'edge_status', 'edgeId': e['id'], 'status': 'completed'})}\n\n"
 
             completed_steps[step_id] = result
+            step_results.append({
+                "id": step_id,
+                "description": step.get("description", ""),
+                "result": result,
+            })
             await asyncio.sleep(0.2)
 
-    # Activate edges to output
+    # ── Orchestrator synthesis ──
+    # Activate edges to output and show orchestrator is synthesizing
     output_edges = [e for e in graph["edges"] if e["target"] == "output"]
     for e in output_edges:
         yield f"data: {json.dumps({'type': 'edge_status', 'edgeId': e['id'], 'status': 'active'})}\n\n"
-    await asyncio.sleep(0.3)
+
+    yield f"data: {json.dumps({'type': 'node_status', 'nodeId': 'output', 'status': 'running'})}\n\n"
+
+    # Call the LLM to synthesize all agent results
+    user_message = plan.get("user_message", plan.get("summary", ""))
+    plan_summary = plan.get("summary", "")
+    client = OpenAI(api_key=api_key)
+
+    start = time.time()
+    summary = await asyncio.to_thread(
+        _synthesize, client, user_message, plan_summary, step_results
+    )
+    duration = int((time.time() - start) * 1000)
+
     for e in output_edges:
         yield f"data: {json.dumps({'type': 'edge_status', 'edgeId': e['id'], 'status': 'completed'})}\n\n"
 
-    # Build a summary of all results
-    summary_parts = []
-    for step in plan["steps"]:
-        sid = step["id"]
-        if sid in completed_steps:
-            summary_parts.append(
-                f"### {step.get('description', sid)}\n\n{completed_steps[sid]}"
-            )
-    summary = "\n\n---\n\n".join(summary_parts)
-
-    yield f"data: {json.dumps({'type': 'node_status', 'nodeId': 'output', 'status': 'completed', 'result': 'All tasks completed'})}\n\n"
+    yield f"data: {json.dumps({'type': 'node_status', 'nodeId': 'output', 'status': 'completed', 'result': 'Synthesis complete', 'duration': duration})}\n\n"
     yield f"data: {json.dumps({'type': 'execution_complete', 'graph': graph, 'summary': summary})}\n\n"
