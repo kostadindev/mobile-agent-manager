@@ -1,5 +1,7 @@
-import { Sheet, Block, BlockTitle } from 'konsta/react';
+import { useState, useEffect } from 'react';
+import { Sheet, Block, BlockTitle, Button } from 'konsta/react';
 import { BookOpen, Lightbulb, Globe, Bot, Search, FileText, Code, Database, Zap, Brain, Wrench, type LucideIcon } from 'lucide-react';
+import { useStore } from '../../state/store';
 import type { Agent } from '../../types/agents';
 
 const iconMap: Record<string, LucideIcon> = { BookOpen, Lightbulb, Globe, Bot, Search, FileText, Code, Database, Zap, Brain };
@@ -11,8 +13,24 @@ interface AgentDetailSheetProps {
 }
 
 export default function AgentDetailSheet({ agent, opened, onClose }: AgentDetailSheetProps) {
+  const { updateConstitution } = useStore();
+  const [draft, setDraft] = useState('');
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    if (agent) {
+      setDraft(agent.constitution ?? '');
+      setDirty(false);
+    }
+  }, [agent, opened]);
+
   if (!agent) return null;
   const Icon = iconMap[agent.icon] ?? Bot;
+
+  const handleSave = async () => {
+    await updateConstitution(agent.id, draft);
+    setDirty(false);
+  };
 
   return (
     <Sheet opened={opened} onBackdropClick={onClose} className="pb-safe">
@@ -59,6 +77,30 @@ export default function AgentDetailSheet({ agent, opened, onClose }: AgentDetail
           {agent.backstory || 'No system prompt configured.'}
         </p>
       </Block>
+
+      {/* Constitution (orchestrator only) */}
+      {agent.isOrchestrator && (
+        <>
+          <BlockTitle>Constitution</BlockTitle>
+          <Block>
+            <p className="text-[11px] text-slate-500 mb-2">
+              Custom guidelines appended to the orchestrator's system prompt.
+            </p>
+            <textarea
+              value={draft}
+              onChange={(e) => { setDraft(e.target.value); setDirty(true); }}
+              placeholder="e.g. Always prefer arXiv over Wikipedia. Keep plans under 3 steps..."
+              rows={4}
+              className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2 text-[13px] text-slate-200 placeholder-slate-600 resize-none outline-none leading-relaxed"
+            />
+            {dirty && (
+              <Button onClick={handleSave} small inline className="mt-2">
+                Save
+              </Button>
+            )}
+          </Block>
+        </>
+      )}
     </Sheet>
   );
 }

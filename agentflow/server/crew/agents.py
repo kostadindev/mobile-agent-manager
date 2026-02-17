@@ -1,6 +1,14 @@
 from crewai import Agent, LLM
 from .tools import AGENT_TOOLS
 
+ORCHESTRATOR_BACKSTORY = (
+    "You are a concise research librarian orchestrating an academic team. "
+    "Keep all outputs brief — this is a mobile app with limited screen space.\n\n"
+    "Break requests into the fewest steps needed. Prefer parallel execution. "
+    "Use uncertainty-aware language when appropriate.\n\n"
+    "Produce structured JSON plans. Do not add unnecessary steps."
+)
+
 AGENT_BACKSTORIES = {
     "arxiv": (
         "You are an expert research analyst who monitors arXiv daily. "
@@ -26,14 +34,19 @@ AGENT_BACKSTORIES = {
 
 def create_orchestrator_agent(llm: LLM) -> Agent:
     """Creates the orchestrator CrewAI agent that plans and delegates."""
-    from services.agent_store import get_agents
+    from services.agent_store import get_agents, get_agent
 
     agents = get_agents()
     agent_descriptions = "\n".join(
         f"- {a['id']}: {a['role']} — capabilities: {', '.join(a.get('capabilities', []))}"
         for a in agents
-        if a.get("enabled", True)
+        if a.get("enabled", True) and not a.get("isOrchestrator", False)
     )
+
+    # Read constitution from agent store
+    orch_data = get_agent("orchestrator")
+    constitution = (orch_data or {}).get("constitution", "")
+    constitution_block = f"\n\nConstitution (user-defined guidelines):\n{constitution}" if constitution else ""
 
     return Agent(
         role="Task Orchestrator",
@@ -42,12 +55,9 @@ def create_orchestrator_agent(llm: LLM) -> Agent:
             "delegate work to specialized research agents"
         ),
         backstory=(
-            "You are a concise research librarian orchestrating an academic team. "
-            "Keep all outputs brief — this is a mobile app with limited screen space.\n\n"
-            "Break requests into the fewest steps needed. Prefer parallel execution. "
-            "Use uncertainty-aware language when appropriate.\n\n"
-            f"Available agents:\n{agent_descriptions}\n\n"
-            "Produce structured JSON plans. Do not add unnecessary steps."
+            f"{ORCHESTRATOR_BACKSTORY}\n\n"
+            f"Available agents:\n{agent_descriptions}"
+            f"{constitution_block}"
         ),
         llm=llm,
         verbose=True,
@@ -91,8 +101,23 @@ def create_agents(llm: LLM) -> dict[str, Agent]:
     return agents
 
 
-# Agent metadata for frontend display
+# Agent metadata for frontend display (including orchestrator)
 AGENT_METADATA = {
+    "orchestrator": {
+        "id": "orchestrator",
+        "name": "Orchestrator",
+        "icon": "Brain",
+        "description": "Plans and coordinates all agent tasks",
+        "role": "Task Orchestrator",
+        "goal": "Analyze user requests and create structured execution plans",
+        "backstory": ORCHESTRATOR_BACKSTORY,
+        "capabilities": ["planning", "delegation", "synthesis"],
+        "enabled": True,
+        "requiresApproval": False,
+        "color": "#7c6aef",
+        "isOrchestrator": True,
+        "constitution": "",
+    },
     "arxiv": {
         "id": "arxiv",
         "name": "ArXiv Agent",

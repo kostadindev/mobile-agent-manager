@@ -10,4 +10,6 @@ export interface Agent {
   enabled: boolean;
   requiresApproval: boolean;
   color: string;
+  isOrchestrator?: boolean;
+  constitution?: string;
 }

@@ -59,6 +59,7 @@ interface AppState {
   agents: Agent[];
   setAgents: (agents: Agent[]) => void;
   toggleAgent: (id: string) => Promise<void>;
+  updateConstitution: (id: string, constitution: string) => Promise<void>;
 
   // Execution
   isExecuting: boolean;
@@ -189,7 +190,7 @@ export const useStore = create<AppState>((set, get) => ({
   setAgents: (agents) => set({ agents }),
   toggleAgent: async (id) => {
     const agent = get().agents.find((a) => a.id === id);
-    if (!agent) return;
+    if (!agent || agent.isOrchestrator) return;
     const updated = { ...agent, enabled: !agent.enabled };
     const res = await fetch(`/api/agents/${id}`, {
       method: 'PUT',
@@ -198,6 +199,19 @@ export const useStore = create<AppState>((set, get) => ({
     });
     if (res.ok) {
       set((s) => ({ agents: s.agents.map((a) => (a.id === id ? { ...a, enabled: !a.enabled } : a)) }));
+    }
+  },
+  updateConstitution: async (id, constitution) => {
+    const agent = get().agents.find((a) => a.id === id);
+    if (!agent) return;
+    const updated = { ...agent, constitution };
+    const res = await fetch(`/api/agents/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated),
+    });
+    if (res.ok) {
+      set((s) => ({ agents: s.agents.map((a) => (a.id === id ? { ...a, constitution } : a)) }));
     }
   },
 

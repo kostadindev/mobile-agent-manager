@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 
 from services.agent_store import (
     get_agents as store_get_agents,
@@ -19,10 +20,13 @@ class AgentCreate(BaseModel):
     description: str = ""
     role: str = ""
     goal: str = ""
+    backstory: str = ""
     capabilities: list[str] = []
     enabled: bool = True
     requiresApproval: bool = False
     color: str = "#A855F7"
+    isOrchestrator: Optional[bool] = None
+    constitution: Optional[str] = None
 
 
 @router.get("/api/agents")
@@ -33,12 +37,12 @@ async def list_agents():
 
 @router.post("/api/agents")
 async def create_agent(agent: AgentCreate):
-    return store_create_agent(agent.model_dump())
+    return store_create_agent(agent.model_dump(exclude_none=True))
 
 
 @router.put("/api/agents/{agent_id}")
 async def update_agent(agent_id: str, agent: AgentCreate):
-    result = store_update_agent(agent_id, agent.model_dump())
+    result = store_update_agent(agent_id, agent.model_dump(exclude_none=True))
     if result is None:
         raise HTTPException(status_code=404, detail="Agent not found")
     return result
