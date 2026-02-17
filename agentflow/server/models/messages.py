@@ -25,3 +25,4 @@ class ChatResponse(BaseModel):
     message: str
     plan: Optional[dict] = None
     graph: Optional[dict] = None
+    image_base64: Optional[str] = None

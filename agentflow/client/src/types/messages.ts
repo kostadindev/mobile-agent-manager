@@ -15,3 +15,11 @@ export interface ChatMessage {
   timestamp: string;
   inputModality: 'text' | 'voice' | 'image';
 }
+
+export interface Conversation {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: string;
+  transparencyLevel: string;
+}

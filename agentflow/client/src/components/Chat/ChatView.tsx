@@ -16,7 +16,7 @@ const suggestions = [
 ];
 
 export default function ChatView() {
-  const { messages, isLoading, sendChat, isExecuting, imagePreview, transparencyLevel, setShowSettings, clearHistory } = useStore();
+  const { messages, isLoading, sendChat, isExecuting, imagePreview, transparencyLevel, setShowSettings, startNewConversation } = useStore();
   const [text, setText] = useState('');
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -82,7 +82,7 @@ export default function ChatView() {
   const canSend = !disabled && (text.trim() || imagePreview);
 
   return (
-    <div className="h-full flex flex-col bg-ios-dark-surface">
+    <div className="h-full flex flex-col overflow-hidden bg-ios-dark-surface">
       {/* Navbar */}
       <Navbar
         title="AgentFlow"
@@ -90,7 +90,7 @@ export default function ChatView() {
         right={
           <div className="flex items-center gap-1">
             {messages.length > 0 && (
-              <Link onClick={clearHistory} navbar>
+              <Link onClick={startNewConversation} navbar>
                 <Trash2 className="w-5 h-5 text-slate-400" aria-label="Clear chat" />
               </Link>
             )}
@@ -102,7 +102,7 @@ export default function ChatView() {
       />
 
       {/* Scrollable content area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="h-0 grow overflow-y-auto">
         {messages.length === 0 ? (
           <>
             <Block className="text-center mt-12 mb-6">

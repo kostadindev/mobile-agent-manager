@@ -62,7 +62,7 @@
       "wiki_search",
       "wiki_summarize"
     ],
-    "enabled": true,
+    "enabled": false,
     "requiresApproval": false,
     "color": "#06B6D4"
   }

@@ -82,6 +82,7 @@ Available agents:
 
 Rules:
 - These are research agents. Set requires_approval=false for all steps since they only read/generate information.
+- If the user request is NOT a research question (e.g. "return this image", "hello", casual chat), return a plan with an empty steps list and a helpful summary. Do NOT force research tasks when none are needed.
 - If steps are independent, leave depends_on empty so they can run in parallel.
 - If a step needs output from another step, add that step's ID to depends_on.
 - Always prefer parallel execution when possible. For example, arxiv search and wikipedia search can run in parallel, then a proposal step can depend on both.

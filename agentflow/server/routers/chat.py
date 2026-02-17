@@ -58,6 +58,15 @@ async def chat(request: ChatRequest):
     all_agents = {a["id"]: a for a in get_agents()}
     agent_names = [all_agents[a]["name"] for a in agents_involved if a in all_agents]
 
+    # Handle 0-step plans (non-research requests like "return this image", "hello")
+    if step_count == 0:
+        return ChatResponse(
+            message=summary,
+            plan=None,
+            graph=None,
+            image_base64=request.image_base64,
+        )
+
     modality_note = ""
     if input_modality == "voice" and audio_transcript:
         modality_note = f'\n\n*Transcribed from voice:* "{audio_transcript}"'
@@ -73,4 +82,5 @@ async def chat(request: ChatRequest):
         message=message,
         plan=result["plan"],
         graph=result["graph"],
+        image_base64=request.image_base64,
     )

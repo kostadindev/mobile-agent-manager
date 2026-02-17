@@ -20,7 +20,7 @@ const levels = [
 ];
 
 export default function SettingsSheet() {
-  const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, clearHistory } =
+  const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, startNewConversation } =
     useStore();
 
   return (
@@ -54,7 +54,7 @@ export default function SettingsSheet() {
         <Button
           outline
           onClick={() => {
-            clearHistory();
+            startNewConversation();
             setShowSettings(false);
           }}
           className="!text-red-400 !border-red-400/40"

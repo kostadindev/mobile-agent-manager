@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { ChatMessage } from '../types/messages';
+import type { ChatMessage, Conversation } from '../types/messages';
 import type { TaskPlan, TaskStep } from '../types/tasks';
 import type { Agent } from '../types/agents';
 import type { ExecutionGraphState, NodeStatus, EdgeStatus, ExecutionSSEEvent } from '../types/graph';
@@ -8,13 +8,21 @@ type Tab = 'chat' | 'agents' | 'history';
 type TransparencyLevel = 'black_box' | 'plan_preview' | 'full_transparency';
 
 const STORAGE_KEY = 'agentflow_state';
+const CONVERSATIONS_KEY = 'agentflow_conversations';
 
 function loadPersistedState(): {
   messages: ChatMessage[];
   currentPlan: TaskPlan | null;
   graphState: ExecutionGraphState | null;
   transparencyLevel: TransparencyLevel;
+  conversations: Conversation[];
 } {
+  let conversations: Conversation[] = [];
+  try {
+    const rawConv = localStorage.getItem(CONVERSATIONS_KEY);
+    if (rawConv) conversations = JSON.parse(rawConv) ?? [];
+  } catch { /* ignore */ }
+
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -24,10 +32,11 @@ function loadPersistedState(): {
         currentPlan: parsed.currentPlan ?? null,
         graphState: parsed.graphState ?? null,
         transparencyLevel: parsed.transparencyLevel ?? 'full_transparency',
+        conversations,
       };
     }
   } catch { /* ignore */ }
-  return { messages: [], currentPlan: null, graphState: null, transparencyLevel: 'full_transparency' };
+  return { messages: [], currentPlan: null, graphState: null, transparencyLevel: 'full_transparency', conversations };
 }
 
 const persisted = loadPersistedState();
@@ -78,6 +87,15 @@ interface AppState {
   setTransparencyLevel: (level: TransparencyLevel) => void;
   showSettings: boolean;
   setShowSettings: (show: boolean) => void;
+
+  // Conversation history
+  conversations: Conversation[];
+  viewingConversation: Conversation | null;
+  setViewingConversation: (conv: Conversation | null) => void;
+  startNewConversation: () => void;
+  openConversation: (id: string) => void;
+  deleteConversation: (id: string) => void;
+  clearAllHistory: () => void;
 
   // Persistence (F9)
   clearHistory: () => void;
@@ -228,10 +246,52 @@ export const useStore = create<AppState>((set, get) => ({
   showSettings: false,
   setShowSettings: (show) => set({ showSettings: show }),
 
+  // Conversation history
+  conversations: persisted.conversations,
+  viewingConversation: null,
+  setViewingConversation: (conv) => set({ viewingConversation: conv }),
+  startNewConversation: () => {
+    const state = get();
+    let conversations = state.conversations;
+    if (state.messages.length > 0) {
+      const firstUserMsg = state.messages.find((m) => m.role === 'user');
+      const title = firstUserMsg
+        ? firstUserMsg.content.slice(0, 60)
+        : 'Untitled conversation';
+      const archived: Conversation = {
+        id: crypto.randomUUID(),
+        title,
+        messages: [...state.messages],
+        createdAt: state.messages[0].timestamp,
+        transparencyLevel: state.transparencyLevel,
+      };
+      conversations = [archived, ...conversations];
+    }
+    set({
+      conversations,
+      messages: [],
+      currentPlan: null,
+      graphState: null,
+      viewingConversation: null,
+    });
+  },
+  openConversation: (id) => {
+    const conv = get().conversations.find((c) => c.id === id) ?? null;
+    set({ viewingConversation: conv, activeTab: 'history' });
+  },
+  deleteConversation: (id) => {
+    set((s) => ({
+      conversations: s.conversations.filter((c) => c.id !== id),
+      viewingConversation: s.viewingConversation?.id === id ? null : s.viewingConversation,
+    }));
+  },
+  clearAllHistory: () => {
+    set({ conversations: [], viewingConversation: null });
+  },
+
   // Persistence (F9)
   clearHistory: () => {
-    set({ messages: [], currentPlan: null, graphState: null });
-    localStorage.removeItem(STORAGE_KEY);
+    get().startNewConversation();
   },
 
   // API calls
@@ -288,6 +348,7 @@ export const useStore = create<AppState>((set, get) => ({
       }
 
       const transparencyLevel = get().transparencyLevel;
+      const responseImageUrl = data.image_base64 ? `data:image/jpeg;base64,${data.image_base64}` : undefined;
 
       if (transparencyLevel === 'black_box') {
         // Don't show plan or graph to user — just "Processing..."
@@ -295,6 +356,7 @@ export const useStore = create<AppState>((set, get) => ({
           id: crypto.randomUUID(),
           role: 'assistant',
           content: 'Processing your request...',
+          imageUrl: responseImageUrl,
           timestamp: new Date().toISOString(),
           inputModality: 'text',
         });
@@ -310,6 +372,7 @@ export const useStore = create<AppState>((set, get) => ({
           id: crypto.randomUUID(),
           role: 'assistant',
           content: data.message,
+          imageUrl: responseImageUrl,
           taskPlan,
           executionGraph: undefined,
           timestamp: new Date().toISOString(),
@@ -321,6 +384,7 @@ export const useStore = create<AppState>((set, get) => ({
           id: crypto.randomUUID(),
           role: 'assistant',
           content: data.message,
+          imageUrl: responseImageUrl,
           taskPlan,
           executionGraph: data.graph ?? undefined,
           timestamp: new Date().toISOString(),
@@ -422,5 +486,6 @@ useStore.subscribe((state) => {
         transparencyLevel: state.transparencyLevel,
       })
     );
+    localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(state.conversations));
   } catch { /* ignore quota errors */ }
 });
