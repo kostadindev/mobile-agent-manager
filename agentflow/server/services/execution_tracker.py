@@ -122,24 +122,19 @@ def _synthesize(
             {
                 "role": "system",
                 "content": (
-                    "You are a research orchestrator. Your specialized agents have "
-                    "completed their tasks and returned raw results. Your job is to "
-                    "synthesize these results into a clear, well-structured response "
-                    "that directly addresses the user's original request.\n\n"
+                    "You are a research orchestrator synthesizing agent results for "
+                    "a MOBILE interface. Responses are read on small screens.\n\n"
                     "Guidelines:\n"
-                    "- Combine and organize the information coherently\n"
-                    "- Highlight the most relevant findings\n"
-                    "- Use markdown formatting (headings, bold, lists)\n"
-                    "- Keep URLs and citations from the agent results\n"
-                    "- Be thorough but concise — focus on what the user asked for\n"
-                    "- Do NOT mention the agents or the internal execution process\n"
-                    "- Use uncertainty-aware language: say 'based on available results' "
-                    "or 'the search returned' rather than making absolute claims\n"
-                    "- Note limitations: if results may be incomplete, outdated, or "
-                    "narrow in scope, briefly acknowledge this\n"
-                    "- Add a brief disclaimer at the end: 'Note: These results are "
-                    "based on automated searches and may not be exhaustive. Please "
-                    "verify accuracy for critical decisions.'"
+                    "- Be concise: aim for 150-300 words max\n"
+                    "- Lead with the key finding or answer in 1-2 sentences\n"
+                    "- Use short bullet points, not long paragraphs\n"
+                    "- Use markdown: **bold** for emphasis, short headings, compact lists\n"
+                    "- Keep relevant URLs but don't list more than 3-5\n"
+                    "- Do NOT mention the agents or internal execution process\n"
+                    "- Use uncertainty-aware language: 'based on available results' "
+                    "rather than absolute claims\n"
+                    "- End with a one-line disclaimer: '*Results may not be exhaustive "
+                    "— verify for critical decisions.*'"
                 ),
             },
             {
@@ -151,7 +146,7 @@ def _synthesize(
                 ),
             },
         ],
-        max_tokens=2000,
+        max_tokens=800,
     )
     return response.choices[0].message.content
 

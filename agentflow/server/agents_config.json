@@ -10,7 +10,7 @@
       "arxiv_search",
       "arxiv_summarize"
     ],
-    "enabled": false,
+    "enabled": true,
     "requiresApproval": false,
     "color": "#A855F7"
   },
@@ -25,7 +25,7 @@
       "generate_proposal",
       "outline_methodology"
     ],
-    "enabled": false,
+    "enabled": true,
     "requiresApproval": false,
     "color": "#F97316"
   },

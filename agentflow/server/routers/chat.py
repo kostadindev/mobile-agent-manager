@@ -65,9 +65,7 @@ async def chat(request: ChatRequest):
         modality_note = f"\n\n*From image analysis:* {image_analysis[:200]}..."
 
     message = (
-        f"I've created a plan: **{summary}**\n\n"
-        f"This involves {step_count} step(s) using {', '.join(agent_names)}.\n"
-        f"Review the execution graph below and approve to start."
+        f"**{summary}** — {step_count} step(s) via {', '.join(agent_names)}."
         f"{modality_note}"
     )
 

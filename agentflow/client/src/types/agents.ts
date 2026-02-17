@@ -5,6 +5,7 @@ export interface Agent {
   description: string;
   role: string;
   goal: string;
+  backstory: string;
   capabilities: string[];
   enabled: boolean;
   requiresApproval: boolean;

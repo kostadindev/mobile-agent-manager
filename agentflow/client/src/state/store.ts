@@ -58,9 +58,6 @@ interface AppState {
   // Agents
   agents: Agent[];
   setAgents: (agents: Agent[]) => void;
-  createAgent: (agent: Agent) => Promise<void>;
-  updateAgent: (agent: Agent) => Promise<void>;
-  deleteAgent: (id: string) => Promise<void>;
   toggleAgent: (id: string) => Promise<void>;
 
   // Execution
@@ -190,38 +187,17 @@ export const useStore = create<AppState>((set, get) => ({
   // Agents
   agents: [],
   setAgents: (agents) => set({ agents }),
-  createAgent: async (agent) => {
-    const res = await fetch('/api/agents', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(agent),
-    });
-    if (res.ok) {
-      const created = await res.json();
-      set((s) => ({ agents: [...s.agents, created] }));
-    }
-  },
-  updateAgent: async (agent) => {
-    const res = await fetch(`/api/agents/${agent.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(agent),
-    });
-    if (res.ok) {
-      const updated = await res.json();
-      set((s) => ({ agents: s.agents.map((a) => (a.id === updated.id ? updated : a)) }));
-    }
-  },
-  deleteAgent: async (id) => {
-    const res = await fetch(`/api/agents/${id}`, { method: 'DELETE' });
-    if (res.ok) {
-      set((s) => ({ agents: s.agents.filter((a) => a.id !== id) }));
-    }
-  },
   toggleAgent: async (id) => {
     const agent = get().agents.find((a) => a.id === id);
-    if (agent) {
-      await get().updateAgent({ ...agent, enabled: !agent.enabled });
+    if (!agent) return;
+    const updated = { ...agent, enabled: !agent.enabled };
+    const res = await fetch(`/api/agents/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updated),
+    });
+    if (res.ok) {
+      set((s) => ({ agents: s.agents.map((a) => (a.id === id ? { ...a, enabled: !a.enabled } : a)) }));
     }
   },
 
