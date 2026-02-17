@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Navbar, Messages, Message, Block, List, ListItem, Link } from 'konsta/react';
 import { useStore } from '../../state/store';
-import { Sparkles, ArrowUp, BookOpen, Lightbulb, Globe, Loader2 } from 'lucide-react';
+import { Sparkles, ArrowUp, BookOpen, Lightbulb, Globe, Loader2, Settings, Volume2, VolumeX, Mic, Camera } from 'lucide-react';
 import Markdown from 'react-markdown';
 import TaskPlanCard from '../TaskPlan/TaskPlanCard';
 import ExecutionGraph from '../Graph/ExecutionGraph';
@@ -16,14 +16,33 @@ const suggestions = [
 ];
 
 export default function ChatView() {
-  const { messages, isLoading, sendChat, isExecuting, imagePreview } = useStore();
+  const { messages, isLoading, sendChat, isExecuting, imagePreview, transparencyLevel, setShowSettings } = useStore();
   const [text, setText] = useState('');
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
+
+  // Cancel speech on unmount
+  useEffect(() => {
+    return () => { speechSynthesis.cancel(); };
+  }, []);
+
+  const handleSpeak = useCallback((msgId: string, content: string) => {
+    if (speakingMsgId === msgId) {
+      speechSynthesis.cancel();
+      setSpeakingMsgId(null);
+    } else {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(content);
+      utterance.onend = () => setSpeakingMsgId(null);
+      speechSynthesis.speak(utterance);
+      setSpeakingMsgId(msgId);
+    }
+  }, [speakingMsgId]);
 
   const handleSend = useCallback(async () => {
     const msg = text.trim();
@@ -65,7 +84,15 @@ export default function ChatView() {
   return (
     <div className="h-full flex flex-col bg-ios-dark-surface">
       {/* Navbar */}
-      <Navbar title="AgentFlow" subtitle="AI Agent Orchestrator" />
+      <Navbar
+        title="AgentFlow"
+        subtitle="AI Agent Orchestrator"
+        right={
+          <Link onClick={() => setShowSettings(true)} navbar>
+            <Settings className="w-5 h-5 text-slate-400" aria-label="Settings" />
+          </Link>
+        }
+      />
 
       {/* Scrollable content area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
@@ -102,6 +129,18 @@ export default function ChatView() {
                 name={msg.role === 'user' ? undefined : 'AgentFlow'}
                 text={
                   <div>
+                    {/* Modality badge (F6) */}
+                    {msg.role === 'user' && msg.inputModality === 'voice' && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-400 bg-amber-400/10 rounded-full px-2 py-0.5 mb-1">
+                        <Mic className="w-3 h-3" /> Voice
+                      </span>
+                    )}
+                    {msg.role === 'user' && msg.inputModality === 'image' && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-cyan-400 bg-cyan-400/10 rounded-full px-2 py-0.5 mb-1">
+                        <Camera className="w-3 h-3" /> Image
+                      </span>
+                    )}
+
                     {msg.imageUrl && (
                       <img src={msg.imageUrl} alt="Attached" className="rounded-lg max-w-[200px] mb-2" />
                     )}
@@ -119,12 +158,31 @@ export default function ChatView() {
                     >
                       {msg.content}
                     </Markdown>
-                    {msg.taskPlan && (
+
+                    {/* TTS button for assistant messages (F4) */}
+                    {msg.role === 'assistant' && msg.content && (
+                      <button
+                        onClick={() => handleSpeak(msg.id, msg.content)}
+                        className="mt-1.5 p-1 rounded-lg hover:bg-white/[0.06] transition-colors"
+                        aria-label={speakingMsgId === msg.id ? 'Stop reading' : 'Read aloud'}
+                      >
+                        {speakingMsgId === msg.id ? (
+                          <VolumeX className="w-3.5 h-3.5 text-[#7c6aef]" />
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5 text-slate-500" />
+                        )}
+                      </button>
+                    )}
+
+                    {/* Task plan: hide in black_box mode */}
+                    {msg.taskPlan && transparencyLevel !== 'black_box' && (
                       <div className="mt-3">
                         <TaskPlanCard plan={msg.taskPlan} />
                       </div>
                     )}
-                    {msg.executionGraph && (
+
+                    {/* Execution graph: only show in full_transparency */}
+                    {msg.executionGraph && transparencyLevel === 'full_transparency' && (
                       <div className="mt-3 min-w-[260px]">
                         <ExecutionGraph compact />
                       </div>
@@ -145,6 +203,19 @@ export default function ChatView() {
                     {[0, 150, 300].map((d) => (
                       <div key={d} className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: `${d}ms` }} />
                     ))}
+                  </div>
+                }
+              />
+            )}
+            {/* Spinner while executing in plan_preview mode */}
+            {isExecuting && transparencyLevel === 'plan_preview' && (
+              <Message
+                type="received"
+                name="AgentFlow"
+                text={
+                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <Loader2 className="w-4 h-4 animate-spin text-[#7c6aef]" />
+                    Agents working...
                   </div>
                 }
               />
@@ -178,6 +249,7 @@ export default function ChatView() {
         <button
           onClick={handleSend}
           disabled={!canSend}
+          aria-label="Send message"
           className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
             canSend ? 'bg-primary text-white' : 'text-white/20'
           }`}

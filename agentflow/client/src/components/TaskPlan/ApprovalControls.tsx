@@ -3,8 +3,9 @@ import { Play, X } from 'lucide-react';
 import { useStore } from '../../state/store';
 
 export default function ApprovalControls() {
-  const { currentPlan, executePlan, isExecuting } = useStore();
+  const { currentPlan, executePlan, isExecuting, transparencyLevel } = useStore();
   if (!currentPlan || currentPlan.status !== 'proposed') return null;
+  if (transparencyLevel === 'black_box') return null;
 
   return (
     <div className="flex items-center gap-2">

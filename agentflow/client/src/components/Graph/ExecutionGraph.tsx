@@ -124,13 +124,14 @@ export default function ExecutionGraph({ compact = false }: ExecutionGraphProps)
         <div className="flex items-center gap-2">
           <GitBranch className="w-3.5 h-3.5 text-slate-500" />
           <span className="text-[11px] font-semibold text-slate-300">Execution Graph</span>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5" aria-live="polite">
             <div className={`w-1.5 h-1.5 rounded-full ${statusDot} ${graphState.status === 'executing' ? 'animate-pulse' : ''}`} />
             <span className={`text-[10px] font-medium ${statusColor}`}>{statusLabel}</span>
           </div>
         </div>
         <button
           onClick={toggleExpand}
+          aria-label={expandedGraph ? 'Collapse execution graph' : 'Expand execution graph'}
           className="p-1.5 rounded-lg hover:bg-slate-700/80 transition-colors active:scale-90"
         >
           {expandedGraph ? (

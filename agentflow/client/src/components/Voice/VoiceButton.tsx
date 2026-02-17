@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Mic, MicOff } from 'lucide-react';
+import PrivacyConsentDialog from '../Privacy/PrivacyConsentDialog';
 
 interface VoiceButtonProps {
   onAudioRecorded: (audioBase64: string) => void;
@@ -8,6 +9,7 @@ interface VoiceButtonProps {
 export default function VoiceButton({ onAudioRecorded }: VoiceButtonProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
+  const [showConsent, setShowConsent] = useState(false);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval>>();
@@ -58,9 +60,23 @@ export default function VoiceButton({ onAudioRecorded }: VoiceButtonProps) {
   }, [onAudioRecorded]);
 
   const toggle = useCallback(() => {
-    if (isRecording) stopRecording();
-    else startRecording();
+    if (isRecording) {
+      stopRecording();
+    } else {
+      // Check consent before recording
+      if (!localStorage.getItem('agentflow_media_consent')) {
+        setShowConsent(true);
+        return;
+      }
+      startRecording();
+    }
   }, [isRecording, stopRecording, startRecording]);
+
+  const handleConsentAccept = useCallback(() => {
+    localStorage.setItem('agentflow_media_consent', 'true');
+    setShowConsent(false);
+    startRecording();
+  }, [startRecording]);
 
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
@@ -73,6 +89,7 @@ export default function VoiceButton({ onAudioRecorded }: VoiceButtonProps) {
       )}
       <button
         onClick={toggle}
+        aria-label={isRecording ? 'Stop recording' : 'Start voice recording'}
         className={`w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90 ${
           isRecording
             ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
@@ -81,6 +98,11 @@ export default function VoiceButton({ onAudioRecorded }: VoiceButtonProps) {
       >
         {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
       </button>
+      <PrivacyConsentDialog
+        opened={showConsent}
+        onAccept={handleConsentAccept}
+        onDecline={() => setShowConsent(false)}
+      />
     </div>
   );
 }

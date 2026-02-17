@@ -26,7 +26,13 @@ export default function StepResult({ description, status, result }: StepResultPr
       </div>
       <div className="flex-1">
         <p className="text-[13px] text-slate-200 leading-snug">{description}</p>
-        {result && <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{result}</p>}
+        {result && (
+          <p className={`text-[11px] mt-1 leading-relaxed ${
+            status === 'failed' ? 'text-red-400/80' : 'text-slate-500'
+          }`}>
+            {status === 'failed' ? `Error: ${result}` : result}
+          </p>
+        )}
       </div>
     </div>
   );

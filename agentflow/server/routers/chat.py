@@ -4,7 +4,7 @@ from openai import OpenAI
 
 from models.messages import ChatRequest, ChatResponse
 from crew.orchestrator import AgentFlowOrchestrator
-from crew.agents import AGENT_METADATA
+from services.agent_store import get_agents
 from services.image_analyzer import analyze_image
 from services.audio_transcriber import transcribe_audio
 from config import settings
@@ -53,7 +53,10 @@ async def chat(request: ChatRequest):
     summary = result["plan"]["summary"]
     step_count = len(result["plan"]["steps"])
     agents_involved = set(s["agent_id"] for s in result["plan"]["steps"])
-    agent_names = [AGENT_METADATA[a]["name"] for a in agents_involved]
+
+    # Look up agent names from the store
+    all_agents = {a["id"]: a for a in get_agents()}
+    agent_names = [all_agents[a]["name"] for a in agents_involved if a in all_agents]
 
     modality_note = ""
     if input_modality == "voice" and audio_transcript:
@@ -73,9 +76,3 @@ async def chat(request: ChatRequest):
         plan=result["plan"],
         graph=result["graph"],
     )
-
-
-@router.get("/api/agents")
-async def get_agents():
-    """Return all available agent metadata for frontend display."""
-    return list(AGENT_METADATA.values())

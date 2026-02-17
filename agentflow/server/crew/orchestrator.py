@@ -2,20 +2,9 @@ from crewai import Crew, Task, Process, LLM
 from pydantic import BaseModel
 import uuid
 
-from .agents import create_agents, create_orchestrator_agent, AGENT_METADATA
+from .agents import create_agents, create_orchestrator_agent
 from .tasks import build_crew_task
-
-AGENT_COLORS = {
-    "arxiv": "#A855F7",
-    "proposal": "#F97316",
-    "wikipedia": "#06B6D4",
-}
-
-AGENT_ICONS = {
-    "arxiv": "BookOpen",
-    "proposal": "Lightbulb",
-    "wikipedia": "Globe",
-}
+from services.agent_store import get_agents
 
 
 class PlanStep(BaseModel):
@@ -71,12 +60,14 @@ class AgentFlowOrchestrator:
 
         context = "\n\n".join(context_parts)
 
+        # Build agent descriptions dynamically from agent store
+        all_agents = get_agents()
+        enabled_agents = [a for a in all_agents if a.get("enabled", True)]
         agent_descriptions = "\n".join(
-            [
-                f"- {aid}: {meta['role']} — capabilities: {', '.join(meta['capabilities'])}"
-                for aid, meta in AGENT_METADATA.items()
-            ]
+            f"- {a['id']}: {a['role']} — capabilities: {', '.join(a.get('capabilities', []))}"
+            for a in enabled_agents
         )
+        valid_agent_ids = ", ".join(a["id"] for a in enabled_agents)
 
         planning_task = Task(
             description=f"""Analyze the following user request and create a structured execution plan.
@@ -95,7 +86,7 @@ Rules:
 - If a step needs output from another step, add that step's ID to depends_on.
 - Always prefer parallel execution when possible. For example, arxiv search and wikipedia search can run in parallel, then a proposal step can depend on both.
 - Use step IDs like "step_1", "step_2", etc.
-- agent_id must be one of: arxiv, proposal, wikipedia
+- agent_id must be one of: {valid_agent_ids}
 - If image analysis is provided, use that content to inform search queries and proposal topics.
 - If audio was transcribed, treat the transcript as the primary user intent.""",
             expected_output="A structured JSON plan with a summary and a list of steps",
@@ -144,6 +135,9 @@ Rules:
         self, plan: dict, user_message: str, input_modality: str = "text"
     ) -> dict:
         """Build the execution graph state from the plan."""
+        # Build lookup from agent store
+        all_agents = {a["id"]: a for a in get_agents()}
+
         nodes = []
         edges = []
         nodes.append(
@@ -187,6 +181,7 @@ Rules:
         for step in plan["steps"]:
             step_id = step["id"]
             agent_id = step["agent_id"]
+            agent_data = all_agents.get(agent_id, {})
 
             nodes.append(
                 {
@@ -197,8 +192,8 @@ Rules:
                         "type": "agent",
                         "status": "pending",
                         "agentId": agent_id,
-                        "agentColor": AGENT_COLORS.get(agent_id, "#6B7280"),
-                        "agentIcon": AGENT_ICONS.get(agent_id, "Bot"),
+                        "agentColor": agent_data.get("color", "#6B7280"),
+                        "agentIcon": agent_data.get("icon", "Bot"),
                     },
                     "position": {"x": 0, "y": 0},
                 }

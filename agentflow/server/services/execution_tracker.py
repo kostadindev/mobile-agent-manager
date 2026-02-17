@@ -132,7 +132,14 @@ def _synthesize(
                     "- Use markdown formatting (headings, bold, lists)\n"
                     "- Keep URLs and citations from the agent results\n"
                     "- Be thorough but concise — focus on what the user asked for\n"
-                    "- Do NOT mention the agents or the internal execution process"
+                    "- Do NOT mention the agents or the internal execution process\n"
+                    "- Use uncertainty-aware language: say 'based on available results' "
+                    "or 'the search returned' rather than making absolute claims\n"
+                    "- Note limitations: if results may be incomplete, outdated, or "
+                    "narrow in scope, briefly acknowledge this\n"
+                    "- Add a brief disclaimer at the end: 'Note: These results are "
+                    "based on automated searches and may not be exhaustive. Please "
+                    "verify accuracy for critical decisions.'"
                 ),
             },
             {

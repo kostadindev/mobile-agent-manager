@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import chat, execute, approve
+from routers import chat, execute, approve, agents
+from services.agent_store import load_agents
 from config import settings
 
 app = FastAPI(title="AgentFlow API")
@@ -17,6 +18,12 @@ app.add_middleware(
 app.include_router(chat.router)
 app.include_router(execute.router)
 app.include_router(approve.router)
+app.include_router(agents.router)
+
+
+@app.on_event("startup")
+async def startup():
+    load_agents()
 
 
 @app.get("/api/health")

@@ -10,6 +10,7 @@ export default function ImagePreview() {
       <img src={imagePreview} alt="Preview" className="h-16 rounded-xl object-cover" />
       <button
         onClick={() => setImagePreview(null)}
+        aria-label="Remove image"
         className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center"
       >
         <X className="w-3 h-3 text-slate-400" />

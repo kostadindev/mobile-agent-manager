@@ -4,9 +4,13 @@ from .tools import AGENT_TOOLS
 
 def create_orchestrator_agent(llm: LLM) -> Agent:
     """Creates the orchestrator CrewAI agent that plans and delegates."""
+    from services.agent_store import get_agents
+
+    agents = get_agents()
     agent_descriptions = "\n".join(
-        f"- {aid}: {meta['role']} — capabilities: {', '.join(meta['capabilities'])}"
-        for aid, meta in AGENT_METADATA.items()
+        f"- {a['id']}: {a['role']} — capabilities: {', '.join(a.get('capabilities', []))}"
+        for a in agents
+        if a.get("enabled", True)
     )
 
     return Agent(
@@ -16,9 +20,12 @@ def create_orchestrator_agent(llm: LLM) -> Agent:
             "delegate work to specialized research agents"
         ),
         backstory=(
-            "You are a senior orchestrator for an academic research team. "
-            "You analyze incoming requests and break them into discrete steps, "
-            "assigning each to the most appropriate specialized agent.\n\n"
+            "You are a knowledgeable but concise research librarian orchestrating "
+            "an academic research team. You analyze incoming requests and break them "
+            "into discrete steps, assigning each to the most appropriate specialized "
+            "agent.\n\n"
+            "You use uncertainty-aware language — when results may be incomplete or "
+            "approximate, say so. Note limitations of the tools and agents available.\n\n"
             f"Available agents:\n{agent_descriptions}\n\n"
             "You produce structured JSON plans and can delegate execution to "
             "any agent on the team."

@@ -5,6 +5,32 @@ import type { Agent } from '../types/agents';
 import type { ExecutionGraphState, NodeStatus, EdgeStatus, ExecutionSSEEvent } from '../types/graph';
 
 type Tab = 'chat' | 'agents' | 'history';
+type TransparencyLevel = 'black_box' | 'plan_preview' | 'full_transparency';
+
+const STORAGE_KEY = 'agentflow_state';
+
+function loadPersistedState(): {
+  messages: ChatMessage[];
+  currentPlan: TaskPlan | null;
+  graphState: ExecutionGraphState | null;
+  transparencyLevel: TransparencyLevel;
+} {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        messages: parsed.messages ?? [],
+        currentPlan: parsed.currentPlan ?? null,
+        graphState: parsed.graphState ?? null,
+        transparencyLevel: parsed.transparencyLevel ?? 'full_transparency',
+      };
+    }
+  } catch { /* ignore */ }
+  return { messages: [], currentPlan: null, graphState: null, transparencyLevel: 'full_transparency' };
+}
+
+const persisted = loadPersistedState();
 
 interface AppState {
   // Navigation
@@ -32,6 +58,10 @@ interface AppState {
   // Agents
   agents: Agent[];
   setAgents: (agents: Agent[]) => void;
+  createAgent: (agent: Agent) => Promise<void>;
+  updateAgent: (agent: Agent) => Promise<void>;
+  deleteAgent: (id: string) => Promise<void>;
+  toggleAgent: (id: string) => Promise<void>;
 
   // Execution
   isExecuting: boolean;
@@ -45,6 +75,19 @@ interface AppState {
   imagePreview: string | null;
   setImagePreview: (url: string | null) => void;
 
+  // Transparency (F1)
+  transparencyLevel: TransparencyLevel;
+  setTransparencyLevel: (level: TransparencyLevel) => void;
+  showSettings: boolean;
+  setShowSettings: (show: boolean) => void;
+
+  // Survey (F2)
+  showSurvey: boolean;
+  setShowSurvey: (show: boolean) => void;
+
+  // Persistence (F9)
+  clearHistory: () => void;
+
   // Send chat
   sendChat: (message: string, imageBase64?: string, modality?: string, audioBase64?: string) => Promise<void>;
   executePlan: () => Promise<void>;
@@ -56,13 +99,13 @@ export const useStore = create<AppState>((set, get) => ({
   setActiveTab: (tab) => set({ activeTab: tab }),
 
   // Chat
-  messages: [],
+  messages: persisted.messages,
   addMessage: (msg) => set((s) => ({ messages: [...s.messages, msg] })),
   isLoading: false,
   setLoading: (loading) => set({ isLoading: loading }),
 
   // Task plan
-  currentPlan: null,
+  currentPlan: persisted.currentPlan,
   setCurrentPlan: (plan) => set({ currentPlan: plan }),
   updateStepStatus: (stepId, status, result) =>
     set((s) => {
@@ -78,7 +121,7 @@ export const useStore = create<AppState>((set, get) => ({
     }),
 
   // Execution graph
-  graphState: null,
+  graphState: persisted.graphState,
   setGraphState: (graph) => set({ graphState: graph }),
   updateNodeStatus: (nodeId, status, result, duration) =>
     set((s) => {
@@ -123,6 +166,7 @@ export const useStore = create<AppState>((set, get) => ({
       case 'execution_complete':
         set((s) => ({
           isExecuting: false,
+          showSurvey: true,
           graphState: s.graphState ? { ...s.graphState, status: 'completed' } : null,
           currentPlan: s.currentPlan ? { ...s.currentPlan, status: 'completed' } : null,
         }));
@@ -146,6 +190,40 @@ export const useStore = create<AppState>((set, get) => ({
   // Agents
   agents: [],
   setAgents: (agents) => set({ agents }),
+  createAgent: async (agent) => {
+    const res = await fetch('/api/agents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(agent),
+    });
+    if (res.ok) {
+      const created = await res.json();
+      set((s) => ({ agents: [...s.agents, created] }));
+    }
+  },
+  updateAgent: async (agent) => {
+    const res = await fetch(`/api/agents/${agent.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(agent),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      set((s) => ({ agents: s.agents.map((a) => (a.id === updated.id ? updated : a)) }));
+    }
+  },
+  deleteAgent: async (id) => {
+    const res = await fetch(`/api/agents/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      set((s) => ({ agents: s.agents.filter((a) => a.id !== id) }));
+    }
+  },
+  toggleAgent: async (id) => {
+    const agent = get().agents.find((a) => a.id === id);
+    if (agent) {
+      await get().updateAgent({ ...agent, enabled: !agent.enabled });
+    }
+  },
 
   // Execution
   isExecuting: false,
@@ -158,6 +236,22 @@ export const useStore = create<AppState>((set, get) => ({
   // Input
   imagePreview: null,
   setImagePreview: (url) => set({ imagePreview: url }),
+
+  // Transparency (F1)
+  transparencyLevel: persisted.transparencyLevel,
+  setTransparencyLevel: (level) => set({ transparencyLevel: level }),
+  showSettings: false,
+  setShowSettings: (show) => set({ showSettings: show }),
+
+  // Survey (F2)
+  showSurvey: false,
+  setShowSurvey: (show) => set({ showSurvey: show }),
+
+  // Persistence (F9)
+  clearHistory: () => {
+    set({ messages: [], currentPlan: null, graphState: null });
+    localStorage.removeItem(STORAGE_KEY);
+  },
 
   // API calls
   sendChat: async (message, imageBase64, modality = 'text', audioBase64) => {
@@ -212,15 +306,46 @@ export const useStore = create<AppState>((set, get) => ({
         set({ graphState: data.graph });
       }
 
-      state.addMessage({
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: data.message,
-        taskPlan,
-        executionGraph: data.graph ?? undefined,
-        timestamp: new Date().toISOString(),
-        inputModality: 'text',
-      });
+      const transparencyLevel = get().transparencyLevel;
+
+      if (transparencyLevel === 'black_box') {
+        // Don't show plan or graph to user — just "Processing..."
+        state.addMessage({
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: 'Processing your request...',
+          timestamp: new Date().toISOString(),
+          inputModality: 'text',
+        });
+        // Auto-execute
+        set({ isLoading: false });
+        get().executePlan();
+        return;
+      }
+
+      if (transparencyLevel === 'plan_preview') {
+        // Show plan but not execution graph
+        state.addMessage({
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: data.message,
+          taskPlan,
+          executionGraph: undefined,
+          timestamp: new Date().toISOString(),
+          inputModality: 'text',
+        });
+      } else {
+        // full_transparency: show both plan and graph
+        state.addMessage({
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: data.message,
+          taskPlan,
+          executionGraph: data.graph ?? undefined,
+          timestamp: new Date().toISOString(),
+          inputModality: 'text',
+        });
+      }
     } catch (err) {
       state.addMessage({
         id: crypto.randomUUID(),
@@ -303,3 +428,18 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 }));
+
+// Persist state to localStorage on change (F9)
+useStore.subscribe((state) => {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        messages: state.messages,
+        currentPlan: state.currentPlan,
+        graphState: state.graphState,
+        transparencyLevel: state.transparencyLevel,
+      })
+    );
+  } catch { /* ignore quota errors */ }
+});
