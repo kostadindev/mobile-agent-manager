@@ -1,0 +1,15 @@
+{
+  "name": "agentflow",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && uvicorn main:app --reload --port 8000",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "install:client": "cd client && npm install",
+    "install:server": "cd server && pip install -r requirements.txt"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}

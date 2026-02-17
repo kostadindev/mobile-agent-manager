@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+client/node_modules/
+
+# Build output
+client/dist/
+
+# Environment
+server/.env
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+server/.venv/
+server/venv/
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log

@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@import "konsta/theme.css";
+
+@theme {
+  --color-brand-primary: #7c6aef;
+
+  --color-agent-email: #3B82F6;
+  --color-agent-slack: #A855F7;
+  --color-agent-jira: #F97316;
+  --color-agent-calendar: #22C55E;
+  --color-agent-search: #06B6D4;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Full-width chat messages */
+.k-message {
+  max-width: 100% !important;
+}
+
+/* React Flow */
+.react-flow__node { font-family: inherit; }
+.react-flow__attribution { display: none !important; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 0; background: transparent; }
+
+/* Node pulse */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(124, 106, 239, 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(124, 106, 239, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(124, 106, 239, 0); }
+}
+.node-running { animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* Edge dash flow */
+@keyframes dash-flow { to { stroke-dashoffset: -20; } }
+.edge-active path {
+  stroke-dasharray: 5 5;
+  animation: dash-flow 0.6s linear infinite;
+}
+
+/* Checkpoint glow */
+@keyframes checkpoint-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.7); }
+}
+.checkpoint-awaiting { animation: checkpoint-glow 2s ease-in-out infinite; }
