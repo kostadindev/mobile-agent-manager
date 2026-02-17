@@ -52,10 +52,11 @@ The current prototype ships with three research-focused agents (ArXiv, Proposal,
 
 ## Default Agents (Extensible)
 
-The platform ships with three demo agents. Any agent can be added by defining its role, tools, and metadata.
+The platform ships with an orchestrator and three demo agents. Any agent can be added by defining its role, tools, and metadata.
 
 | Agent | Tools | Description |
 |-------|-------|-------------|
+| **Orchestrator** | `planning`, `delegation`, `synthesis` | Plans and coordinates all agent tasks. Always active — cannot be disabled. Has an editable constitution for user-defined guidelines. |
 | **ArXiv Agent** | `arxiv_search`, `arxiv_summarize` | Searches and summarizes academic papers from arXiv |
 | **Proposal Agent** | `generate_proposal`, `outline_methodology` | Generates structured research proposals and methodology outlines |
 | **Wikipedia Agent** | `wiki_search`, `wiki_summarize` | Searches and summarizes Wikipedia articles for background research |
@@ -86,7 +87,7 @@ agentflow/
 │   │   └── components/
 │   │       ├── Layout/       # Shell with bottom tab navigation
 │   │       ├── Chat/         # Chat interface + image preview + TTS
-│   │       ├── Agents/       # Agent list + CRUD form + toggle/delete
+│   │       ├── Agents/       # Agent list + detail sheet + toggle + constitution editor
 │   │       ├── TaskPlan/     # Plan card + approval controls
 │   │       ├── Graph/        # ReactFlow DAG (nodes, edges, legend)
 │   │       ├── Execution/    # History view + step stream
@@ -195,7 +196,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser (or on mobil
 ## UI Tabs
 
 - **Chat** — Multimodal conversation interface. Type, speak, or photograph your request. The orchestrator returns a task plan that renders inline as a card with an interactive execution graph.
-- **Agents** — Browse and manage registered agents — their capabilities, approval requirements, and status.
+- **Agents** — Browse all agents. Tap any agent to view its goal, tools, and full system prompt. The orchestrator appears first (always active, with an editable constitution). Worker agents have enable/disable toggles.
 - **History** — Full-screen execution graph and a step-by-step result stream for the most recent run.
 
 ## Key Design Decisions
@@ -225,23 +226,21 @@ The active mode is persisted to localStorage and tagged on every survey response
 
 After every `execution_complete` event, a bottom sheet presents 4 Likert-scale items (7-point scale): trust, perceived control, satisfaction, and understanding. Responses are tagged with the active transparency level and saved to localStorage (`agentflow_surveys`). A "Skip" option is always available.
 
-### Agent Management CRUD
+### Agent Inspector and Configuration
 
-The Agents tab is fully interactive:
+The Agents tab displays all agents with a detail sheet for each:
 
-- **Create** — Fab button (+) opens a bottom sheet form with name, description, role, goal, icon picker (10 Lucide icons), and color picker (8 swatches).
-- **Edit** — Tap any agent card to reopen the form pre-filled.
-- **Enable/Disable** — Toggle switch on each card. Disabled agents are excluded from the orchestrator's planning prompt.
-- **Delete** — Trash icon removes the agent from the registry.
-- **Persistence** — Agent configs are stored in `agents_config.json` on the server; the orchestrator dynamically reads from this registry for every plan.
+- **Orchestrator** — Shown first under its own section header, always active (no toggle). Tapping it opens a scrollable detail sheet showing its goal, capabilities, full system prompt, and an **editable constitution** — free-text guidelines that are appended to the orchestrator's system prompt at planning time. Changes are persisted to the server.
+- **Worker agents** — Listed below with an enable/disable toggle. Disabled agents are excluded from the orchestrator's planning prompt. Tapping opens a read-only detail sheet showing the agent's goal, tools, and system prompt.
+- **Persistence** — Agent configs (including constitution and enabled state) are stored in `agents_config.json` on the server; the orchestrator dynamically reads from this registry for every plan.
 
 ### Text-to-Speech (TTS)
 
 Every assistant message has a small speaker icon. Tapping it reads the message aloud using the Web Speech API (`speechSynthesis`). Tapping again stops playback. Speech is cancelled on component unmount.
 
-### AI Persona and Tone
+### AI Persona, Tone, and Constitution
 
-The orchestrator's system prompt uses a "knowledgeable but concise research librarian" tone with uncertainty-aware language. The synthesis prompt instructs the LLM to say "based on available results" rather than making absolute claims and appends a brief accuracy disclaimer.
+The orchestrator's system prompt uses a "concise research librarian" tone optimized for mobile reading (150-300 word responses, short bullets, max 3-5 URLs). The synthesis prompt instructs the LLM to say "based on available results" rather than making absolute claims and appends a brief accuracy disclaimer. Users can further customize behavior via the orchestrator's **constitution** — editable from the Agents tab — which is appended to the system prompt at planning time.
 
 ### Modality Indicators and Privacy Consent
 
@@ -256,7 +255,7 @@ The orchestrator's system prompt uses a "knowledgeable but concise research libr
 
 ### Empty States and Error Styling
 
-- **Agents tab** — When no agents exist: Bot icon + "No agents configured" + "Tap + to add one".
+- **Agents tab** — When no agents are loaded: Bot icon + "No agents configured".
 - **Step results** — Failed steps render in `text-red-400` with an "Error: " prefix.
 
 ### Conversation Persistence
@@ -304,9 +303,9 @@ This prototype is built for the *Designing AI Experiences* module assessment. Th
 
 All features below are fully implemented and functional.
 
-### 1. Agent Management from the Mobile UI — DONE
+### 1. Agent Inspector and Configuration — DONE
 
-The Agents tab is fully interactive with CRUD operations: create via bottom sheet form (name, description, role, goal, icon picker, color picker), edit by tapping a card, enable/disable toggle, delete via trash icon. Backend REST endpoints (`POST/PUT/DELETE /api/agents`) persist to `agents_config.json`. The orchestrator dynamically reads enabled agents for planning.
+The Agents tab shows all agents with full detail views. The orchestrator is listed first (always active, not toggle-able) with an editable **constitution** that appends user-defined guidelines to its system prompt. Worker agents have enable/disable toggles — disabled agents are excluded from planning. Tapping any agent opens a scrollable bottom sheet showing its goal, tools, and full system prompt. Backend REST endpoints (`PUT /api/agents/{id}`) persist state to `agents_config.json`.
 
 ### 2. Three Design Configurations for Evaluation — DONE
 
@@ -348,7 +347,7 @@ Settings gear in navbar → bottom sheet with radio selector. Persisted to local
 
 | Area | Implementation |
 |------|---------------|
-| **AI persona** | Orchestrator backstory: "knowledgeable but concise research librarian", uncertainty-aware. Synthesis prompt adds disclaimers and limitation notes. |
+| **AI persona** | Orchestrator: "concise research librarian" tone, mobile-optimized (150-300 word responses). Synthesis prompt adds disclaimers. User-editable constitution for custom guidelines. |
 | **Modality indicators** | Amber `Voice` badge and cyan `Image` badge on user messages. |
 | **Empty states** | Agent list: Bot icon + "No agents configured" + "Tap + to add one". Failed steps: red text with "Error:" prefix. |
 | **Accessibility** | `aria-label` on all icon-only buttons, `aria-live="polite"` on graph status, `focus-visible` ring styles in CSS. |
