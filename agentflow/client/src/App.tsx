@@ -5,7 +5,6 @@ import ChatView from './components/Chat/ChatView';
 import AgentList from './components/Agents/AgentList';
 import ExecutionView from './components/Execution/ExecutionView';
 import SettingsSheet from './components/Settings/SettingsSheet';
-import SurveyModal from './components/Survey/SurveyModal';
 
 export default function App() {
   const { activeTab } = useStore();
@@ -18,7 +17,6 @@ export default function App() {
         {activeTab === 'history' && <ExecutionView />}
       </Shell>
       <SettingsSheet />
-      <SurveyModal />
     </KonstaApp>
   );
 }

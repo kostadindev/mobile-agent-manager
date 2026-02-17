@@ -79,10 +79,6 @@ interface AppState {
   showSettings: boolean;
   setShowSettings: (show: boolean) => void;
 
-  // Survey (F2)
-  showSurvey: boolean;
-  setShowSurvey: (show: boolean) => void;
-
   // Persistence (F9)
   clearHistory: () => void;
 
@@ -164,7 +160,6 @@ export const useStore = create<AppState>((set, get) => ({
       case 'execution_complete':
         set((s) => ({
           isExecuting: false,
-          showSurvey: true,
           graphState: s.graphState ? { ...s.graphState, status: 'completed' } : null,
           currentPlan: s.currentPlan ? { ...s.currentPlan, status: 'completed' } : null,
         }));
@@ -232,10 +227,6 @@ export const useStore = create<AppState>((set, get) => ({
   setTransparencyLevel: (level) => set({ transparencyLevel: level }),
   showSettings: false,
   setShowSettings: (show) => set({ showSettings: show }),
-
-  // Survey (F2)
-  showSurvey: false,
-  setShowSurvey: (show) => set({ showSurvey: show }),
 
   // Persistence (F9)
   clearHistory: () => {
