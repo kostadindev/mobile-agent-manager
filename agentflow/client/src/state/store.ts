@@ -6,6 +6,7 @@ import type { ExecutionGraphState, NodeStatus, EdgeStatus, ExecutionSSEEvent } f
 
 type Tab = 'chat' | 'agents' | 'history';
 type TransparencyLevel = 'black_box' | 'plan_preview' | 'full_transparency';
+type ModalityMode = 'multimodal' | 'text_image' | 'voice_only';
 
 const STORAGE_KEY = 'agentflow_state';
 const CONVERSATIONS_KEY = 'agentflow_conversations';
@@ -15,6 +16,7 @@ function loadPersistedState(): {
   currentPlan: TaskPlan | null;
   graphState: ExecutionGraphState | null;
   transparencyLevel: TransparencyLevel;
+  modalityMode: ModalityMode;
   conversations: Conversation[];
 } {
   let conversations: Conversation[] = [];
@@ -32,11 +34,12 @@ function loadPersistedState(): {
         currentPlan: parsed.currentPlan ?? null,
         graphState: parsed.graphState ?? null,
         transparencyLevel: parsed.transparencyLevel ?? 'full_transparency',
+        modalityMode: parsed.modalityMode ?? 'multimodal',
         conversations,
       };
     }
   } catch { /* ignore */ }
-  return { messages: [], currentPlan: null, graphState: null, transparencyLevel: 'full_transparency', conversations };
+  return { messages: [], currentPlan: null, graphState: null, transparencyLevel: 'full_transparency', modalityMode: 'multimodal', conversations };
 }
 
 const persisted = loadPersistedState();
@@ -87,6 +90,10 @@ interface AppState {
   setTransparencyLevel: (level: TransparencyLevel) => void;
   showSettings: boolean;
   setShowSettings: (show: boolean) => void;
+
+  // Modality mode
+  modalityMode: ModalityMode;
+  setModalityMode: (mode: ModalityMode) => void;
 
   // Conversation history
   conversations: Conversation[];
@@ -245,6 +252,10 @@ export const useStore = create<AppState>((set, get) => ({
   setTransparencyLevel: (level) => set({ transparencyLevel: level }),
   showSettings: false,
   setShowSettings: (show) => set({ showSettings: show }),
+
+  // Modality mode
+  modalityMode: persisted.modalityMode,
+  setModalityMode: (mode) => set({ modalityMode: mode }),
 
   // Conversation history
   conversations: persisted.conversations,
@@ -484,6 +495,7 @@ useStore.subscribe((state) => {
         currentPlan: state.currentPlan,
         graphState: state.graphState,
         transparencyLevel: state.transparencyLevel,
+        modalityMode: state.modalityMode,
       })
     );
     localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(state.conversations));

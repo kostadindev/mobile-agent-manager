@@ -19,8 +19,26 @@ const levels = [
   },
 ];
 
+const modalities = [
+  {
+    value: 'multimodal' as const,
+    label: 'Multimodal',
+    description: 'Text, images, and voice input.',
+  },
+  {
+    value: 'text_image' as const,
+    label: 'Text + Images',
+    description: 'Text and image input only — no voice.',
+  },
+  {
+    value: 'voice_only' as const,
+    label: 'Voice Only',
+    description: 'Voice input only — no text or images.',
+  },
+];
+
 export default function SettingsSheet() {
-  const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, startNewConversation } =
+  const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, modalityMode, setModalityMode, startNewConversation } =
     useStore();
 
   return (
@@ -46,6 +64,27 @@ export default function SettingsSheet() {
               />
             }
             onClick={() => setTransparencyLevel(l.value)}
+          />
+        ))}
+      </List>
+
+      <BlockTitle className="mt-2">Input Mode</BlockTitle>
+      <List strong inset outline>
+        {modalities.map((m) => (
+          <ListItem
+            key={m.value}
+            title={m.label}
+            subtitle={m.description}
+            after={
+              <input
+                type="radio"
+                name="modality"
+                checked={modalityMode === m.value}
+                onChange={() => setModalityMode(m.value)}
+                className="accent-[#7c6aef]"
+              />
+            }
+            onClick={() => setModalityMode(m.value)}
           />
         ))}
       </List>

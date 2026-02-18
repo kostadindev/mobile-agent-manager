@@ -10,13 +10,13 @@ import VoiceButton from '../Voice/VoiceButton';
 import ImageCapture from '../Camera/ImageCapture';
 
 const suggestions = [
-  { text: 'Summarize recent papers on LLM reasoning', icon: BookOpen, color: '#A855F7' },
-  { text: 'Draft a research proposal on multimodal AI', icon: Lightbulb, color: '#F97316' },
-  { text: 'Research background on transformer architectures', icon: Globe, color: '#06B6D4' },
+  { text: 'Summarize the latest research on LLM reasoning', icon: BookOpen, color: '#A855F7' },
+  { text: 'Help me draft a proposal for a multimodal AI project', icon: Lightbulb, color: '#F97316' },
+  { text: 'Break down how transformer architectures work', icon: Globe, color: '#06B6D4' },
 ];
 
 export default function ChatView() {
-  const { messages, isLoading, sendChat, isExecuting, imagePreview, transparencyLevel, setShowSettings, startNewConversation } = useStore();
+  const { messages, isLoading, sendChat, isExecuting, imagePreview, transparencyLevel, modalityMode, setShowSettings, startNewConversation } = useStore();
   const [text, setText] = useState('');
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -79,6 +79,9 @@ export default function ChatView() {
   }, []);
 
   const disabled = isLoading || isExecuting;
+  const showText = modalityMode !== 'voice_only';
+  const showImage = modalityMode !== 'voice_only';
+  const showVoice = modalityMode !== 'text_image';
   const canSend = !disabled && (text.trim() || imagePreview);
 
   return (
@@ -86,7 +89,7 @@ export default function ChatView() {
       {/* Navbar */}
       <Navbar
         title="AgentFlow"
-        subtitle="AI Agent Orchestrator"
+        subtitle="Your AI Workforce"
         right={
           <div className="flex items-center gap-1">
             {messages.length > 0 && (
@@ -111,7 +114,7 @@ export default function ChatView() {
               </div>
               <h2 className="text-xl font-semibold mb-1">AgentFlow</h2>
               <p className="text-sm opacity-50">
-                Orchestrate AI agents to handle your tasks. Just describe what you need.
+                Your personal AI workforce. Describe any task and let intelligent agents do the heavy lifting.
               </p>
             </Block>
 
@@ -232,41 +235,45 @@ export default function ChatView() {
       </div>
 
       {/* Image preview */}
-      <ImagePreview />
+      {showImage && <ImagePreview />}
 
       {/* Input bar */}
       <div className="flex-shrink-0 flex items-end gap-2 px-3 py-2 bg-ios-dark-surface-1 border-t border-white/[0.08]">
-        <ImageCapture />
-        <VoiceButton onAudioRecorded={handleAudioRecorded} />
+        {showImage && <ImageCapture />}
+        {showVoice && <VoiceButton onAudioRecorded={handleAudioRecorded} />}
 
-        <div className="flex-1 bg-ios-dark-surface-2 rounded-2xl px-3 py-2 border border-white/[0.06]">
-          <textarea
-            ref={textareaRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onInput={handleInput}
-            placeholder="Message..."
-            rows={1}
-            disabled={disabled}
-            className="w-full bg-transparent text-[15px] text-white placeholder-white/30 resize-none outline-none max-h-[120px] leading-relaxed"
-          />
-        </div>
+        {showText && (
+          <>
+            <div className="flex-1 bg-ios-dark-surface-2 rounded-2xl px-3 py-2 border border-white/[0.06]">
+              <textarea
+                ref={textareaRef}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onInput={handleInput}
+                placeholder="Message..."
+                rows={1}
+                disabled={disabled}
+                className="w-full bg-transparent text-[15px] text-white placeholder-white/30 resize-none outline-none max-h-[120px] leading-relaxed"
+              />
+            </div>
 
-        <button
-          onClick={handleSend}
-          disabled={!canSend}
-          aria-label="Send message"
-          className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-            canSend ? 'bg-primary text-white' : 'text-white/20'
-          }`}
-        >
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
-          )}
-        </button>
+            <button
+              onClick={handleSend}
+              disabled={!canSend}
+              aria-label="Send message"
+              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                canSend ? 'bg-primary text-white' : 'text-white/20'
+              }`}
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
+              )}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
