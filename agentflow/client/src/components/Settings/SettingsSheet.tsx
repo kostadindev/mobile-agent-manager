@@ -1,41 +1,54 @@
-import { Sheet, Block, BlockTitle, List, ListItem, Button } from 'konsta/react';
+import { Sheet, Block, Button } from 'konsta/react';
 import { useStore } from '../../state/store';
 
 const levels = [
-  {
-    value: 'black_box' as const,
-    label: 'Black Box',
-    description: 'Agents execute automatically — only the final answer is shown.',
-  },
-  {
-    value: 'plan_preview' as const,
-    label: 'Plan Preview',
-    description: 'See the task plan before execution, but no live graph.',
-  },
-  {
-    value: 'full_transparency' as const,
-    label: 'Full Transparency',
-    description: 'See the task plan and live execution graph.',
-  },
+  { value: 'black_box' as const, label: 'Black Box', description: 'Agents execute automatically — only the final answer is shown.' },
+  { value: 'plan_preview' as const, label: 'Plan Preview', description: 'See the task plan before execution, but no live graph.' },
+  { value: 'full_transparency' as const, label: 'Full Transparency', description: 'See the task plan and live execution graph.' },
 ];
 
 const modalities = [
-  {
-    value: 'multimodal' as const,
-    label: 'Multimodal',
-    description: 'Text, images, and voice input.',
-  },
-  {
-    value: 'text_image' as const,
-    label: 'Text + Images',
-    description: 'Text and image input only — no voice.',
-  },
-  {
-    value: 'voice_only' as const,
-    label: 'Voice Only',
-    description: 'Voice input only — no text or images.',
-  },
+  { value: 'multimodal' as const, label: 'Multimodal', description: 'Text, images, and voice input.' },
+  { value: 'text_image' as const, label: 'Text + Images', description: 'Text and image input only — no voice.' },
+  { value: 'voice_only' as const, label: 'Voice Only', description: 'Voice input only — no text or images.' },
 ];
+
+function SegmentedControl<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: T; label: string; description: string }[];
+  value: T;
+  onChange: (v: T) => void;
+}) {
+  const active = options.find((o) => o.value === value);
+  return (
+    <div>
+      <div className="flex rounded-xl bg-white/[0.06] p-1 gap-1">
+        {options.map((o) => {
+          const isActive = value === o.value;
+          return (
+            <button
+              key={o.value}
+              onClick={() => onChange(o.value)}
+              className={`flex-1 py-2.5 px-2 rounded-lg text-[13px] font-medium transition-all ${
+                isActive
+                  ? 'bg-[#7c6aef] text-white shadow-md'
+                  : 'text-white/50 active:bg-white/[0.08]'
+              }`}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+      {active && (
+        <p className="text-[12px] text-white/40 mt-2 px-1">{active.description}</p>
+      )}
+    </div>
+  );
+}
 
 export default function SettingsSheet() {
   const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, modalityMode, setModalityMode, startNewConversation } =
@@ -47,49 +60,17 @@ export default function SettingsSheet() {
       onBackdropClick={() => setShowSettings(false)}
       className="pb-safe"
     >
-      <BlockTitle>Transparency Mode</BlockTitle>
-      <List strong inset outline>
-        {levels.map((l) => (
-          <ListItem
-            key={l.value}
-            title={l.label}
-            subtitle={l.description}
-            after={
-              <input
-                type="radio"
-                name="transparency"
-                checked={transparencyLevel === l.value}
-                onChange={() => setTransparencyLevel(l.value)}
-                className="accent-[#7c6aef]"
-              />
-            }
-            onClick={() => setTransparencyLevel(l.value)}
-          />
-        ))}
-      </List>
+      <div className="px-4 py-4 space-y-6">
+        <div>
+          <p className="text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2">Transparency Mode</p>
+          <SegmentedControl options={levels} value={transparencyLevel} onChange={setTransparencyLevel} />
+        </div>
 
-      <BlockTitle className="mt-2">Input Mode</BlockTitle>
-      <List strong inset outline>
-        {modalities.map((m) => (
-          <ListItem
-            key={m.value}
-            title={m.label}
-            subtitle={m.description}
-            after={
-              <input
-                type="radio"
-                name="modality"
-                checked={modalityMode === m.value}
-                onChange={() => setModalityMode(m.value)}
-                className="accent-[#7c6aef]"
-              />
-            }
-            onClick={() => setModalityMode(m.value)}
-          />
-        ))}
-      </List>
+        <div>
+          <p className="text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2">Input Mode</p>
+          <SegmentedControl options={modalities} value={modalityMode} onChange={setModalityMode} />
+        </div>
 
-      <Block className="mt-4">
         <Button
           outline
           onClick={() => {
@@ -100,7 +81,7 @@ export default function SettingsSheet() {
         >
           Clear History
         </Button>
-      </Block>
+      </div>
     </Sheet>
   );
 }
