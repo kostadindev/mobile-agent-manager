@@ -6,7 +6,7 @@ import type { ExecutionGraphState, NodeStatus, EdgeStatus, ExecutionSSEEvent } f
 import type { Language } from '../i18n';
 import { dictionaries } from '../i18n';
 
-type Tab = 'chat' | 'agents' | 'history';
+type Tab = 'chat' | 'agents' | 'history' | 'guide';
 type TransparencyLevel = 'black_box' | 'plan_preview' | 'full_transparency';
 type ModalityMode = 'multimodal' | 'text_image' | 'voice_only';
 type ThemeMode = 'dark' | 'light' | 'auto';

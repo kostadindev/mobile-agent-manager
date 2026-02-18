@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Tabbar, TabbarLink } from 'konsta/react';
-import { MessageSquare, Bot, Clock } from 'lucide-react';
+import { MessageSquare, Bot, Clock, BookOpen } from 'lucide-react';
 import { useStore } from '../../state/store';
 import { useT } from '../../i18n';
 
@@ -16,6 +16,7 @@ export default function Shell({ children }: ShellProps) {
     { id: 'chat' as const, label: t('tab.chat'), Icon: MessageSquare },
     { id: 'agents' as const, label: t('tab.agents'), Icon: Bot },
     { id: 'history' as const, label: t('tab.history'), Icon: Clock },
+    { id: 'guide' as const, label: t('tab.guide'), Icon: BookOpen },
   ];
 
   return (

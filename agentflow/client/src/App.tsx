@@ -5,6 +5,7 @@ import Shell from './components/Layout/Shell';
 import ChatView from './components/Chat/ChatView';
 import AgentList from './components/Agents/AgentList';
 import ExecutionView from './components/Execution/ExecutionView';
+import GuideView from './components/Guide/GuideView';
 import SettingsSheet from './components/Settings/SettingsSheet';
 
 function useIsDark() {
@@ -47,6 +48,7 @@ export default function App() {
         {activeTab === 'chat' && <ChatView />}
         {activeTab === 'agents' && <AgentList />}
         {activeTab === 'history' && <ExecutionView />}
+        {activeTab === 'guide' && <GuideView />}
       </Shell>
       <SettingsSheet />
     </KonstaApp>

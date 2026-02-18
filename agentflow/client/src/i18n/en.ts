@@ -7,6 +7,7 @@ export type TranslationKey =
   | 'tab.chat'
   | 'tab.agents'
   | 'tab.history'
+  | 'tab.guide'
   // Chat
   | 'chat.placeholder'
   | 'chat.analyzeImage'
@@ -119,7 +120,22 @@ export type TranslationKey =
   | 'msg.processing'
   | 'msg.error'
   | 'msg.allCompleted'
-  | 'msg.executionFailed';
+  | 'msg.executionFailed'
+  // Guide
+  | 'guide.title'
+  | 'guide.subtitle'
+  | 'guide.gettingStarted'
+  | 'guide.gettingStartedDesc'
+  | 'guide.inputModes'
+  | 'guide.inputModesDesc'
+  | 'guide.transparencyModes'
+  | 'guide.transparencyModesDesc'
+  | 'guide.agents'
+  | 'guide.agentsDesc'
+  | 'guide.executionGraph'
+  | 'guide.executionGraphDesc'
+  | 'guide.history'
+  | 'guide.historyDesc';
 
 export type Translations = Record<TranslationKey, string>;
 
@@ -133,6 +149,7 @@ const en: Translations = {
   'tab.chat': 'Chat',
   'tab.agents': 'Agents',
   'tab.history': 'History',
+  'tab.guide': 'Docs',
 
   // Chat
   'chat.placeholder': 'Message...',
@@ -261,6 +278,22 @@ const en: Translations = {
   'msg.error': 'Sorry, something went wrong. Please check that the server is running.',
   'msg.allCompleted': 'All tasks completed successfully!',
   'msg.executionFailed': 'Execution failed. Please check the server connection.',
+
+  // Guide
+  'guide.title': 'Docs',
+  'guide.subtitle': 'Learn how to use AgentFlow',
+  'guide.gettingStarted': 'Getting Started',
+  'guide.gettingStartedDesc': 'Type a message in the Chat tab to describe any task. The orchestrator will break it into steps and delegate to specialized agents. Tap Execute to run the plan.',
+  'guide.inputModes': 'Input Modes',
+  'guide.inputModesDesc': 'Multimodal accepts text, images, and voice. Text + Images disables voice. Voice Only restricts input to the microphone. Change the mode in Settings.',
+  'guide.transparencyModes': 'Transparency Modes',
+  'guide.transparencyModesDesc': 'Black Box runs agents silently and shows only the final answer. Plan Preview shows the task plan before execution. Full Transparency shows the plan and a live execution graph.',
+  'guide.agents': 'Agents',
+  'guide.agentsDesc': 'The Agents tab lists all available agents. The Orchestrator plans tasks and is always active. Worker agents can be toggled on/off. Tap an agent to view its details or edit its constitution.',
+  'guide.executionGraph': 'Execution Graph',
+  'guide.executionGraphDesc': 'In Full Transparency mode, a directed acyclic graph (DAG) visualizes agent tasks. Nodes represent steps; edges show dependencies. Colors indicate status: pending, running, complete, or failed.',
+  'guide.history': 'History',
+  'guide.historyDesc': 'Past conversations are saved automatically when you start a new chat. Browse and reopen them from the History tab. You can delete individual conversations or clear all history from Settings.',
 };
 
 export default en;

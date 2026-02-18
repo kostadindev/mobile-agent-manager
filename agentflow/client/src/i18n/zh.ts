@@ -10,6 +10,7 @@ const zh: Translations = {
   'tab.chat': '聊天',
   'tab.agents': '代理',
   'tab.history': '历史',
+  'tab.guide': '文档',
 
   // Chat
   'chat.placeholder': '输入消息...',
@@ -138,6 +139,22 @@ const zh: Translations = {
   'msg.error': '出错了。请检查服务器是否运行。',
   'msg.allCompleted': '所有任务已成功完成！',
   'msg.executionFailed': '执行失败。请检查服务器连接。',
+
+  // Guide
+  'guide.title': '文档',
+  'guide.subtitle': '了解如何使用 AgentFlow',
+  'guide.gettingStarted': '快速入门',
+  'guide.gettingStartedDesc': '在聊天标签中输入消息来描述任务。编排器会将其拆分为步骤并分配给专业代理。点击执行来运行计划。',
+  'guide.inputModes': '输入模式',
+  'guide.inputModesDesc': '多模态接受文本、图片和语音。文本+图片禁用语音。仅语音将输入限制为麦克风。在设置中更改模式。',
+  'guide.transparencyModes': '透明度模式',
+  'guide.transparencyModesDesc': '黑盒模式静默运行代理，只显示最终结果。计划预览在执行前显示任务计划。完全透明显示计划和实时执行图表。',
+  'guide.agents': '代理',
+  'guide.agentsDesc': '代理标签列出所有可用代理。编排器规划任务且始终活跃。工作代理可以启用/禁用。点击代理查看详情或编辑其准则。',
+  'guide.executionGraph': '执行图',
+  'guide.executionGraphDesc': '在完全透明模式下，有向无环图（DAG）可视化代理任务。节点代表步骤；边表示依赖关系。颜色指示状态：等待中、运行中、完成或失败。',
+  'guide.history': '历史',
+  'guide.historyDesc': '开始新聊天时，过往对话会自动保存。从历史标签浏览和重新打开。可以删除单个对话或从设置中清除所有历史。',
 };
 
 export default zh;
