@@ -11,7 +11,7 @@ export default function OutputNode({ data }: NodeProps) {
       className={`flex items-center gap-1.5 px-2.5 py-1.5 border-2 rounded-xl min-w-[100px] max-w-[160px] shadow-lg backdrop-blur-sm transition-all duration-500 ${
         isComplete
           ? 'bg-green-500/8 border-green-500/70'
-          : 'bg-slate-800/90 border-slate-700/50'
+          : 'bg-surface-1 border-slate-700/50'
       }`}
     >
       {isComplete ? (
@@ -21,7 +21,7 @@ export default function OutputNode({ data }: NodeProps) {
       )}
       <div>
         <div className="text-[8px] text-slate-500 uppercase tracking-widest font-semibold">Output</div>
-        <div className="text-[10px] text-white font-medium">
+        <div className="text-[10px] text-on-surface font-medium">
           {isComplete ? 'All Complete' : 'Waiting...'}
         </div>
       </div>

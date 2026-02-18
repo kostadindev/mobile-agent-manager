@@ -85,7 +85,7 @@ export default function ChatView() {
   const canSend = !disabled && (text.trim() || imagePreview);
 
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-ios-dark-surface">
+    <div className="h-full flex flex-col overflow-hidden bg-surface">
       {/* Navbar */}
       <Navbar
         title="AgentFlow"
@@ -160,7 +160,7 @@ export default function ChatView() {
                         h2: ({ children }) => <h2 className="text-base font-bold mt-4 mb-1">{children}</h2>,
                         p: ({ children }) => <p className="mt-1 text-sm">{children}</p>,
                         strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                        hr: () => <hr className="my-2 border-white/10" />,
+                        hr: () => <hr className="my-2 border-border" />,
                         ul: ({ children }) => <ul className="list-disc ml-4 mt-1 text-sm">{children}</ul>,
                         li: ({ children }) => <li className="mt-0.5">{children}</li>,
                         a: ({ href, children }) => <a href={href} target="_blank" rel="noreferrer" className="text-blue-400 underline">{children}</a>,
@@ -173,7 +173,7 @@ export default function ChatView() {
                     {msg.role === 'assistant' && msg.content && (
                       <button
                         onClick={() => handleSpeak(msg.id, msg.content)}
-                        className="mt-1.5 p-1 rounded-lg hover:bg-white/[0.06] transition-colors"
+                        className="mt-1.5 p-1 rounded-lg hover:bg-hover transition-colors"
                         aria-label={speakingMsgId === msg.id ? 'Stop reading' : 'Read aloud'}
                       >
                         {speakingMsgId === msg.id ? (
@@ -238,13 +238,13 @@ export default function ChatView() {
       {showImage && <ImagePreview />}
 
       {/* Input bar */}
-      <div className="flex-shrink-0 flex items-end gap-2 px-3 py-2 bg-ios-dark-surface-1 border-t border-white/[0.08]">
+      <div className="flex-shrink-0 flex items-end gap-2 px-3 py-2 bg-surface-1 border-t border-border">
         {showImage && <ImageCapture />}
         {showVoice && <VoiceButton onAudioRecorded={handleAudioRecorded} />}
 
         {showText && (
           <>
-            <div className="flex-1 bg-ios-dark-surface-2 rounded-2xl px-3 py-2 border border-white/[0.06]">
+            <div className="flex-1 bg-surface-2 rounded-2xl px-3 py-2 border border-border">
               <textarea
                 ref={textareaRef}
                 value={text}
@@ -254,7 +254,7 @@ export default function ChatView() {
                 placeholder="Message..."
                 rows={1}
                 disabled={disabled}
-                className="w-full bg-transparent text-[15px] text-white placeholder-white/30 resize-none outline-none max-h-[120px] leading-relaxed"
+                className="w-full bg-transparent text-[15px] text-on-surface placeholder-on-surface-muted resize-none outline-none max-h-[120px] leading-relaxed"
               />
             </div>
 
@@ -263,7 +263,7 @@ export default function ChatView() {
               disabled={!canSend}
               aria-label="Send message"
               className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                canSend ? 'bg-primary text-white' : 'text-white/20'
+                canSend ? 'bg-primary text-white' : 'text-on-surface-muted'
               }`}
             >
               {isLoading ? (

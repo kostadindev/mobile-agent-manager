@@ -48,7 +48,7 @@ export default function AgentDetailSheet({ agent, opened, onClose }: AgentDetail
             <Icon className="w-6 h-6" style={{ color: agent.color }} />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-white">{agent.name}</h2>
+            <h2 className="text-base font-semibold text-on-surface">{agent.name}</h2>
             <p className="text-xs text-slate-400">{agent.role}</p>
           </div>
         </Block>
@@ -66,7 +66,7 @@ export default function AgentDetailSheet({ agent, opened, onClose }: AgentDetail
             {agent.capabilities.map((cap) => (
               <span
                 key={cap}
-                className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg bg-white/[0.06] text-slate-300"
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg bg-control-bg text-slate-300"
               >
                 <Wrench className="w-3 h-3 text-slate-500" />
                 {cap}
@@ -96,7 +96,7 @@ export default function AgentDetailSheet({ agent, opened, onClose }: AgentDetail
                 onChange={(e) => { setDraft(e.target.value); setDirty(true); }}
                 placeholder="e.g. Always prefer arXiv over Wikipedia. Keep plans under 3 steps..."
                 rows={4}
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2 text-[13px] text-slate-200 placeholder-slate-600 resize-none outline-none leading-relaxed"
+                className="w-full bg-hover border border-border rounded-xl px-3 py-2 text-[13px] text-slate-200 placeholder-slate-600 resize-none outline-none leading-relaxed"
               />
               {dirty && (
                 <Button onClick={handleSave} small inline className="mt-2">

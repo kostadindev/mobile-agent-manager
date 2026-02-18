@@ -7,6 +7,12 @@ const levels = [
   { value: 'full_transparency' as const, label: 'Full Transparency', description: 'See the task plan and live execution graph.' },
 ];
 
+const themes = [
+  { value: 'dark' as const, label: 'Dark', description: 'Always use dark theme.' },
+  { value: 'light' as const, label: 'Light', description: 'Always use light theme.' },
+  { value: 'auto' as const, label: 'Auto', description: 'Follow your system preference.' },
+];
+
 const modalities = [
   { value: 'multimodal' as const, label: 'Multimodal', description: 'Text, images, and voice input.' },
   { value: 'text_image' as const, label: 'Text + Images', description: 'Text and image input only — no voice.' },
@@ -25,7 +31,7 @@ function SegmentedControl<T extends string>({
   const active = options.find((o) => o.value === value);
   return (
     <div>
-      <div className="flex rounded-xl bg-white/[0.06] p-1 gap-1">
+      <div className="flex rounded-xl bg-control-bg p-1 gap-1">
         {options.map((o) => {
           const isActive = value === o.value;
           return (
@@ -35,7 +41,7 @@ function SegmentedControl<T extends string>({
               className={`flex-1 py-2.5 px-2 rounded-lg text-[13px] font-medium transition-all ${
                 isActive
                   ? 'bg-[#7c6aef] text-white shadow-md'
-                  : 'text-white/50 active:bg-white/[0.08]'
+                  : 'text-on-surface-muted active:bg-hover'
               }`}
             >
               {o.label}
@@ -44,14 +50,14 @@ function SegmentedControl<T extends string>({
         })}
       </div>
       {active && (
-        <p className="text-[12px] text-white/40 mt-2 px-1">{active.description}</p>
+        <p className="text-[12px] text-on-surface-muted mt-2 px-1">{active.description}</p>
       )}
     </div>
   );
 }
 
 export default function SettingsSheet() {
-  const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, modalityMode, setModalityMode, startNewConversation } =
+  const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, modalityMode, setModalityMode, themeMode, setThemeMode, startNewConversation } =
     useStore();
 
   return (
@@ -62,13 +68,18 @@ export default function SettingsSheet() {
     >
       <div className="px-4 py-4 space-y-6">
         <div>
-          <p className="text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2">Transparency Mode</p>
+          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">Transparency Mode</p>
           <SegmentedControl options={levels} value={transparencyLevel} onChange={setTransparencyLevel} />
         </div>
 
         <div>
-          <p className="text-[13px] font-semibold text-white/60 uppercase tracking-wide mb-2">Input Mode</p>
+          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">Input Mode</p>
           <SegmentedControl options={modalities} value={modalityMode} onChange={setModalityMode} />
+        </div>
+
+        <div>
+          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">Theme</p>
+          <SegmentedControl options={themes} value={themeMode} onChange={setThemeMode} />
         </div>
 
         <Button

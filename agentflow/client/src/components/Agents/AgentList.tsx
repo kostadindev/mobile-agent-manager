@@ -33,7 +33,7 @@ export default function AgentList() {
   const workerAgents = agents.filter((a) => !a.isOrchestrator);
 
   return (
-    <div className="h-full flex flex-col bg-ios-dark-surface">
+    <div className="h-full flex flex-col bg-surface">
       <Navbar title="Agents" subtitle="Assembled dynamically for each task" />
       <div className="flex-1 overflow-y-auto">
         {agents.length === 0 ? (

@@ -16,7 +16,7 @@ export default function ExecutionView() {
   // Detail view: show a single conversation read-only
   if (viewingConversation) {
     return (
-      <div className="h-full flex flex-col bg-ios-dark-surface">
+      <div className="h-full flex flex-col bg-surface">
         <Navbar
           title={viewingConversation.title}
           left={
@@ -35,7 +35,7 @@ export default function ExecutionView() {
                 className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm ${
                   msg.role === 'user'
                     ? 'bg-primary text-white rounded-br-md'
-                    : 'bg-ios-dark-surface-1 text-white/90 rounded-bl-md'
+                    : 'bg-surface-1 text-on-surface-secondary rounded-bl-md'
                 }`}
               >
                 {/* Modality badge */}
@@ -59,7 +59,7 @@ export default function ExecutionView() {
                     h2: ({ children }) => <h2 className="text-base font-bold mt-4 mb-1">{children}</h2>,
                     p: ({ children }) => <p className="mt-1 text-sm">{children}</p>,
                     strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                    hr: () => <hr className="my-2 border-white/10" />,
+                    hr: () => <hr className="my-2 border-border" />,
                     ul: ({ children }) => <ul className="list-disc ml-4 mt-1 text-sm">{children}</ul>,
                     li: ({ children }) => <li className="mt-0.5">{children}</li>,
                     a: ({ href, children }) => (
@@ -84,7 +84,7 @@ export default function ExecutionView() {
 
   // List view: show all archived conversations
   return (
-    <div className="h-full flex flex-col bg-ios-dark-surface">
+    <div className="h-full flex flex-col bg-surface">
       <Navbar
         title="History"
         subtitle="Past conversations"
@@ -99,18 +99,18 @@ export default function ExecutionView() {
       <div className="flex-1 min-h-0 overflow-y-auto">
         {conversations.length === 0 ? (
           <Block className="text-center mt-24">
-            <div className="w-14 h-14 rounded-2xl bg-ios-dark-surface-1 flex items-center justify-center mx-auto mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-surface-1 flex items-center justify-center mx-auto mb-4">
               <Clock className="w-7 h-7 opacity-30" />
             </div>
             <p className="text-base opacity-50">No past conversations</p>
             <p className="text-sm opacity-30 mt-1">Cleared or new chats will appear here</p>
           </Block>
         ) : (
-          <div className="divide-y divide-white/[0.06]">
+          <div className="divide-y divide-border">
             {conversations.map((conv) => (
               <div
                 key={conv.id}
-                className="flex items-center gap-3 px-4 py-3 active:bg-white/[0.04] transition-colors"
+                className="flex items-center gap-3 px-4 py-3 active:bg-hover transition-colors"
               >
                 <button
                   className="flex-1 min-w-0 text-left"
@@ -118,7 +118,7 @@ export default function ExecutionView() {
                 >
                   <div className="flex items-center gap-2 mb-0.5">
                     <MessageSquare className="w-4 h-4 text-[#7c6aef] flex-shrink-0" />
-                    <p className="text-sm font-medium text-white truncate">{conv.title}</p>
+                    <p className="text-sm font-medium text-on-surface truncate">{conv.title}</p>
                   </div>
                   <div className="flex items-center gap-2 ml-6">
                     <span className="text-xs opacity-40">
@@ -131,7 +131,7 @@ export default function ExecutionView() {
                 </button>
                 <button
                   onClick={() => deleteConversation(conv.id)}
-                  className="p-2 rounded-lg hover:bg-white/[0.06] transition-colors flex-shrink-0"
+                  className="p-2 rounded-lg hover:bg-hover transition-colors flex-shrink-0"
                   aria-label="Delete conversation"
                 >
                   <Trash2 className="w-4 h-4 text-red-400/60" />

@@ -13,7 +13,7 @@ export default function OrchestratorNode({ data }: NodeProps) {
         </div>
         <div className="min-w-0">
           <div className="text-[8px] text-indigo-300/80 font-semibold uppercase tracking-widest">Orchestrator</div>
-          <div className="text-[10px] text-white font-semibold truncate">{d.label}</div>
+          <div className="text-[10px] text-on-surface font-semibold truncate">{d.label}</div>
         </div>
       </div>
       <Handle type="target" position={Position.Top} className="!bg-indigo-400 !w-2 !h-2 !border-0" />

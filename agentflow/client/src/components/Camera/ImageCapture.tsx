@@ -40,7 +40,7 @@ export default function ImageCapture() {
       <button
         onClick={openPicker}
         aria-label="Take photo or choose image"
-        className="w-9 h-9 rounded-full flex items-center justify-center bg-white/[0.06] text-slate-500 hover:text-slate-300 transition-all active:scale-90"
+        className="w-9 h-9 rounded-full flex items-center justify-center bg-control-bg text-on-surface-muted hover:text-on-surface-secondary transition-all active:scale-90"
       >
         <Camera className="w-4 h-4" />
       </button>

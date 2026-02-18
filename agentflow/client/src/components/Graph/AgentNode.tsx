@@ -16,7 +16,7 @@ export default function AgentNode({ data }: NodeProps) {
 
   return (
     <div
-      className={`relative flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-800/90 rounded-xl min-w-[120px] max-w-[160px] shadow-lg backdrop-blur-sm transition-all duration-300 ${
+      className={`relative flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-1 rounded-xl min-w-[120px] max-w-[160px] shadow-lg backdrop-blur-sm transition-all duration-300 ${
         isRunning ? 'node-running border-2' : 'border border-slate-700/40'
       }`}
       style={{
@@ -36,7 +36,7 @@ export default function AgentNode({ data }: NodeProps) {
         <Icon className="w-3 h-3" style={{ color }} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[10px] text-white font-medium truncate">{d.label}</div>
+        <div className="text-[10px] text-on-surface font-medium truncate">{d.label}</div>
       </div>
 
       {/* Status indicator */}

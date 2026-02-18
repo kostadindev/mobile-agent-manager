@@ -1,3 +1,4 @@
+import { useEffect, useState, useMemo } from 'react';
 import { App as KonstaApp } from 'konsta/react';
 import { useStore } from './state/store';
 import Shell from './components/Layout/Shell';
@@ -6,11 +7,32 @@ import AgentList from './components/Agents/AgentList';
 import ExecutionView from './components/Execution/ExecutionView';
 import SettingsSheet from './components/Settings/SettingsSheet';
 
+function useIsDark() {
+  const themeMode = useStore((s) => s.themeMode);
+  const mql = useMemo(() => window.matchMedia('(prefers-color-scheme: dark)'), []);
+  const [systemDark, setSystemDark] = useState(mql.matches);
+
+  useEffect(() => {
+    const handler = (e: MediaQueryListEvent) => setSystemDark(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, [mql]);
+
+  const isDark = themeMode === 'dark' || (themeMode === 'auto' && systemDark);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
+
+  return isDark;
+}
+
 export default function App() {
   const { activeTab } = useStore();
+  const isDark = useIsDark();
 
   return (
-    <KonstaApp theme="ios" dark safeAreas className="dark">
+    <KonstaApp theme="ios" dark={isDark} safeAreas className={isDark ? 'dark' : ''}>
       <Shell>
         {activeTab === 'chat' && <ChatView />}
         {activeTab === 'agents' && <AgentList />}

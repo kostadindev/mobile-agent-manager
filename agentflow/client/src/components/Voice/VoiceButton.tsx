@@ -93,7 +93,7 @@ export default function VoiceButton({ onAudioRecorded }: VoiceButtonProps) {
         className={`w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90 ${
           isRecording
             ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
-            : 'bg-white/[0.06] text-slate-500 hover:text-slate-300'
+            : 'bg-control-bg text-on-surface-muted hover:text-on-surface-secondary'
         }`}
       >
         {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}

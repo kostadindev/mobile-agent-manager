@@ -89,7 +89,7 @@ export default function AgentFormSheet({ agent, opened, onClose, onSave }: Agent
               key={n}
               onClick={() => setIcon(n)}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                icon === n ? 'bg-[#7c6aef] text-white' : 'bg-white/[0.06] text-slate-400'
+                icon === n ? 'bg-[#7c6aef] text-white' : 'bg-control-bg text-on-surface-muted'
               }`}
             >
               <Icon className="w-5 h-5" />

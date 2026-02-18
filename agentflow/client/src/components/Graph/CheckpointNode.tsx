@@ -25,7 +25,7 @@ export default function CheckpointNode({ data }: NodeProps) {
     ? 'bg-green-500/8'
     : isAwaiting
     ? 'bg-amber-500/8'
-    : 'bg-slate-800/90';
+    : 'bg-surface-1';
 
   const iconColor = isFailed
     ? 'text-red-400'
@@ -44,7 +44,7 @@ export default function CheckpointNode({ data }: NodeProps) {
       <Icon className={`w-4 h-4 ${iconColor} flex-shrink-0`} />
       <div className="flex-1 min-w-0">
         <div className="text-[8px] text-slate-500 uppercase tracking-widest font-semibold">Checkpoint</div>
-        <div className="text-[10px] text-white font-medium truncate">{d.label}</div>
+        <div className="text-[10px] text-on-surface font-medium truncate">{d.label}</div>
       </div>
       <Handle type="target" position={Position.Top} className="!bg-slate-400 !w-2 !h-2 !border-0" />
       <Handle type="source" position={Position.Bottom} className="!bg-slate-400 !w-2 !h-2 !border-0" />
