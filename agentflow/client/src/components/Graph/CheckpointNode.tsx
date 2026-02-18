@@ -1,9 +1,11 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { ShieldCheck, ShieldAlert, ShieldX } from 'lucide-react';
 import type { GraphNodeData } from '../../types/graph';
+import { useT } from '../../i18n';
 
 export default function CheckpointNode({ data }: NodeProps) {
   const d = data as unknown as GraphNodeData;
+  const t = useT();
 
   const isAwaiting = d.status === 'awaiting_approval';
   const isApproved = d.status === 'approved' || d.status === 'completed';
@@ -43,7 +45,7 @@ export default function CheckpointNode({ data }: NodeProps) {
     >
       <Icon className={`w-4 h-4 ${iconColor} flex-shrink-0`} />
       <div className="flex-1 min-w-0">
-        <div className="text-[8px] text-slate-500 uppercase tracking-widest font-semibold">Checkpoint</div>
+        <div className="text-[8px] text-slate-500 uppercase tracking-widest font-semibold">{t('node.checkpoint')}</div>
         <div className="text-[10px] text-on-surface font-medium truncate">{d.label}</div>
       </div>
       <Handle type="target" position={Position.Top} className="!bg-slate-400 !w-2 !h-2 !border-0" />

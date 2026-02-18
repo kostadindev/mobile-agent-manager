@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Sheet, Block, BlockTitle, Button } from 'konsta/react';
 import { BookOpen, Lightbulb, Globe, Bot, Search, FileText, Code, Database, Zap, Brain, Wrench, type LucideIcon } from 'lucide-react';
 import { useStore } from '../../state/store';
+import { useT } from '../../i18n';
 import type { Agent } from '../../types/agents';
 
 const iconMap: Record<string, LucideIcon> = { BookOpen, Lightbulb, Globe, Bot, Search, FileText, Code, Database, Zap, Brain };
@@ -14,6 +15,7 @@ interface AgentDetailSheetProps {
 
 export default function AgentDetailSheet({ agent, opened, onClose }: AgentDetailSheetProps) {
   const { updateConstitution } = useStore();
+  const t = useT();
   const [draft, setDraft] = useState('');
   const [dirty, setDirty] = useState(false);
 
@@ -54,13 +56,13 @@ export default function AgentDetailSheet({ agent, opened, onClose }: AgentDetail
         </Block>
 
         {/* Goal */}
-        <BlockTitle>Goal</BlockTitle>
+        <BlockTitle>{t('agentDetail.goal')}</BlockTitle>
         <Block>
           <p className="text-sm text-slate-300">{agent.goal || agent.description}</p>
         </Block>
 
         {/* Tools */}
-        <BlockTitle>Tools</BlockTitle>
+        <BlockTitle>{t('agentDetail.tools')}</BlockTitle>
         <Block>
           <div className="flex flex-wrap gap-2">
             {agent.capabilities.map((cap) => (
@@ -76,31 +78,31 @@ export default function AgentDetailSheet({ agent, opened, onClose }: AgentDetail
         </Block>
 
         {/* System Prompt / Backstory */}
-        <BlockTitle>System Prompt</BlockTitle>
+        <BlockTitle>{t('agentDetail.systemPrompt')}</BlockTitle>
         <Block>
           <p className="text-[13px] text-slate-400 leading-relaxed whitespace-pre-wrap">
-            {agent.backstory || 'No system prompt configured.'}
+            {agent.backstory || t('agentDetail.noSystemPrompt')}
           </p>
         </Block>
 
         {/* Constitution (orchestrator only) */}
         {agent.isOrchestrator && (
           <>
-            <BlockTitle>Constitution</BlockTitle>
+            <BlockTitle>{t('agentDetail.constitution')}</BlockTitle>
             <Block>
               <p className="text-[11px] text-slate-500 mb-2">
-                Custom guidelines appended to the orchestrator's system prompt.
+                {t('agentDetail.constitutionDesc')}
               </p>
               <textarea
                 value={draft}
                 onChange={(e) => { setDraft(e.target.value); setDirty(true); }}
-                placeholder="e.g. Always prefer arXiv over Wikipedia. Keep plans under 3 steps..."
+                placeholder={t('agentDetail.constitutionPlaceholder')}
                 rows={4}
                 className="w-full bg-hover border border-border rounded-xl px-3 py-2 text-[13px] text-slate-200 placeholder-slate-600 resize-none outline-none leading-relaxed"
               />
               {dirty && (
                 <Button onClick={handleSave} small inline className="mt-2">
-                  Save
+                  {t('agentDetail.save')}
                 </Button>
               )}
             </Block>

@@ -1,23 +1,7 @@
-import { Sheet, Block, Button } from 'konsta/react';
+import { Sheet, Button } from 'konsta/react';
 import { useStore } from '../../state/store';
-
-const levels = [
-  { value: 'black_box' as const, label: 'Black Box', description: 'Agents execute automatically — only the final answer is shown.' },
-  { value: 'plan_preview' as const, label: 'Plan Preview', description: 'See the task plan before execution, but no live graph.' },
-  { value: 'full_transparency' as const, label: 'Full Transparency', description: 'See the task plan and live execution graph.' },
-];
-
-const themes = [
-  { value: 'dark' as const, label: 'Dark', description: 'Always use dark theme.' },
-  { value: 'light' as const, label: 'Light', description: 'Always use light theme.' },
-  { value: 'auto' as const, label: 'Auto', description: 'Follow your system preference.' },
-];
-
-const modalities = [
-  { value: 'multimodal' as const, label: 'Multimodal', description: 'Text, images, and voice input.' },
-  { value: 'text_image' as const, label: 'Text + Images', description: 'Text and image input only — no voice.' },
-  { value: 'voice_only' as const, label: 'Voice Only', description: 'Voice input only — no text or images.' },
-];
+import { useT, LANGUAGES } from '../../i18n';
+import type { Language } from '../../i18n';
 
 function SegmentedControl<T extends string>({
   options,
@@ -57,8 +41,33 @@ function SegmentedControl<T extends string>({
 }
 
 export default function SettingsSheet() {
-  const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, modalityMode, setModalityMode, themeMode, setThemeMode, startNewConversation } =
+  const { showSettings, setShowSettings, transparencyLevel, setTransparencyLevel, modalityMode, setModalityMode, themeMode, setThemeMode, language, setLanguage, startNewConversation } =
     useStore();
+  const t = useT();
+
+  const levels = [
+    { value: 'black_box' as const, label: t('settings.blackBox'), description: t('settings.blackBoxDesc') },
+    { value: 'plan_preview' as const, label: t('settings.planPreview'), description: t('settings.planPreviewDesc') },
+    { value: 'full_transparency' as const, label: t('settings.fullTransparency'), description: t('settings.fullTransparencyDesc') },
+  ];
+
+  const modalities = [
+    { value: 'multimodal' as const, label: t('settings.multimodal'), description: t('settings.multimodalDesc') },
+    { value: 'text_image' as const, label: t('settings.textImages'), description: t('settings.textImagesDesc') },
+    { value: 'voice_only' as const, label: t('settings.voiceOnly'), description: t('settings.voiceOnlyDesc') },
+  ];
+
+  const themes = [
+    { value: 'dark' as const, label: t('settings.dark'), description: t('settings.darkDesc') },
+    { value: 'light' as const, label: t('settings.light'), description: t('settings.lightDesc') },
+    { value: 'auto' as const, label: t('settings.auto'), description: t('settings.autoDesc') },
+  ];
+
+  const languageOptions = LANGUAGES.map((l) => ({
+    value: l.code,
+    label: l.label,
+    description: '',
+  }));
 
   return (
     <Sheet
@@ -68,18 +77,23 @@ export default function SettingsSheet() {
     >
       <div className="px-4 py-4 space-y-6">
         <div>
-          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">Transparency Mode</p>
+          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">{t('settings.transparencyMode')}</p>
           <SegmentedControl options={levels} value={transparencyLevel} onChange={setTransparencyLevel} />
         </div>
 
         <div>
-          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">Input Mode</p>
+          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">{t('settings.inputMode')}</p>
           <SegmentedControl options={modalities} value={modalityMode} onChange={setModalityMode} />
         </div>
 
         <div>
-          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">Theme</p>
+          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">{t('settings.theme')}</p>
           <SegmentedControl options={themes} value={themeMode} onChange={setThemeMode} />
+        </div>
+
+        <div>
+          <p className="text-[13px] font-semibold text-on-surface-muted uppercase tracking-wide mb-2">{t('settings.language')}</p>
+          <SegmentedControl options={languageOptions} value={language} onChange={(v) => setLanguage(v as Language)} />
         </div>
 
         <Button
@@ -90,7 +104,7 @@ export default function SettingsSheet() {
           }}
           className="!text-red-400 !border-red-400/40"
         >
-          Clear History
+          {t('settings.clearHistory')}
         </Button>
       </div>
     </Sheet>

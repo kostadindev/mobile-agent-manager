@@ -2,12 +2,7 @@ import type { ReactNode } from 'react';
 import { Tabbar, TabbarLink } from 'konsta/react';
 import { MessageSquare, Bot, Clock } from 'lucide-react';
 import { useStore } from '../../state/store';
-
-const tabs = [
-  { id: 'chat' as const, label: 'Chat', Icon: MessageSquare },
-  { id: 'agents' as const, label: 'Agents', Icon: Bot },
-  { id: 'history' as const, label: 'History', Icon: Clock },
-];
+import { useT } from '../../i18n';
 
 interface ShellProps {
   children: ReactNode;
@@ -15,6 +10,13 @@ interface ShellProps {
 
 export default function Shell({ children }: ShellProps) {
   const { activeTab, setActiveTab } = useStore();
+  const t = useT();
+
+  const tabs = [
+    { id: 'chat' as const, label: t('tab.chat'), Icon: MessageSquare },
+    { id: 'agents' as const, label: t('tab.agents'), Icon: Bot },
+    { id: 'history' as const, label: t('tab.history'), Icon: Clock },
+  ];
 
   return (
     <div className="h-full flex flex-col">

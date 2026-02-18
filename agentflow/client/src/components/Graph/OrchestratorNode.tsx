@@ -1,9 +1,11 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { Workflow } from 'lucide-react';
 import type { GraphNodeData } from '../../types/graph';
+import { useT } from '../../i18n';
 
 export default function OrchestratorNode({ data }: NodeProps) {
   const d = data as unknown as GraphNodeData;
+  const t = useT();
 
   return (
     <div className="relative">
@@ -12,7 +14,7 @@ export default function OrchestratorNode({ data }: NodeProps) {
           <Workflow className="w-3 h-3 text-white" />
         </div>
         <div className="min-w-0">
-          <div className="text-[8px] text-indigo-300/80 font-semibold uppercase tracking-widest">Orchestrator</div>
+          <div className="text-[8px] text-indigo-300/80 font-semibold uppercase tracking-widest">{t('node.orchestrator')}</div>
           <div className="text-[10px] text-on-surface font-semibold truncate">{d.label}</div>
         </div>
       </div>

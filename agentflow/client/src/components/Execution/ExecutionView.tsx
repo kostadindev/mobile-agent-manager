@@ -1,5 +1,6 @@
 import { Navbar, Block, Link } from 'konsta/react';
 import { useStore } from '../../state/store';
+import { useT } from '../../i18n';
 import { Clock, ChevronLeft, Trash2, MessageSquare, Mic, Camera } from 'lucide-react';
 import Markdown from 'react-markdown';
 
@@ -12,6 +13,7 @@ export default function ExecutionView() {
     deleteConversation,
     clearAllHistory,
   } = useStore();
+  const t = useT();
 
   // Detail view: show a single conversation read-only
   if (viewingConversation) {
@@ -41,12 +43,12 @@ export default function ExecutionView() {
                 {/* Modality badge */}
                 {msg.role === 'user' && msg.inputModality === 'voice' && (
                   <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-400 bg-amber-400/10 rounded-full px-2 py-0.5 mb-1">
-                    <Mic className="w-3 h-3" /> Voice
+                    <Mic className="w-3 h-3" /> {t('chat.voiceBadge')}
                   </span>
                 )}
                 {msg.role === 'user' && msg.inputModality === 'image' && (
                   <span className="inline-flex items-center gap-1 text-[10px] font-medium text-cyan-400 bg-cyan-400/10 rounded-full px-2 py-0.5 mb-1">
-                    <Camera className="w-3 h-3" /> Image
+                    <Camera className="w-3 h-3" /> {t('chat.imageBadge')}
                   </span>
                 )}
 
@@ -60,7 +62,7 @@ export default function ExecutionView() {
                     p: ({ children }) => <p className="mt-1 text-sm">{children}</p>,
                     strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                     hr: () => <hr className="my-2 border-border" />,
-                    ul: ({ children }) => <ul className="list-disc ml-4 mt-1 text-sm">{children}</ul>,
+                    ul: ({ children }) => <ul className="list-disc ms-4 mt-1 text-sm">{children}</ul>,
                     li: ({ children }) => <li className="mt-0.5">{children}</li>,
                     a: ({ href, children }) => (
                       <a href={href} target="_blank" rel="noreferrer" className="text-blue-400 underline">
@@ -86,8 +88,8 @@ export default function ExecutionView() {
   return (
     <div className="h-full flex flex-col bg-surface">
       <Navbar
-        title="History"
-        subtitle="Past conversations"
+        title={t('history.title')}
+        subtitle={t('history.subtitle')}
         right={
           conversations.length > 0 ? (
             <Link onClick={clearAllHistory} navbar>
@@ -102,8 +104,8 @@ export default function ExecutionView() {
             <div className="w-14 h-14 rounded-2xl bg-surface-1 flex items-center justify-center mx-auto mb-4">
               <Clock className="w-7 h-7 opacity-30" />
             </div>
-            <p className="text-base opacity-50">No past conversations</p>
-            <p className="text-sm opacity-30 mt-1">Cleared or new chats will appear here</p>
+            <p className="text-base opacity-50">{t('history.noConversations')}</p>
+            <p className="text-sm opacity-30 mt-1">{t('history.noConversationsHint')}</p>
           </Block>
         ) : (
           <div className="divide-y divide-border">
@@ -113,19 +115,19 @@ export default function ExecutionView() {
                 className="flex items-center gap-3 px-4 py-3 active:bg-hover transition-colors"
               >
                 <button
-                  className="flex-1 min-w-0 text-left"
+                  className="flex-1 min-w-0 text-start"
                   onClick={() => openConversation(conv.id)}
                 >
                   <div className="flex items-center gap-2 mb-0.5">
                     <MessageSquare className="w-4 h-4 text-[#7c6aef] flex-shrink-0" />
                     <p className="text-sm font-medium text-on-surface truncate">{conv.title}</p>
                   </div>
-                  <div className="flex items-center gap-2 ml-6">
+                  <div className="flex items-center gap-2 ms-6">
                     <span className="text-xs opacity-40">
                       {new Date(conv.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                     </span>
                     <span className="text-xs opacity-30">
-                      {conv.messages.length} message{conv.messages.length !== 1 ? 's' : ''}
+                      {t('history.nMessages', { count: String(conv.messages.length) })}
                     </span>
                   </div>
                 </button>

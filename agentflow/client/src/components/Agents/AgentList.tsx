@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navbar, List, ListItem, Block, Toggle, BlockTitle } from 'konsta/react';
 import { BookOpen, Lightbulb, Globe, Bot, Search, FileText, Code, Database, Zap, Brain, type LucideIcon } from 'lucide-react';
 import { useStore } from '../../state/store';
+import { useT } from '../../i18n';
 import type { Agent } from '../../types/agents';
 import AgentDetailSheet from './AgentDetailSheet';
 
@@ -16,6 +17,7 @@ const iconMap: Record<string, LucideIcon> = { BookOpen, Lightbulb, Globe, Bot, S
 
 export default function AgentList() {
   const { agents, setAgents, toggleAgent } = useStore();
+  const t = useT();
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
 
   useEffect(() => {
@@ -34,12 +36,12 @@ export default function AgentList() {
 
   return (
     <div className="h-full flex flex-col bg-surface">
-      <Navbar title="Agents" subtitle="Assembled dynamically for each task" />
+      <Navbar title={t('agents.title')} subtitle={t('agents.subtitle')} />
       <div className="flex-1 overflow-y-auto">
         {agents.length === 0 ? (
           <Block className="text-center mt-16">
             <Bot className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-            <p className="text-slate-400 text-sm">No agents configured</p>
+            <p className="text-slate-400 text-sm">{t('agents.noAgents')}</p>
           </Block>
         ) : (
           <>
@@ -48,12 +50,12 @@ export default function AgentList() {
               const Icon = iconMap[orchestrator.icon] ?? Brain;
               return (
                 <>
-                  <BlockTitle>Orchestrator</BlockTitle>
+                  <BlockTitle>{t('agents.orchestrator')}</BlockTitle>
                   <List strong inset outline>
                     <ListItem
                       title={orchestrator.name}
                       subtitle={orchestrator.description}
-                      text="Always active"
+                      text={t('agents.alwaysActive')}
                       link
                       onClick={() => setSelectedAgent(orchestrator)}
                       media={
@@ -71,7 +73,7 @@ export default function AgentList() {
             })()}
 
             {/* Worker agents */}
-            <BlockTitle>Agents</BlockTitle>
+            <BlockTitle>{t('agents.agents')}</BlockTitle>
             <List strong inset outline>
               {workerAgents.map((agent) => {
                 const Icon = iconMap[agent.icon] ?? Bot;
@@ -80,7 +82,7 @@ export default function AgentList() {
                     key={agent.id}
                     title={agent.name}
                     subtitle={agent.description}
-                    text={`${agent.capabilities.length} tool${agent.capabilities.length !== 1 ? 's' : ''}`}
+                    text={t('agents.nTools', { count: String(agent.capabilities.length) })}
                     link
                     onClick={() => setSelectedAgent(agent)}
                     media={

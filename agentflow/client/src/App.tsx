@@ -27,9 +27,19 @@ function useIsDark() {
   return isDark;
 }
 
+function useDirection() {
+  const language = useStore((s) => s.language);
+  useEffect(() => {
+    const dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = dir;
+    document.documentElement.lang = language;
+  }, [language]);
+}
+
 export default function App() {
   const { activeTab } = useStore();
   const isDark = useIsDark();
+  useDirection();
 
   return (
     <KonstaApp theme="ios" dark={isDark} safeAreas className={isDark ? 'dark' : ''}>

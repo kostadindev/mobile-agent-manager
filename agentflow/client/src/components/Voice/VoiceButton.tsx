@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Mic, MicOff } from 'lucide-react';
+import { useT } from '../../i18n';
 import PrivacyConsentDialog from '../Privacy/PrivacyConsentDialog';
 
 interface VoiceButtonProps {
@@ -7,6 +8,7 @@ interface VoiceButtonProps {
 }
 
 export default function VoiceButton({ onAudioRecorded }: VoiceButtonProps) {
+  const t = useT();
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
   const [showConsent, setShowConsent] = useState(false);
@@ -55,9 +57,9 @@ export default function VoiceButton({ onAudioRecorded }: VoiceButtonProps) {
       setDuration(0);
       timerRef.current = setInterval(() => setDuration((d) => d + 1), 1000);
     } catch {
-      alert('Microphone access denied.');
+      alert(t('voice.micDenied'));
     }
-  }, [onAudioRecorded]);
+  }, [onAudioRecorded, t]);
 
   const toggle = useCallback(() => {
     if (isRecording) {

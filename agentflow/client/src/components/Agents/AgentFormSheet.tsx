@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Sheet, Block, BlockTitle, Button, List, ListInput } from 'konsta/react';
 import { BookOpen, Lightbulb, Globe, Bot, Search, FileText, Code, Database, Zap, Brain, type LucideIcon } from 'lucide-react';
+import { useT } from '../../i18n';
 import type { Agent } from '../../types/agents';
 
 const ICON_OPTIONS: { name: string; Icon: LucideIcon }[] = [
@@ -29,6 +30,7 @@ interface AgentFormSheetProps {
 }
 
 export default function AgentFormSheet({ agent, opened, onClose, onSave }: AgentFormSheetProps) {
+  const t = useT();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [role, setRole] = useState('');
@@ -73,15 +75,15 @@ export default function AgentFormSheet({ agent, opened, onClose, onSave }: Agent
 
   return (
     <Sheet opened={opened} onBackdropClick={onClose} className="pb-safe">
-      <BlockTitle>{agent ? 'Edit Agent' : 'New Agent'}</BlockTitle>
+      <BlockTitle>{agent ? t('agentForm.editAgent') : t('agentForm.newAgent')}</BlockTitle>
       <List strongIos insetIos>
-        <ListInput label="Name" type="text" value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)} placeholder="Agent name" />
-        <ListInput label="Description" type="text" value={description} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)} placeholder="What does this agent do?" />
-        <ListInput label="Role" type="text" value={role} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRole(e.target.value)} placeholder="e.g. Research Analyst" />
-        <ListInput label="Goal" type="text" value={goal} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGoal(e.target.value)} placeholder="Agent's goal" />
+        <ListInput label={t('agentForm.name')} type="text" value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)} placeholder={t('agentForm.namePlaceholder')} />
+        <ListInput label={t('agentForm.description')} type="text" value={description} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)} placeholder={t('agentForm.descriptionPlaceholder')} />
+        <ListInput label={t('agentForm.role')} type="text" value={role} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRole(e.target.value)} placeholder={t('agentForm.rolePlaceholder')} />
+        <ListInput label={t('agentForm.goal')} type="text" value={goal} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGoal(e.target.value)} placeholder={t('agentForm.goalPlaceholder')} />
       </List>
 
-      <BlockTitle>Icon</BlockTitle>
+      <BlockTitle>{t('agentForm.icon')}</BlockTitle>
       <Block>
         <div className="flex flex-wrap gap-2">
           {ICON_OPTIONS.map(({ name: n, Icon }) => (
@@ -98,7 +100,7 @@ export default function AgentFormSheet({ agent, opened, onClose, onSave }: Agent
         </div>
       </Block>
 
-      <BlockTitle>Color</BlockTitle>
+      <BlockTitle>{t('agentForm.color')}</BlockTitle>
       <Block>
         <div className="flex flex-wrap gap-2">
           {COLOR_OPTIONS.map((c) => (
@@ -116,7 +118,7 @@ export default function AgentFormSheet({ agent, opened, onClose, onSave }: Agent
 
       <Block>
         <Button onClick={handleSave} disabled={!name.trim()}>
-          {agent ? 'Update' : 'Create'}
+          {agent ? t('agentForm.update') : t('agentForm.create')}
         </Button>
       </Block>
     </Sheet>

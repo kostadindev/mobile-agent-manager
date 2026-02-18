@@ -3,6 +3,8 @@ import type { ChatMessage, Conversation } from '../types/messages';
 import type { TaskPlan, TaskStep } from '../types/tasks';
 import type { Agent } from '../types/agents';
 import type { ExecutionGraphState, NodeStatus, EdgeStatus, ExecutionSSEEvent } from '../types/graph';
+import type { Language } from '../i18n';
+import { dictionaries } from '../i18n';
 
 type Tab = 'chat' | 'agents' | 'history';
 type TransparencyLevel = 'black_box' | 'plan_preview' | 'full_transparency';
@@ -19,6 +21,7 @@ function loadPersistedState(): {
   transparencyLevel: TransparencyLevel;
   modalityMode: ModalityMode;
   themeMode: ThemeMode;
+  language: Language;
   conversations: Conversation[];
 } {
   let conversations: Conversation[] = [];
@@ -38,11 +41,12 @@ function loadPersistedState(): {
         transparencyLevel: parsed.transparencyLevel ?? 'full_transparency',
         modalityMode: parsed.modalityMode ?? 'multimodal',
         themeMode: parsed.themeMode ?? 'dark',
+        language: parsed.language ?? 'en',
         conversations,
       };
     }
   } catch { /* ignore */ }
-  return { messages: [], currentPlan: null, graphState: null, transparencyLevel: 'full_transparency', modalityMode: 'multimodal', themeMode: 'dark', conversations };
+  return { messages: [], currentPlan: null, graphState: null, transparencyLevel: 'full_transparency', modalityMode: 'multimodal', themeMode: 'dark', language: 'en', conversations };
 }
 
 const persisted = loadPersistedState();
@@ -101,6 +105,10 @@ interface AppState {
   // Theme
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
+
+  // Language
+  language: Language;
+  setLanguage: (lang: Language) => void;
 
   // Conversation history
   conversations: Conversation[];
@@ -268,6 +276,10 @@ export const useStore = create<AppState>((set, get) => ({
   themeMode: persisted.themeMode,
   setThemeMode: (mode) => set({ themeMode: mode }),
 
+  // Language
+  language: persisted.language,
+  setLanguage: (lang) => set({ language: lang }),
+
   // Conversation history
   conversations: persisted.conversations,
   viewingConversation: null,
@@ -319,10 +331,11 @@ export const useStore = create<AppState>((set, get) => ({
   // API calls
   sendChat: async (message, imageBase64, modality = 'text', audioBase64) => {
     const state = get();
+    const dict = dictionaries[state.language] ?? dictionaries.en;
     state.addMessage({
       id: crypto.randomUUID(),
       role: 'user',
-      content: message || (modality === 'voice' ? 'Voice message' : modality === 'image' ? 'Image sent' : ''),
+      content: message || (modality === 'voice' ? dict['msg.voiceMessage'] : modality === 'image' ? dict['msg.imageSent'] : ''),
       imageUrl: imageBase64 ? `data:image/jpeg;base64,${imageBase64}` : undefined,
       timestamp: new Date().toISOString(),
       inputModality: modality as 'text' | 'voice' | 'image',
@@ -377,7 +390,7 @@ export const useStore = create<AppState>((set, get) => ({
         state.addMessage({
           id: crypto.randomUUID(),
           role: 'assistant',
-          content: 'Processing your request...',
+          content: dict['msg.processing'],
           imageUrl: responseImageUrl,
           timestamp: new Date().toISOString(),
           inputModality: 'text',
@@ -417,7 +430,7 @@ export const useStore = create<AppState>((set, get) => ({
       state.addMessage({
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: 'Sorry, something went wrong. Please check that the server is running.',
+        content: dict['msg.error'],
         timestamp: new Date().toISOString(),
         inputModality: 'text',
       });
@@ -485,10 +498,11 @@ export const useStore = create<AppState>((set, get) => ({
       }
     } catch (err) {
       set({ isExecuting: false });
+      const dict = dictionaries[get().language] ?? dictionaries.en;
       state.addMessage({
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: 'Execution failed. Please check the server connection.',
+        content: dict['msg.executionFailed'],
         timestamp: new Date().toISOString(),
         inputModality: 'text',
       });
@@ -508,6 +522,7 @@ useStore.subscribe((state) => {
         transparencyLevel: state.transparencyLevel,
         modalityMode: state.modalityMode,
         themeMode: state.themeMode,
+        language: state.language,
       })
     );
     localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(state.conversations));

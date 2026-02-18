@@ -1,4 +1,5 @@
 import { Dialog, DialogButton } from 'konsta/react';
+import { useT } from '../../i18n';
 
 interface PrivacyConsentDialogProps {
   opened: boolean;
@@ -7,20 +8,21 @@ interface PrivacyConsentDialogProps {
 }
 
 export default function PrivacyConsentDialog({ opened, onAccept, onDecline }: PrivacyConsentDialogProps) {
+  const t = useT();
+
   return (
     <Dialog
       opened={opened}
-      title="Privacy Notice"
+      title={t('privacy.title')}
       content={
         <p className="text-sm text-slate-300">
-          Voice and image data will be sent to OpenAI for processing. No data is stored
-          permanently on our servers. By continuing, you consent to this processing.
+          {t('privacy.description')}
         </p>
       }
       buttons={
         <>
-          <DialogButton onClick={onDecline}>Cancel</DialogButton>
-          <DialogButton strong onClick={onAccept}>Continue</DialogButton>
+          <DialogButton onClick={onDecline}>{t('privacy.cancel')}</DialogButton>
+          <DialogButton strong onClick={onAccept}>{t('privacy.continue')}</DialogButton>
         </>
       }
     />

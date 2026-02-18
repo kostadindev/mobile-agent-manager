@@ -13,6 +13,7 @@ import '@xyflow/react/dist/style.css';
 import Dagre from '@dagrejs/dagre';
 import { Maximize2, Minimize2, GitBranch } from 'lucide-react';
 import { useStore } from '../../state/store';
+import { useT } from '../../i18n';
 import InputNode from './InputNode';
 import OrchestratorNode from './OrchestratorNode';
 import AgentNode from './AgentNode';
@@ -61,6 +62,7 @@ interface ExecutionGraphProps {
 
 export default function ExecutionGraph({ compact = false }: ExecutionGraphProps) {
   const { graphState, expandedGraph, setExpandedGraph } = useStore();
+  const t = useT();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
@@ -88,13 +90,13 @@ export default function ExecutionGraph({ compact = false }: ExecutionGraphProps)
   const statusLabel = useMemo(() => {
     if (!graphState) return '';
     switch (graphState.status) {
-      case 'planning': return 'Plan Ready';
-      case 'executing': return 'Executing...';
-      case 'completed': return 'Completed';
-      case 'failed': return 'Failed';
+      case 'planning': return t('graph.planReady');
+      case 'executing': return t('graph.executing');
+      case 'completed': return t('graph.completed');
+      case 'failed': return t('graph.failed');
       default: return '';
     }
-  }, [graphState]);
+  }, [graphState, t]);
 
   const statusColor = useMemo(() => {
     if (!graphState) return 'text-slate-500';
@@ -123,7 +125,7 @@ export default function ExecutionGraph({ compact = false }: ExecutionGraphProps)
       <div className="flex items-center justify-between px-3 py-1.5">
         <div className="flex items-center gap-2">
           <GitBranch className="w-3.5 h-3.5 text-slate-500" />
-          <span className="text-[11px] font-semibold text-slate-300">Execution Graph</span>
+          <span className="text-[11px] font-semibold text-slate-300">{t('graph.title')}</span>
           <div className="flex items-center gap-1.5" aria-live="polite">
             <div className={`w-1.5 h-1.5 rounded-full ${statusDot} ${graphState.status === 'executing' ? 'animate-pulse' : ''}`} />
             <span className={`text-[10px] font-medium ${statusColor}`}>{statusLabel}</span>

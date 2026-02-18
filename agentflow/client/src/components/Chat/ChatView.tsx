@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Navbar, Messages, Message, Block, List, ListItem, Link } from 'konsta/react';
 import { useStore } from '../../state/store';
+import { useT } from '../../i18n';
 import { Sparkles, ArrowUp, BookOpen, Lightbulb, Globe, Loader2, Settings, Volume2, VolumeX, Mic, Camera, Trash2 } from 'lucide-react';
 import Markdown from 'react-markdown';
 import TaskPlanCard from '../TaskPlan/TaskPlanCard';
@@ -9,18 +10,19 @@ import ImagePreview from './ImagePreview';
 import VoiceButton from '../Voice/VoiceButton';
 import ImageCapture from '../Camera/ImageCapture';
 
-const suggestions = [
-  { text: 'Summarize the latest research on LLM reasoning', icon: BookOpen, color: '#A855F7' },
-  { text: 'Help me draft a proposal for a multimodal AI project', icon: Lightbulb, color: '#F97316' },
-  { text: 'Break down how transformer architectures work', icon: Globe, color: '#06B6D4' },
-];
-
 export default function ChatView() {
   const { messages, isLoading, sendChat, isExecuting, imagePreview, transparencyLevel, modalityMode, setShowSettings, startNewConversation } = useStore();
+  const t = useT();
   const [text, setText] = useState('');
   const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const suggestions = [
+    { text: t('suggestion.research'), icon: BookOpen, color: '#A855F7' },
+    { text: t('suggestion.proposal'), icon: Lightbulb, color: '#F97316' },
+    { text: t('suggestion.transformer'), icon: Globe, color: '#06B6D4' },
+  ];
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -55,8 +57,8 @@ export default function ChatView() {
     }
     setText('');
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
-    await sendChat(msg || 'Analyze this image', imageBase64, modality);
-  }, [text, imagePreview, sendChat]);
+    await sendChat(msg || t('chat.analyzeImage'), imageBase64, modality);
+  }, [text, imagePreview, sendChat, t]);
 
   const handleAudioRecorded = useCallback(
     (audioBase64: string) => { sendChat('', undefined, 'voice', audioBase64); },
@@ -88,8 +90,8 @@ export default function ChatView() {
     <div className="h-full flex flex-col overflow-hidden bg-surface">
       {/* Navbar */}
       <Navbar
-        title="AgentFlow"
-        subtitle="Your AI Workforce"
+        title={t('app.title')}
+        subtitle={t('app.subtitle')}
         right={
           <div className="flex items-center gap-1">
             {messages.length > 0 && (
@@ -112,9 +114,9 @@ export default function ChatView() {
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7c6aef] to-[#a855f7] flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-xl font-semibold mb-1">AgentFlow</h2>
+              <h2 className="text-xl font-semibold mb-1">{t('app.title')}</h2>
               <p className="text-sm opacity-50">
-                Your personal AI workforce. Describe any task and let intelligent agents do the heavy lifting.
+                {t('app.tagline')}
               </p>
             </Block>
 
@@ -142,12 +144,12 @@ export default function ChatView() {
                     {/* Modality badge (F6) */}
                     {msg.role === 'user' && msg.inputModality === 'voice' && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-400 bg-amber-400/10 rounded-full px-2 py-0.5 mb-1">
-                        <Mic className="w-3 h-3" /> Voice
+                        <Mic className="w-3 h-3" /> {t('chat.voiceBadge')}
                       </span>
                     )}
                     {msg.role === 'user' && msg.inputModality === 'image' && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-medium text-cyan-400 bg-cyan-400/10 rounded-full px-2 py-0.5 mb-1">
-                        <Camera className="w-3 h-3" /> Image
+                        <Camera className="w-3 h-3" /> {t('chat.imageBadge')}
                       </span>
                     )}
 
@@ -161,7 +163,7 @@ export default function ChatView() {
                         p: ({ children }) => <p className="mt-1 text-sm">{children}</p>,
                         strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                         hr: () => <hr className="my-2 border-border" />,
-                        ul: ({ children }) => <ul className="list-disc ml-4 mt-1 text-sm">{children}</ul>,
+                        ul: ({ children }) => <ul className="list-disc ms-4 mt-1 text-sm">{children}</ul>,
                         li: ({ children }) => <li className="mt-0.5">{children}</li>,
                         a: ({ href, children }) => <a href={href} target="_blank" rel="noreferrer" className="text-blue-400 underline">{children}</a>,
                       }}
@@ -225,7 +227,7 @@ export default function ChatView() {
                 text={
                   <div className="flex items-center gap-2 text-sm text-slate-400">
                     <Loader2 className="w-4 h-4 animate-spin text-[#7c6aef]" />
-                    Agents working...
+                    {t('chat.agentsWorking')}
                   </div>
                 }
               />
@@ -251,7 +253,7 @@ export default function ChatView() {
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onInput={handleInput}
-                placeholder="Message..."
+                placeholder={t('chat.placeholder')}
                 rows={1}
                 disabled={disabled}
                 className="w-full bg-transparent text-[15px] text-on-surface placeholder-on-surface-muted resize-none outline-none max-h-[120px] leading-relaxed"

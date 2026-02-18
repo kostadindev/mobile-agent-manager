@@ -1,6 +1,7 @@
 import { Card, List, ListItem } from 'konsta/react';
 import { BookOpen, Lightbulb, Globe, Bot, Check, Loader2, ShieldCheck, type LucideIcon } from 'lucide-react';
 import type { TaskPlan } from '../../types/tasks';
+import { useT } from '../../i18n';
 import ApprovalControls from './ApprovalControls';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -10,14 +11,16 @@ const colorMap: Record<string, string> = {
   arxiv: '#A855F7', proposal: '#F97316', wikipedia: '#06B6D4',
 };
 
-const statusLabels: Record<string, { text: string; color: string }> = {
-  proposed: { text: 'Proposed', color: '#F59E0B' },
-  executing: { text: 'Executing', color: '#7c6aef' },
-  completed: { text: 'Completed', color: '#22C55E' },
-  failed: { text: 'Failed', color: '#EF4444' },
-};
-
 export default function TaskPlanCard({ plan }: { plan: TaskPlan }) {
+  const t = useT();
+
+  const statusLabels: Record<string, { text: string; color: string }> = {
+    proposed: { text: t('taskPlan.proposed'), color: '#F59E0B' },
+    executing: { text: t('taskPlan.executing'), color: '#7c6aef' },
+    completed: { text: t('taskPlan.completed'), color: '#22C55E' },
+    failed: { text: t('taskPlan.failed'), color: '#EF4444' },
+  };
+
   const status = statusLabels[plan.status] ?? { text: plan.status, color: '#888' };
 
   return (
@@ -25,7 +28,7 @@ export default function TaskPlanCard({ plan }: { plan: TaskPlan }) {
       outline
       header={
         <div className="flex items-center justify-between">
-          <span className="font-semibold">Task Plan</span>
+          <span className="font-semibold">{t('taskPlan.title')}</span>
           <span className="text-xs px-2 py-0.5 rounded-full" style={{ color: status.color, backgroundColor: `${status.color}20` }}>
             {status.text}
           </span>
