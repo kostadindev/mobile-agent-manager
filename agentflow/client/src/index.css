@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "konsta/theme.css";
+@import "konsta/react/theme.css";
 
 @theme {
   --color-brand-primary: #7c6aef;
