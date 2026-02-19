@@ -3,6 +3,7 @@ import urllib.request
 import urllib.parse
 import xml.etree.ElementTree as ET
 import json
+import os
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +132,30 @@ def _wiki_search(query: str) -> str:
         return f"Wikipedia search failed: {e}"
 
 
+def _slack_send_message(channel: str, text: str) -> str:
+    token = os.environ.get("SLACK_BOT_TOKEN", "")
+    if not token:
+        return "Slack bot token not configured. Set the SLACK_BOT_TOKEN environment variable."
+    url = "https://slack.com/api/chat.postMessage"
+    payload = json.dumps({"channel": channel, "text": text}).encode()
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json; charset=utf-8",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+        if data.get("ok"):
+            return f"Message sent to {channel}: \"{text}\""
+        return f"Slack API error: {data.get('error', 'unknown error')}"
+    except Exception as e:
+        return f"Slack send failed: {e}"
+
+
 def _wiki_summarize(title: str) -> str:
     encoded = urllib.parse.quote(title)
     url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{encoded}"
@@ -185,6 +210,12 @@ def wiki_summarize(title: str) -> str:
     return _wiki_summarize(title)
 
 
+@tool("slack_send_message")
+def slack_send_message(channel: str, text: str) -> str:
+    """Send a message to a Slack channel. Requires SLACK_BOT_TOKEN to be configured."""
+    return _slack_send_message(channel, text)
+
+
 # ---------------------------------------------------------------------------
 # Exports
 # ---------------------------------------------------------------------------
@@ -194,6 +225,7 @@ AGENT_TOOLS = {
     "arxiv": [arxiv_search, arxiv_summarize],
     "proposal": [generate_proposal, outline_methodology],
     "wikipedia": [wiki_search, wiki_summarize],
+    "slack": [slack_send_message],
 }
 
 # Raw callables for direct execution by the execution tracker
@@ -204,4 +236,5 @@ TOOL_FUNCTIONS: dict[str, callable] = {
     "outline_methodology": _outline_methodology,
     "wiki_search": _wiki_search,
     "wiki_summarize": _wiki_summarize,
+    "slack_send_message": _slack_send_message,
 }

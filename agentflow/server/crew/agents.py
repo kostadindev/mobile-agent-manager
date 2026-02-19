@@ -29,6 +29,12 @@ AGENT_BACKSTORIES = {
         "articles, extract key concepts and definitions, and provide "
         "well-structured overviews that help contextualize research work."
     ),
+    "slack": (
+        "You are a communication specialist who sends messages to Slack "
+        "channels on behalf of the team. You craft clear, well-formatted "
+        "messages and deliver them to the correct channels. You always "
+        "confirm which channel to post to and summarize what was sent."
+    ),
 }
 
 
@@ -96,6 +102,15 @@ def create_agents(llm: LLM) -> dict[str, Agent]:
             allow_delegation=False,
             tools=AGENT_TOOLS["wikipedia"],
         ),
+        "slack": Agent(
+            role="Slack Messenger",
+            goal="Send messages to Slack channels on behalf of the user",
+            backstory=AGENT_BACKSTORIES["slack"],
+            llm=llm,
+            verbose=True,
+            allow_delegation=False,
+            tools=AGENT_TOOLS["slack"],
+        ),
     }
 
     return agents
@@ -156,5 +171,18 @@ AGENT_METADATA = {
         "enabled": True,
         "requiresApproval": False,
         "color": "#06B6D4",
+    },
+    "slack": {
+        "id": "slack",
+        "name": "Slack Agent",
+        "icon": "MessageSquare",
+        "description": "Send messages to Slack channels",
+        "role": "Slack Messenger",
+        "goal": "Send messages to Slack channels on behalf of the user",
+        "backstory": AGENT_BACKSTORIES["slack"],
+        "capabilities": ["slack_send_message"],
+        "enabled": True,
+        "requiresApproval": True,
+        "color": "#E01E5A",
     },
 }

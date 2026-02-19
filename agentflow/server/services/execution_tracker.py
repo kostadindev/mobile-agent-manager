@@ -46,6 +46,7 @@ def _call_tool(
             "arxiv": "arxiv_search",
             "proposal": "generate_proposal",
             "wikipedia": "wiki_search",
+            "slack": "slack_send_message",
         }
         fallback_name = defaults.get(agent_id)
         func = TOOL_FUNCTIONS.get(fallback_name) if fallback_name else None
@@ -55,10 +56,21 @@ def _call_tool(
     sig = inspect.signature(func)
     param_names = list(sig.parameters.keys())
 
+    # Normalize common param aliases to match function signatures
+    PARAM_ALIASES = {
+        "message": "text",
+        "msg": "text",
+        "content": "text",
+        "recipient": "channel",
+        "user": "channel",
+        "to": "channel",
+    }
+
     kwargs = {}
     for k, v in params.items():
-        if k in param_names:
-            kwargs[k] = v
+        key = PARAM_ALIASES.get(k, k)
+        if key in param_names:
+            kwargs[key] = v
 
     # Handle dependent steps with incomplete params
     if not kwargs and prev_results:

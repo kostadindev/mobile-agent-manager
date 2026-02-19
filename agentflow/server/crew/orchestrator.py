@@ -62,9 +62,13 @@ class AgentFlowOrchestrator:
 
         # Build agent descriptions dynamically from agent store
         all_agents = get_agents()
-        enabled_agents = [a for a in all_agents if a.get("enabled", True)]
+        enabled_agents = [
+            a for a in all_agents
+            if a.get("enabled", True) and not a.get("isOrchestrator", False)
+        ]
         agent_descriptions = "\n".join(
             f"- {a['id']}: {a['role']} — capabilities: {', '.join(a.get('capabilities', []))}"
+            + (f" [requires_approval]" if a.get("requiresApproval") else "")
             for a in enabled_agents
         )
         valid_agent_ids = ", ".join(a["id"] for a in enabled_agents)
@@ -81,13 +85,15 @@ Available agents:
 {agent_descriptions}
 
 Rules:
-- These are research agents. Set requires_approval=false for all steps since they only read/generate information.
-- If the user request is NOT a research question (e.g. "return this image", "hello", casual chat), return a plan with an empty steps list and a helpful summary. Do NOT force research tasks when none are needed.
+- Match the user's request to the most appropriate agent(s). Agents are NOT limited to research — some send messages, perform actions, etc.
+- For agents marked [requires_approval], set requires_approval=true on that step. For all other agents, set requires_approval=false.
+- Only return an empty steps list if the request truly cannot be handled by ANY available agent (e.g. "hello", pure casual chat with no actionable intent).
 - If steps are independent, leave depends_on empty so they can run in parallel.
 - If a step needs output from another step, add that step's ID to depends_on.
 - Always prefer parallel execution when possible. For example, arxiv search and wikipedia search can run in parallel, then a proposal step can depend on both.
 - Use step IDs like "step_1", "step_2", etc.
 - agent_id must be one of: {valid_agent_ids}
+- Use exact param names from the tool signatures. For slack_send_message use params: {{"channel": "<channel-or-username>", "text": "<message>"}}
 - If image analysis is provided, use that content to inform search queries and proposal topics.
 - If audio was transcribed, treat the transcript as the primary user intent.""",
             expected_output="A structured JSON plan with a summary and a list of steps",

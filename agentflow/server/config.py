@@ -8,6 +8,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
+    slack_bot_token: str = os.getenv("SLACK_BOT_TOKEN", "")
     app_name: str = "AgentFlow"
     debug: bool = True
 

@@ -62,8 +62,23 @@
       "wiki_search",
       "wiki_summarize"
     ],
-    "enabled": false,
+    "enabled": true,
     "requiresApproval": false,
     "color": "#06B6D4"
+  },
+  {
+    "id": "slack",
+    "name": "Slack Agent",
+    "icon": "MessageSquare",
+    "description": "Send messages to Slack channels",
+    "role": "Slack Messenger",
+    "goal": "Send messages to Slack channels on behalf of the user",
+    "backstory": "You are a communication specialist who sends messages to Slack channels on behalf of the team. You craft clear, well-formatted messages and deliver them to the correct channels. You always confirm which channel to post to and summarize what was sent.",
+    "capabilities": [
+      "slack_send_message"
+    ],
+    "enabled": true,
+    "requiresApproval": true,
+    "color": "#E01E5A"
   }
 ]
