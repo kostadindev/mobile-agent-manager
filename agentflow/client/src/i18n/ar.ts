@@ -134,6 +134,14 @@ const ar: Translations = {
   // Voice
   'voice.micDenied': 'تم رفض الوصول للميكروفون.',
 
+  // Voice-only view
+  'voiceView.tapToSpeak': 'اضغط للتحدث',
+  'voiceView.listening': 'جاري الاستماع...',
+  'voiceView.thinking': 'جاري التفكير...',
+  'voiceView.speaking': 'جاري التحدث...',
+  'voiceView.tapToStop': 'اضغط للإيقاف',
+  'voiceView.hint': 'الردود تُقرأ بصوت عالٍ تلقائياً',
+
   // Messages (store)
   'msg.voiceMessage': 'رسالة صوتية',
   'msg.imageSent': 'تم إرسال صورة',

@@ -134,6 +134,14 @@ const bg: Translations = {
   // Voice
   'voice.micDenied': 'Достъпът до микрофона е отказан.',
 
+  // Voice-only view
+  'voiceView.tapToSpeak': 'Натисни за говорене',
+  'voiceView.listening': 'Слушам...',
+  'voiceView.thinking': 'Мисля...',
+  'voiceView.speaking': 'Говоря...',
+  'voiceView.tapToStop': 'Натисни за стоп',
+  'voiceView.hint': 'Отговорите се четат на глас автоматично',
+
   // Messages (store)
   'msg.voiceMessage': 'Гласово съобщение',
   'msg.imageSent': 'Изпратена снимка',

@@ -116,6 +116,13 @@ export type TranslationKey =
   | 'privacy.continue'
   // Voice
   | 'voice.micDenied'
+  // Voice-only view
+  | 'voiceView.tapToSpeak'
+  | 'voiceView.listening'
+  | 'voiceView.thinking'
+  | 'voiceView.speaking'
+  | 'voiceView.tapToStop'
+  | 'voiceView.hint'
   // Messages (store)
   | 'msg.voiceMessage'
   | 'msg.imageSent'
@@ -274,6 +281,14 @@ const en: Translations = {
 
   // Voice
   'voice.micDenied': 'Microphone access denied.',
+
+  // Voice-only view
+  'voiceView.tapToSpeak': 'Tap to speak',
+  'voiceView.listening': 'Listening...',
+  'voiceView.thinking': 'Thinking...',
+  'voiceView.speaking': 'Speaking...',
+  'voiceView.tapToStop': 'Tap to stop',
+  'voiceView.hint': 'Responses are spoken aloud automatically',
 
   // Messages (store)
   'msg.voiceMessage': 'Voice message',

@@ -134,6 +134,14 @@ const zh: Translations = {
   // Voice
   'voice.micDenied': '麦克风访问被拒绝。',
 
+  // Voice-only view
+  'voiceView.tapToSpeak': '点击说话',
+  'voiceView.listening': '正在聆听...',
+  'voiceView.thinking': '正在思考...',
+  'voiceView.speaking': '正在朗读...',
+  'voiceView.tapToStop': '点击停止',
+  'voiceView.hint': '回复会自动朗读',
+
   // Messages (store)
   'msg.voiceMessage': '语音消息',
   'msg.imageSent': '已发送图片',

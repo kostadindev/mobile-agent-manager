@@ -7,6 +7,7 @@ import AgentList from './components/Agents/AgentList';
 import ExecutionView from './components/Execution/ExecutionView';
 import GuideView from './components/Guide/GuideView';
 import SettingsSheet from './components/Settings/SettingsSheet';
+import VoiceOnlyView from './components/Voice/VoiceOnlyView';
 
 function useIsDark() {
   const themeMode = useStore((s) => s.themeMode);
@@ -38,18 +39,24 @@ function useDirection() {
 }
 
 export default function App() {
-  const { activeTab } = useStore();
+  const { activeTab, modalityMode } = useStore();
   const isDark = useIsDark();
   useDirection();
 
+  const isVoiceOnly = modalityMode === 'voice_only';
+
   return (
     <KonstaApp theme="ios" dark={isDark} safeAreas className={isDark ? 'dark' : ''}>
-      <Shell>
-        {activeTab === 'chat' && <ChatView />}
-        {activeTab === 'agents' && <AgentList />}
-        {activeTab === 'history' && <ExecutionView />}
-        {activeTab === 'guide' && <GuideView />}
-      </Shell>
+      {isVoiceOnly ? (
+        <VoiceOnlyView />
+      ) : (
+        <Shell>
+          {activeTab === 'chat' && <ChatView />}
+          {activeTab === 'agents' && <AgentList />}
+          {activeTab === 'history' && <ExecutionView />}
+          {activeTab === 'guide' && <GuideView />}
+        </Shell>
+      )}
       <SettingsSheet />
     </KonstaApp>
   );
