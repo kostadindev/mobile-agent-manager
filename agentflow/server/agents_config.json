@@ -80,5 +80,21 @@
     "enabled": true,
     "requiresApproval": true,
     "color": "#E01E5A"
+  },
+  {
+    "id": "semantic_scholar",
+    "name": "Semantic Scholar Agent",
+    "icon": "Search",
+    "description": "Search papers and retrieve citation impact metrics",
+    "role": "Citation Analyst",
+    "goal": "Search Semantic Scholar for papers and retrieve citation impact metrics",
+    "backstory": "You are a citation analyst who uses Semantic Scholar to find papers and assess their impact. You search across all academic literature (not just arXiv), retrieve citation counts and influential citation metrics, and help identify the most impactful work in any research area.",
+    "capabilities": [
+      "semantic_scholar_search",
+      "semantic_scholar_cite"
+    ],
+    "enabled": true,
+    "requiresApproval": false,
+    "color": "#F59E0B"
   }
 ]

@@ -94,6 +94,7 @@ Rules:
 - Use step IDs like "step_1", "step_2", etc.
 - agent_id must be one of: {valid_agent_ids}
 - Use exact param names from the tool signatures. For slack_send_message use params: {{"channel": "<channel-or-username>", "text": "<message>"}}
+- For semantic_scholar_cite use params: {{"paper_id": "<id-or-doi>"}}
 - If image analysis is provided, use that content to inform search queries and proposal topics.
 - If audio was transcribed, treat the transcript as the primary user intent.""",
             expected_output="A structured JSON plan with a summary and a list of steps",

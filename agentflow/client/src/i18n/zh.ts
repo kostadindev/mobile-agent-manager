@@ -24,6 +24,7 @@ const zh: Translations = {
   'suggestion.proposal': '帮我起草一个多模态 AI 项目提案',
   'suggestion.transformer': '讲解 Transformer 架构的工作原理',
   'suggestion.slack': '总结最新的HCI论文并分享到 #general',
+  'suggestion.citations': '查找关于注意力机制的最高引用论文',
 
   // Settings
   'settings.transparencyMode': '透明度模式',

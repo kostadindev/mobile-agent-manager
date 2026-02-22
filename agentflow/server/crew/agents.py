@@ -35,6 +35,13 @@ AGENT_BACKSTORIES = {
         "messages and deliver them to the correct channels. You always "
         "confirm which channel to post to and summarize what was sent."
     ),
+    "semantic_scholar": (
+        "You are a citation analyst who uses Semantic Scholar to find "
+        "papers and assess their impact. You search across all academic "
+        "literature (not just arXiv), retrieve citation counts and "
+        "influential citation metrics, and help identify the most "
+        "impactful work in any research area."
+    ),
 }
 
 
@@ -111,6 +118,15 @@ def create_agents(llm: LLM) -> dict[str, Agent]:
             allow_delegation=False,
             tools=AGENT_TOOLS["slack"],
         ),
+        "semantic_scholar": Agent(
+            role="Citation Analyst",
+            goal="Search Semantic Scholar for papers and retrieve citation impact metrics",
+            backstory=AGENT_BACKSTORIES["semantic_scholar"],
+            llm=llm,
+            verbose=True,
+            allow_delegation=False,
+            tools=AGENT_TOOLS["semantic_scholar"],
+        ),
     }
 
     return agents
@@ -184,5 +200,18 @@ AGENT_METADATA = {
         "enabled": True,
         "requiresApproval": True,
         "color": "#E01E5A",
+    },
+    "semantic_scholar": {
+        "id": "semantic_scholar",
+        "name": "Semantic Scholar Agent",
+        "icon": "Search",
+        "description": "Search papers and retrieve citation impact metrics",
+        "role": "Citation Analyst",
+        "goal": "Search Semantic Scholar for papers and retrieve citation impact metrics",
+        "backstory": AGENT_BACKSTORIES["semantic_scholar"],
+        "capabilities": ["semantic_scholar_search", "semantic_scholar_cite"],
+        "enabled": True,
+        "requiresApproval": False,
+        "color": "#F59E0B",
     },
 }

@@ -156,6 +156,67 @@ def _slack_send_message(channel: str, text: str) -> str:
         return f"Slack send failed: {e}"
 
 
+def _semantic_scholar_search(query: str, max_results: int = 5) -> str:
+    encoded = urllib.parse.quote(query)
+    url = (
+        f"https://api.semanticscholar.org/graph/v1/paper/search?query={encoded}"
+        f"&limit={max_results}"
+        f"&fields=title,year,citationCount,influentialCitationCount,authors,url,abstract"
+    )
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "AgentFlow/1.0"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode())
+        papers = data.get("data", [])
+        if not papers:
+            return f"No papers found on Semantic Scholar for '{query}'."
+        results = []
+        for p in papers:
+            authors = [a.get("name", "") for a in (p.get("authors") or [])[:3]]
+            author_str = ", ".join(authors)
+            if len(p.get("authors") or []) > 3:
+                author_str += "..."
+            abstract = (p.get("abstract") or "No abstract available.")[:300]
+            results.append(
+                f"**{p.get('title', 'Untitled')}** ({p.get('year', 'n/a')})\n"
+                f"Authors: {author_str}\n"
+                f"Citations: {p.get('citationCount', 0)} "
+                f"(influential: {p.get('influentialCitationCount', 0)})\n"
+                f"URL: {p.get('url', 'N/A')}\n"
+                f"Abstract: {abstract}..."
+            )
+        return f"Found {len(results)} papers for '{query}':\n\n" + "\n\n---\n\n".join(results)
+    except Exception as e:
+        return f"Semantic Scholar search failed: {e}"
+
+
+def _semantic_scholar_cite(paper_id: str) -> str:
+    encoded = urllib.parse.quote(paper_id, safe=":")
+    url = (
+        f"https://api.semanticscholar.org/graph/v1/paper/{encoded}"
+        f"?fields=title,year,citationCount,influentialCitationCount,referenceCount,authors,url"
+    )
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "AgentFlow/1.0"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode())
+        authors = [a.get("name", "") for a in (data.get("authors") or [])]
+        return (
+            f"**{data.get('title', 'Untitled')}** ({data.get('year', 'n/a')})\n"
+            f"Authors: {', '.join(authors)}\n"
+            f"Citations: {data.get('citationCount', 0)} "
+            f"(influential: {data.get('influentialCitationCount', 0)})\n"
+            f"References: {data.get('referenceCount', 0)}\n"
+            f"URL: {data.get('url', 'N/A')}"
+        )
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return f"Paper not found: {paper_id}"
+        return f"Semantic Scholar API error: {e}"
+    except Exception as e:
+        return f"Semantic Scholar cite failed: {e}"
+
+
 def _wiki_summarize(title: str) -> str:
     encoded = urllib.parse.quote(title)
     url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{encoded}"
@@ -216,6 +277,18 @@ def slack_send_message(channel: str, text: str) -> str:
     return _slack_send_message(channel, text)
 
 
+@tool("semantic_scholar_search")
+def semantic_scholar_search(query: str, max_results: int = 5) -> str:
+    """Search Semantic Scholar for papers with citation counts. Returns titles, authors, citation counts, and abstracts."""
+    return _semantic_scholar_search(query, max_results)
+
+
+@tool("semantic_scholar_cite")
+def semantic_scholar_cite(paper_id: str) -> str:
+    """Get citation details for a specific paper. Accepts a Semantic Scholar ID, DOI, or ARXIV:<id> prefixed identifier."""
+    return _semantic_scholar_cite(paper_id)
+
+
 # ---------------------------------------------------------------------------
 # Exports
 # ---------------------------------------------------------------------------
@@ -226,6 +299,7 @@ AGENT_TOOLS = {
     "proposal": [generate_proposal, outline_methodology],
     "wikipedia": [wiki_search, wiki_summarize],
     "slack": [slack_send_message],
+    "semantic_scholar": [semantic_scholar_search, semantic_scholar_cite],
 }
 
 # Raw callables for direct execution by the execution tracker
@@ -237,4 +311,6 @@ TOOL_FUNCTIONS: dict[str, callable] = {
     "wiki_search": _wiki_search,
     "wiki_summarize": _wiki_summarize,
     "slack_send_message": _slack_send_message,
+    "semantic_scholar_search": _semantic_scholar_search,
+    "semantic_scholar_cite": _semantic_scholar_cite,
 }

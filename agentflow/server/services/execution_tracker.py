@@ -47,6 +47,7 @@ def _call_tool(
             "proposal": "generate_proposal",
             "wikipedia": "wiki_search",
             "slack": "slack_send_message",
+            "semantic_scholar": "semantic_scholar_search",
         }
         fallback_name = defaults.get(agent_id)
         func = TOOL_FUNCTIONS.get(fallback_name) if fallback_name else None
@@ -64,6 +65,8 @@ def _call_tool(
         "recipient": "channel",
         "user": "channel",
         "to": "channel",
+        "id": "paper_id",
+        "doi": "paper_id",
     }
 
     kwargs = {}

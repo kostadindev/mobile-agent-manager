@@ -24,6 +24,7 @@ const ar: Translations = {
   'suggestion.proposal': 'ساعدني أكتب مقترح لمشروع ذكاء اصطناعي متعدد الوسائط',
   'suggestion.transformer': 'اشرح ازاي بنية المحولات بتشتغل',
   'suggestion.slack': 'لخص أحدث أبحاث HCI وشاركها في #general',
+  'suggestion.citations': 'لاقي أكتر الأبحاث اقتباساً عن آليات الانتباه',
 
   // Settings
   'settings.transparencyMode': 'وضع الشفافية',

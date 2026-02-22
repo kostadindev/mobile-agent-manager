@@ -19,6 +19,7 @@ export type TranslationKey =
   | 'suggestion.proposal'
   | 'suggestion.transformer'
   | 'suggestion.slack'
+  | 'suggestion.citations'
   // Settings
   | 'settings.transparencyMode'
   | 'settings.blackBox'
@@ -164,6 +165,7 @@ const en: Translations = {
   'suggestion.proposal': 'Help me draft a proposal for a multimodal AI project',
   'suggestion.transformer': 'Break down how transformer architectures work',
   'suggestion.slack': 'Summarize the latest HCI papers and share in #general',
+  'suggestion.citations': 'Find the most cited papers on attention mechanisms',
 
   // Settings
   'settings.transparencyMode': 'Transparency Mode',

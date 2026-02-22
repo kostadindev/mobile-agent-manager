@@ -24,6 +24,7 @@ const bg: Translations = {
   'suggestion.proposal': 'Помогни ми да напиша предложение за мултимодален AI проект',
   'suggestion.transformer': 'Обясни как работят трансформер архитектурите',
   'suggestion.slack': 'Обобщи последните HCI статии и сподели в #general',
+  'suggestion.citations': 'Намери най-цитираните статии за механизми на внимание',
 
   // Settings
   'settings.transparencyMode': 'Режим на прозрачност',
