@@ -39,6 +39,7 @@ class AgentFlowOrchestrator:
         image_analysis: str | None = None,
         audio_transcript: str | None = None,
         input_modality: str = "text",
+        conversation_history: list[dict] | None = None,
     ) -> dict:
         """
         Use the orchestrator CrewAI agent to analyze user request and produce
@@ -57,6 +58,16 @@ class AgentFlowOrchestrator:
             "voice": "The user spoke this request via voice input.",
             "image": "The user provided an image along with their request. The image has been analyzed and the analysis is included above.",
         }.get(input_modality, "")
+
+        # Include recent conversation history for multi-turn context
+        if conversation_history:
+            # Keep last 10 messages to avoid prompt bloat
+            recent = conversation_history[-10:]
+            history_lines = []
+            for msg in recent:
+                role = msg["role"].capitalize()
+                history_lines.append(f"  {role}: {msg['content'][:200]}")
+            context_parts.insert(0, "Conversation history:\n" + "\n".join(history_lines))
 
         context = "\n\n".join(context_parts)
 
@@ -96,7 +107,8 @@ Rules:
 - Use exact param names from the tool signatures. For slack_send_message use params: {{"channel": "<channel-or-username>", "text": "<message>"}}
 - For semantic_scholar_cite use params: {{"paper_id": "<id-or-doi>"}}
 - If image analysis is provided, use that content to inform search queries and proposal topics.
-- If audio was transcribed, treat the transcript as the primary user intent.""",
+- If audio was transcribed, treat the transcript as the primary user intent.
+- If conversation history is provided, use it to resolve ambiguous references (e.g. "do it", "yes", "go ahead" likely refer to the most recent plan or topic discussed).""",
             expected_output="A structured JSON plan with a summary and a list of steps",
             agent=self.orchestrator_agent,
             output_json=TaskPlan,

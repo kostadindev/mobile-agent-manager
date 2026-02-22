@@ -43,11 +43,18 @@ async def chat(request: ChatRequest):
     if not user_message:
         user_message = "Analyze this image" if image_analysis else "Hello"
 
+    # Pass recent conversation history for multi-turn context
+    history = [
+        {"role": m.role, "content": m.content}
+        for m in request.conversation_history
+    ]
+
     result = await orchestrator.plan(
         user_message=user_message,
         image_analysis=image_analysis,
         audio_transcript=audio_transcript,
         input_modality=input_modality,
+        conversation_history=history,
     )
 
     summary = result["plan"]["summary"]

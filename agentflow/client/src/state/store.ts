@@ -343,6 +343,12 @@ export const useStore = create<AppState>((set, get) => ({
     set({ isLoading: true, imagePreview: null });
 
     try {
+      // Send recent conversation history for multi-turn context
+      const history = get().messages.slice(-10).map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
+
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -351,6 +357,7 @@ export const useStore = create<AppState>((set, get) => ({
           image_base64: imageBase64 ?? null,
           audio_base64: audioBase64 ?? null,
           input_modality: modality,
+          conversation_history: history,
         }),
       });
       const data = await res.json();

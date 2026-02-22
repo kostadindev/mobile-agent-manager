@@ -14,11 +14,17 @@ class ChatMessage(BaseModel):
     input_modality: str = "text"
 
 
+class HistoryMessage(BaseModel):
+    role: str
+    content: str
+
+
 class ChatRequest(BaseModel):
     message: str = ""
     image_base64: Optional[str] = None
     audio_base64: Optional[str] = None
     input_modality: str = "text"
+    conversation_history: list[HistoryMessage] = []
 
 
 class ChatResponse(BaseModel):
