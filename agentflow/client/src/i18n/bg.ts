@@ -2,7 +2,7 @@ import type { Translations } from './en';
 
 const bg: Translations = {
   // App
-  'app.title': 'AgentFlow',
+  'app.title': 'MobileAgents',
   'app.subtitle': 'Твоят AI екип',
   'app.tagline': 'Твоят персонален AI екип. Опиши задача и остави интелигентните агенти да свършат работата.',
 
@@ -163,7 +163,7 @@ const bg: Translations = {
 
   // Guide
   'guide.title': 'Документи',
-  'guide.subtitle': 'Научи как да използваш AgentFlow',
+  'guide.subtitle': 'Научи как да използваш MobileAgents',
   'guide.gettingStarted': 'Първи стъпки',
   'guide.gettingStartedDesc': 'Напиши съобщение в таба Чат, за да опишеш задача. Оркестраторът ще я раздели на стъпки и ще ги разпредели на специализирани агенти. Натисни Изпълни, за да стартираш плана.',
   'guide.inputModes': 'Режими на въвеждане',

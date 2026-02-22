@@ -1,4 +1,4 @@
-# AgentFlow
+# MobileAgents
 
 An open-source, mobile-first, multimodal agent manager. Bring your own AI agents and control them from your phone through text, voice, or image input — an LLM orchestrator decomposes requests into a dependency-aware execution plan, and a live DAG graph streams agent progress in real time.
 

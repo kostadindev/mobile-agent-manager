@@ -3,7 +3,7 @@ from crewai import LLM
 from openai import OpenAI
 
 from models.messages import ChatRequest, ChatResponse
-from crew.orchestrator import AgentFlowOrchestrator
+from crew.orchestrator import MobileAgentsOrchestrator
 from services.agent_store import get_agents
 from services.image_analyzer import analyze_image
 from services.audio_transcriber import transcribe_audio
@@ -21,7 +21,7 @@ async def chat(request: ChatRequest, user: dict = Depends(get_current_user)):
     Analyzes multimodal input and returns a task plan with execution graph.
     """
     llm = LLM(model="gpt-4.1", api_key=settings.openai_api_key)
-    orchestrator = AgentFlowOrchestrator(llm=llm)
+    orchestrator = MobileAgentsOrchestrator(llm=llm)
     client = OpenAI(api_key=settings.openai_api_key)
 
     image_analysis = None

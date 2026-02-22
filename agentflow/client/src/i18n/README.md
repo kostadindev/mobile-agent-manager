@@ -1,6 +1,6 @@
 # i18n — Internationalization Guide
 
-AgentFlow supports multiple languages with RTL (right-to-left) layout support. This guide explains how the system works and how to extend it.
+MobileAgents supports multiple languages with RTL (right-to-left) layout support. This guide explains how the system works and how to extend it.
 
 ## Supported Languages
 
@@ -69,7 +69,7 @@ dict['msg.error']; // → translated string
 import type { Translations } from './en';
 
 const fr: Translations = {
-  'app.title': 'AgentFlow',
+  'app.title': 'MobileAgents',
   'app.subtitle': 'Votre équipe IA',
   // ... every key from TranslationKey must be present (enforced at compile time)
 };

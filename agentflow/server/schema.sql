@@ -1,4 +1,4 @@
--- AgentFlow Supabase Schema
+-- MobileAgents Supabase Schema
 -- Run this in the Supabase SQL Editor
 
 -- Conversations

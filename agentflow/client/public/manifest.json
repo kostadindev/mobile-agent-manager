@@ -1,6 +1,6 @@
 {
-  "name": "AgentFlow",
-  "short_name": "AgentFlow",
+  "name": "MobileAgents",
+  "short_name": "MobileAgents",
   "description": "Personal AI Agent Orchestrator",
   "start_url": "/",
   "display": "standalone",

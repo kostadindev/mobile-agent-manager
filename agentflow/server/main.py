@@ -5,7 +5,7 @@ from routers import chat, execute, approve, agents, conversations
 from services.agent_store import load_agents
 from config import settings
 
-app = FastAPI(title="AgentFlow API")
+app = FastAPI(title="MobileAgents API")
 
 app.add_middleware(
     CORSMiddleware,

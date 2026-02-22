@@ -108,6 +108,8 @@
 \citation{Friedman2017}
 \citation{Friedman2017}
 \citation{Clawdbot2025}
+\citation{MCP2024}
+\citation{A2A2025}
 \bibstyle{ACM-Reference-Format}
 \bibdata{references}
 \bibcite{Amershi2019}{{1}{2019}{{Amershi et~al\mbox  {.}}}{{}}}
@@ -120,6 +122,8 @@
 \bibcite{Friedman2002}{{8}{2002}{{Friedman et~al\mbox  {.}}}{{}}}
 \bibcite{Hemmer2023}{{9}{2023}{{Hemmer et~al\mbox  {.}}}{{}}}
 \bibcite{Jerry2025}{{10}{2025}{{Jerry et~al\mbox  {.}}}{{}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Limitations, Future Work, and Conclusion}{6}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{6}{section*.8}\protected@file@percent }
 \bibcite{Jian2000}{{11}{2000}{{Jian et~al\mbox  {.}}}{{}}}
 \bibcite{Kim2025}{{12}{2025}{{Kim et~al\mbox  {.}}}{{}}}
 \bibcite{Pappu2025}{{13}{2025}{{Pappu et~al\mbox  {.}}}{{}}}
@@ -127,8 +131,6 @@
 \bibcite{Sadek2023}{{15}{2023}{{Sadek et~al\mbox  {.}}}{{}}}
 \bibcite{Sadek2025IJHCI}{{16}{2025a}{{Sadek et~al\mbox  {.}}}{{}}}
 \bibcite{Sadek2024CHI}{{17}{2024}{{Sadek et~al\mbox  {.}}}{{}}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Limitations, Future Work, and Conclusion}{6}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{References}{6}{section*.8}\protected@file@percent }
 \bibcite{Sadek2025AIS}{{18}{2025b}{{Sadek et~al\mbox  {.}}}{{}}}
 \bibcite{SadekMougenot2025}{{19}{2025}{{Sadek and Mougenot}}{{}}}
 \bibcite{Sanders2008}{{20}{2008}{{Sanders and Stappers}}{{}}}
@@ -141,10 +143,10 @@
 \bibcite{Yang2019}{{27}{2019}{{Yang et~al\mbox  {.}}}{{}}}
 \@writefile{toc}{\contentsline {section}{\numberline {A}Architecture Diagram}{7}{appendix.A}\protected@file@percent }
 \newlabel{app:architecture}{{A}{7}{Architecture Diagram}{appendix.A}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces AgentFlow system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time.}}{7}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:arch}{{1}{7}{AgentFlow system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time}{figure.caption.9}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {B}Project Structure}{7}{appendix.B}\protected@file@percent }
 \newlabel{app:structure}{{B}{7}{Project Structure}{appendix.B}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces AgentFlow system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time.}}{7}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:arch}{{1}{7}{AgentFlow system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time}{figure.caption.9}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {C}System Prompts}{7}{appendix.C}\protected@file@percent }
 \newlabel{app:prompts}{{C}{7}{System Prompts}{appendix.C}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Orchestrator Backstory}{7}{subsection.C.1}\protected@file@percent }
@@ -153,10 +155,10 @@
 \newlabel{app:planning-prompt}{{C.2}{8}{Planning Task Prompt}{subsection.C.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Synthesis Prompt}{8}{subsection.C.3}\protected@file@percent }
 \newlabel{app:synthesis-prompt}{{C.3}{8}{Synthesis Prompt}{subsection.C.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.4}Image Analysis Prompt}{8}{subsection.C.4}\protected@file@percent }
-\newlabel{app:image-prompt}{{C.4}{8}{Image Analysis Prompt}{subsection.C.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.5}Audio Transcription}{8}{subsection.C.5}\protected@file@percent }
-\newlabel{app:audio}{{C.5}{8}{Audio Transcription}{subsection.C.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.4}Image Analysis Prompt}{9}{subsection.C.4}\protected@file@percent }
+\newlabel{app:image-prompt}{{C.4}{9}{Image Analysis Prompt}{subsection.C.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.5}Audio Transcription}{9}{subsection.C.5}\protected@file@percent }
+\newlabel{app:audio}{{C.5}{9}{Audio Transcription}{subsection.C.5}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.6}Modality Notes}{9}{subsection.C.6}\protected@file@percent }
 \newlabel{app:modality-notes}{{C.6}{9}{Modality Notes}{subsection.C.6}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Modality notes injected into the planning prompt.}}{9}{table.caption.10}\protected@file@percent }
@@ -170,16 +172,16 @@
 \newlabel{app:execution}{{F}{9}{Execution Engine}{appendix.F}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {F.1}Two-Phase Architecture}{9}{subsection.F.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {F.2}SSE Event Protocol}{9}{subsection.F.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {F.3}Checkpoint Approval Flow}{9}{subsection.F.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {G}Data Schemas}{9}{appendix.G}\protected@file@percent }
-\newlabel{app:schemas}{{G}{9}{Data Schemas}{appendix.G}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}Request and Response Models}{9}{subsection.G.1}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Complete tool registry. Each function is mapped to one or more agents and called directly during execution.}}{10}{table.caption.11}\protected@file@percent }
 \newlabel{tab:tools}{{4}{10}{Complete tool registry. Each function is mapped to one or more agents and called directly during execution}{table.caption.11}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces SSE event types streamed during execution.}}{10}{table.caption.12}\protected@file@percent }
 \newlabel{tab:sse}{{5}{10}{SSE event types streamed during execution}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {F.3}Checkpoint Approval Flow}{10}{subsection.F.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {G}Data Schemas}{10}{appendix.G}\protected@file@percent }
+\newlabel{app:schemas}{{G}{10}{Data Schemas}{appendix.G}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}Request and Response Models}{10}{subsection.G.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {G.2}Task Plan Models}{10}{subsection.G.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {G.3}Execution Graph Models}{10}{subsection.G.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.3}Execution Graph Models}{11}{subsection.G.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {H}Agent Registry Schema}{11}{appendix.H}\protected@file@percent }
 \newlabel{app:registry}{{H}{11}{Agent Registry Schema}{appendix.H}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Client State Management}{11}{appendix.I}\protected@file@percent }
@@ -188,19 +190,12 @@
 \newlabel{tab:state}{{6}{11}{Zustand store state slices}{table.caption.13}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {J}Internationalisation Keys}{11}{appendix.J}\protected@file@percent }
 \newlabel{app:i18n}{{J}{11}{Internationalisation Keys}{appendix.J}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {K}CSS Animations and Theming}{11}{appendix.K}\protected@file@percent }
-\newlabel{app:css}{{K}{11}{CSS Animations and Theming}{appendix.K}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {K.1}Theme Variables}{11}{subsection.K.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {K.2}Graph Animations}{11}{subsection.K.2}\protected@file@percent }
-\newlabel{tocindent-1}{0pt}
-\newlabel{tocindent0}{0pt}
-\newlabel{tocindent1}{7.551pt}
-\newlabel{tocindent2}{12.32999pt}
-\newlabel{tocindent3}{0pt}
-\newlabel{tocindent4}{0pt}
-\newlabel{tocindent5}{0pt}
+\@writefile{toc}{\contentsline {section}{\numberline {K}CSS Animations and Theming}{12}{appendix.K}\protected@file@percent }
+\newlabel{app:css}{{K}{12}{CSS Animations and Theming}{appendix.K}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {K.1}Theme Variables}{12}{subsection.K.1}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Theme colour tokens (selected).}}{12}{table.caption.14}\protected@file@percent }
 \newlabel{tab:theme}{{7}{12}{Theme colour tokens (selected)}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {K.2}Graph Animations}{12}{subsection.K.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {K.3}Accessibility Styles}{12}{subsection.K.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {L}Authentication and Data Persistence}{12}{appendix.L}\protected@file@percent }
 \newlabel{app:auth}{{L}{12}{Authentication and Data Persistence}{appendix.L}{}}
@@ -211,5 +206,12 @@
 \newlabel{app:survey}{{M}{12}{Post-Task Survey Items}{appendix.M}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {N}Semi-Structured Interview Questions}{12}{appendix.N}\protected@file@percent }
 \newlabel{app:interview}{{N}{12}{Semi-Structured Interview Questions}{appendix.N}{}}
-\newlabel{TotPages}{{12}{12}{}{page.12}{}}
-\gdef \@abspage@last{12}
+\newlabel{tocindent-1}{0pt}
+\newlabel{tocindent0}{0pt}
+\newlabel{tocindent1}{7.551pt}
+\newlabel{tocindent2}{12.32999pt}
+\newlabel{tocindent3}{0pt}
+\newlabel{tocindent4}{0pt}
+\newlabel{tocindent5}{0pt}
+\newlabel{TotPages}{{13}{13}{}{page.13}{}}
+\gdef \@abspage@last{13}

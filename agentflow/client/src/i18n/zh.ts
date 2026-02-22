@@ -2,7 +2,7 @@ import type { Translations } from './en';
 
 const zh: Translations = {
   // App
-  'app.title': 'AgentFlow',
+  'app.title': 'MobileAgents',
   'app.subtitle': '你的 AI 团队',
   'app.tagline': '你的个人 AI 团队。描述任何任务，让智能代理帮你完成。',
 
@@ -163,7 +163,7 @@ const zh: Translations = {
 
   // Guide
   'guide.title': '文档',
-  'guide.subtitle': '了解如何使用 AgentFlow',
+  'guide.subtitle': '了解如何使用 MobileAgents',
   'guide.gettingStarted': '快速入门',
   'guide.gettingStartedDesc': '在聊天标签中输入消息来描述任务。编排器会将其拆分为步骤并分配给专业代理。点击执行来运行计划。',
   'guide.inputModes': '输入模式',

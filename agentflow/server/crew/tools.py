@@ -113,7 +113,7 @@ def _wiki_search(query: str) -> str:
         f"&srsearch={encoded}&srlimit=5&format=json"
     )
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "AgentFlow/1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "MobileAgents/1.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read().decode())
         results = data.get("query", {}).get("search", [])
@@ -164,7 +164,7 @@ def _semantic_scholar_search(query: str, max_results: int = 5) -> str:
         f"&fields=title,year,citationCount,influentialCitationCount,authors,url,abstract"
     )
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "AgentFlow/1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "MobileAgents/1.0"})
         with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read().decode())
         papers = data.get("data", [])
@@ -197,7 +197,7 @@ def _semantic_scholar_cite(paper_id: str) -> str:
         f"?fields=title,year,citationCount,influentialCitationCount,referenceCount,authors,url"
     )
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "AgentFlow/1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "MobileAgents/1.0"})
         with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read().decode())
         authors = [a.get("name", "") for a in (data.get("authors") or [])]
@@ -221,7 +221,7 @@ def _wiki_summarize(title: str) -> str:
     encoded = urllib.parse.quote(title)
     url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{encoded}"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "AgentFlow/1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "MobileAgents/1.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read().decode())
         extract = data.get("extract", "No summary available.")

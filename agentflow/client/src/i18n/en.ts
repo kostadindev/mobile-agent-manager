@@ -160,7 +160,7 @@ export type Translations = Record<TranslationKey, string>;
 
 const en: Translations = {
   // App
-  'app.title': 'AgentFlow',
+  'app.title': 'MobileAgents',
   'app.subtitle': 'Your AI Workforce',
   'app.tagline': 'Your personal AI workforce. Describe any task and let intelligent agents do the heavy lifting.',
 
@@ -321,7 +321,7 @@ const en: Translations = {
 
   // Guide
   'guide.title': 'Docs',
-  'guide.subtitle': 'Learn how to use AgentFlow',
+  'guide.subtitle': 'Learn how to use MobileAgents',
   'guide.gettingStarted': 'Getting Started',
   'guide.gettingStartedDesc': 'Type a message in the Chat tab to describe any task. The orchestrator will break it into steps and delegate to specialized agents. Tap Execute to run the plan.',
   'guide.inputModes': 'Input Modes',

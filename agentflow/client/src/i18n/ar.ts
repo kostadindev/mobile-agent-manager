@@ -2,7 +2,7 @@ import type { Translations } from './en';
 
 const ar: Translations = {
   // App
-  'app.title': 'AgentFlow',
+  'app.title': 'MobileAgents',
   'app.subtitle': 'فريق الذكاء الاصطناعي بتاعك',
   'app.tagline': 'فريق الذكاء الاصطناعي الشخصي بتاعك. اوصف أي مهمة وسيب الوكلاء الأذكياء يشتغلوا.',
 
@@ -163,7 +163,7 @@ const ar: Translations = {
 
   // Guide
   'guide.title': 'الدليل',
-  'guide.subtitle': 'اتعلم ازاي تستخدم AgentFlow',
+  'guide.subtitle': 'اتعلم ازاي تستخدم MobileAgents',
   'guide.gettingStarted': 'البداية',
   'guide.gettingStartedDesc': 'اكتب رسالة في تبويب المحادثة لوصف أي مهمة. المنسق هيقسمها لخطوات ويوزعها على الوكلاء المتخصصين. اضغط تنفيذ لتشغيل الخطة.',
   'guide.inputModes': 'أوضاع الإدخال',

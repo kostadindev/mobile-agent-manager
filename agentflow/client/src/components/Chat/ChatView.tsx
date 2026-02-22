@@ -140,7 +140,7 @@ export default function ChatView() {
               <Message
                 key={msg.id}
                 type={msg.role === 'user' ? 'sent' : 'received'}
-                name={msg.role === 'user' ? undefined : 'AgentFlow'}
+                name={msg.role === 'user' ? undefined : 'MobileAgents'}
                 text={
                   <div>
                     {/* Modality badge (F6) */}
@@ -211,7 +211,7 @@ export default function ChatView() {
             {isLoading && (
               <Message
                 type="received"
-                name="AgentFlow"
+                name="MobileAgents"
                 text={
                   <div className="flex gap-1.5">
                     {[0, 150, 300].map((d) => (
@@ -225,7 +225,7 @@ export default function ChatView() {
             {isExecuting && transparencyLevel === 'plan_preview' && (
               <Message
                 type="received"
-                name="AgentFlow"
+                name="MobileAgents"
                 text={
                   <div className="flex items-center gap-2 text-sm text-slate-400">
                     <Loader2 className="w-4 h-4 animate-spin text-[#7c6aef]" />

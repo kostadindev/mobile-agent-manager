@@ -22,7 +22,7 @@ class TaskPlan(BaseModel):
     steps: list[PlanStep]
 
 
-class AgentFlowOrchestrator:
+class MobileAgentsOrchestrator:
     """
     A CrewAI-based orchestrator that uses an orchestrator agent to plan tasks
     and a hierarchical crew to execute them via specialized worker agents.
