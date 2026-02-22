@@ -1,0 +1,81 @@
+This is BibTeX, Version 0.99d (TeX Live 2025)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: report.aux
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: references.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Warning--empty address in Amershi2019
+Warning--no number and no volume in Brooke1996
+Warning--empty address in Buçinca2020
+Warning--empty address in Capel2023
+Warning--empty address in CostanzaChock2020
+Warning--can't use both volume and number fields in Friedman2017
+Warning--empty address in Friedman2017
+Warning--unusual to have number, but no volume, for Friedman2002
+Warning--page numbers missing in both pages and numpages fields in Friedman2002
+Warning--empty address in Hemmer2023
+Warning--no number and no volume in Jerry2025
+Warning--page numbers missing in both pages and numpages fields in Jerry2025
+Warning--no number and no volume in Kim2025
+Warning--page numbers missing in both pages and numpages fields in Kim2025
+Warning--no number and no volume in Pappu2025
+Warning--page numbers missing in both pages and numpages fields in Pappu2025
+Warning--page numbers missing in both pages and numpages fields in Sadek2023
+Warning--empty address in Sadek2024CHI
+Warning--no number and no volume in Tang2025
+Warning--page numbers missing in both pages and numpages fields in Tang2025
+Warning--no number and no volume in Tomasev2025
+Warning--page numbers missing in both pages and numpages fields in Tomasev2025
+Warning--no number and no volume in vanDePoel2013
+Warning--empty address in Yang2018
+Warning--empty address in Yang2019
+You've used 27 entries,
+            6056 wiz_defined-function locations,
+            1677 strings with 23640 characters,
+and the built_in function-call counts, 32175 in all, are:
+= -- 4580
+> -- 1036
+< -- 0
++ -- 353
+- -- 361
+* -- 2297
+:= -- 3015
+add.period$ -- 138
+call.type$ -- 27
+change.case$ -- 205
+chr.to.int$ -- 26
+cite$ -- 52
+duplicate$ -- 2702
+empty$ -- 1912
+format.name$ -- 452
+if$ -- 8149
+int.to.chr$ -- 3
+int.to.str$ -- 1
+missing$ -- 110
+newline$ -- 265
+num.names$ -- 188
+pop$ -- 1060
+preamble$ -- 1
+purify$ -- 419
+quote$ -- 0
+skip$ -- 932
+stack$ -- 0
+substring$ -- 2326
+swap$ -- 259
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 540
+warning$ -- 25
+while$ -- 178
+width$ -- 0
+write$ -- 563
+(There were 25 warnings)
