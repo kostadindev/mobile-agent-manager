@@ -3,6 +3,7 @@ import { Navbar, List, ListItem, Block, Toggle, BlockTitle } from 'konsta/react'
 import { BookOpen, Lightbulb, Globe, Bot, Search, FileText, Code, Database, Zap, Brain, type LucideIcon } from 'lucide-react';
 import { useStore } from '../../state/store';
 import { useT } from '../../i18n';
+import { supabase } from '../../lib/supabase';
 import type { Agent } from '../../types/agents';
 import AgentDetailSheet from './AgentDetailSheet';
 
@@ -23,7 +24,12 @@ export default function AgentList() {
   useEffect(() => {
     async function fetchAgents() {
       try {
-        const res = await fetch('/api/agents');
+        const { data: { session } } = await supabase.auth.getSession();
+        const res = await fetch('/api/agents', {
+          headers: {
+            Authorization: `Bearer ${session?.access_token ?? ''}`,
+          },
+        });
         if (res.ok) { setAgents(await res.json()); return; }
       } catch { /* fallback */ }
       setAgents(DEFAULT_AGENTS);
