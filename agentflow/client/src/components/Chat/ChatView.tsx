@@ -242,9 +242,13 @@ export default function ChatView() {
       {showImage && <ImagePreview />}
 
       {/* Input bar */}
-      <div className="flex-shrink-0 flex items-end gap-2 px-3 py-2 bg-surface-1 border-t border-border">
-        {showImage && <ImageCapture />}
-        {showVoice && <VoiceButton onAudioRecorded={handleAudioRecorded} />}
+      <div className="flex-shrink-0 flex items-end gap-1.5 px-3 py-2 bg-surface-1 border-t border-border">
+        {(showImage || showVoice) && (
+          <div className="flex items-center gap-1 mb-0.5">
+            {showImage && <ImageCapture />}
+            {showVoice && <VoiceButton onAudioRecorded={handleAudioRecorded} />}
+          </div>
+        )}
 
         {showText && (
           <>
@@ -266,7 +270,7 @@ export default function ChatView() {
               onClick={handleSend}
               disabled={!canSend}
               aria-label="Send message"
-              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+              className={`flex-shrink-0 w-9 h-9 mb-0.5 rounded-full flex items-center justify-center transition-all ${
                 canSend ? 'bg-primary text-white' : 'text-on-surface-muted'
               }`}
             >
