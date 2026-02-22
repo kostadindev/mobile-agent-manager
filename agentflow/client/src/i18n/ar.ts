@@ -23,6 +23,7 @@ const ar: Translations = {
   'suggestion.research': 'لخص أحدث الأبحاث عن استدلال نماذج اللغة الكبيرة',
   'suggestion.proposal': 'ساعدني أكتب مقترح لمشروع ذكاء اصطناعي متعدد الوسائط',
   'suggestion.transformer': 'اشرح ازاي بنية المحولات بتشتغل',
+  'suggestion.slack': 'لخص أحدث أبحاث HCI وشاركها في #general',
 
   // Settings
   'settings.transparencyMode': 'وضع الشفافية',

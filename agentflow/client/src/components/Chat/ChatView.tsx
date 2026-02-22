@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Navbar, Messages, Message, Block, List, ListItem, Link } from 'konsta/react';
 import { useStore } from '../../state/store';
 import { useT } from '../../i18n';
-import { Sparkles, ArrowUp, BookOpen, Lightbulb, Globe, Loader2, Settings, Volume2, VolumeX, Mic, Camera, Trash2 } from 'lucide-react';
+import { Sparkles, ArrowUp, BookOpen, Lightbulb, Globe, MessageSquare, Loader2, Settings, Volume2, VolumeX, Mic, Camera, Trash2 } from 'lucide-react';
 import Markdown from 'react-markdown';
 import TaskPlanCard from '../TaskPlan/TaskPlanCard';
 import ExecutionGraph from '../Graph/ExecutionGraph';
@@ -22,6 +22,7 @@ export default function ChatView() {
     { text: t('suggestion.research'), icon: BookOpen, color: '#A855F7' },
     { text: t('suggestion.proposal'), icon: Lightbulb, color: '#F97316' },
     { text: t('suggestion.transformer'), icon: Globe, color: '#06B6D4' },
+    { text: t('suggestion.slack'), icon: MessageSquare, color: '#E01E5A' },
   ];
 
   useEffect(() => {

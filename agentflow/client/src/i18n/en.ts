@@ -18,6 +18,7 @@ export type TranslationKey =
   | 'suggestion.research'
   | 'suggestion.proposal'
   | 'suggestion.transformer'
+  | 'suggestion.slack'
   // Settings
   | 'settings.transparencyMode'
   | 'settings.blackBox'
@@ -162,6 +163,7 @@ const en: Translations = {
   'suggestion.research': 'Summarize the latest research on LLM reasoning',
   'suggestion.proposal': 'Help me draft a proposal for a multimodal AI project',
   'suggestion.transformer': 'Break down how transformer architectures work',
+  'suggestion.slack': 'Summarize the latest HCI papers and share in #general',
 
   // Settings
   'settings.transparencyMode': 'Transparency Mode',

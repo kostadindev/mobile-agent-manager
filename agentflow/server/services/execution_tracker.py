@@ -72,6 +72,15 @@ def _call_tool(
         if key in param_names:
             kwargs[key] = v
 
+    # Fill slack text from previous step results when it's empty or a placeholder
+    if action == "slack_send_message" and prev_results:
+        text_val = kwargs.get("text", "")
+        is_placeholder = not text_val or text_val.startswith("<") or "step_" in text_val
+        if is_placeholder:
+            kwargs["text"] = prev_text[:3000]
+        if not kwargs.get("channel"):
+            kwargs["channel"] = "#general"
+
     # Handle dependent steps with incomplete params
     if not kwargs and prev_results:
         if action == "arxiv_summarize":
