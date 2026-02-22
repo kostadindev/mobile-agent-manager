@@ -25,6 +25,7 @@ class ChatRequest(BaseModel):
     audio_base64: Optional[str] = None
     input_modality: str = "text"
     conversation_history: list[HistoryMessage] = []
+    conversation_id: Optional[str] = None
 
 
 class ChatResponse(BaseModel):

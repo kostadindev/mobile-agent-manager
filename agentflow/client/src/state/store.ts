@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { supabase } from '../lib/supabase';
 import type { ChatMessage, Conversation } from '../types/messages';
 import type { TaskPlan, TaskStep } from '../types/tasks';
 import type { Agent } from '../types/agents';
@@ -13,6 +14,14 @@ type ThemeMode = 'dark' | 'light' | 'auto';
 
 const STORAGE_KEY = 'agentflow_state';
 const CONVERSATIONS_KEY = 'agentflow_conversations';
+
+async function authHeaders(): Promise<Record<string, string>> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return {
+    Authorization: `Bearer ${session?.access_token ?? ''}`,
+    'Content-Type': 'application/json',
+  };
+}
 
 function loadPersistedState(): {
   messages: ChatMessage[];
@@ -111,6 +120,7 @@ interface AppState {
   setLanguage: (lang: Language) => void;
 
   // Conversation history
+  currentConversationId: string | null;
   conversations: Conversation[];
   viewingConversation: Conversation | null;
   setViewingConversation: (conv: Conversation | null) => void;
@@ -118,6 +128,7 @@ interface AppState {
   openConversation: (id: string) => void;
   deleteConversation: (id: string) => void;
   clearAllHistory: () => void;
+  loadConversations: () => Promise<void>;
 
   // Persistence (F9)
   clearHistory: () => void;
@@ -227,9 +238,10 @@ export const useStore = create<AppState>((set, get) => ({
     const agent = get().agents.find((a) => a.id === id);
     if (!agent || agent.isOrchestrator) return;
     const updated = { ...agent, enabled: !agent.enabled };
+    const headers = await authHeaders();
     const res = await fetch(`/api/agents/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(updated),
     });
     if (res.ok) {
@@ -240,9 +252,10 @@ export const useStore = create<AppState>((set, get) => ({
     const agent = get().agents.find((a) => a.id === id);
     if (!agent) return;
     const updated = { ...agent, constitution };
+    const headers = await authHeaders();
     const res = await fetch(`/api/agents/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(updated),
     });
     if (res.ok) {
@@ -281,6 +294,7 @@ export const useStore = create<AppState>((set, get) => ({
   setLanguage: (lang) => set({ language: lang }),
 
   // Conversation history
+  currentConversationId: null,
   conversations: persisted.conversations,
   viewingConversation: null,
   setViewingConversation: (conv) => set({ viewingConversation: conv }),
@@ -307,13 +321,19 @@ export const useStore = create<AppState>((set, get) => ({
       currentPlan: null,
       graphState: null,
       viewingConversation: null,
+      currentConversationId: null,
     });
   },
   openConversation: (id) => {
     const conv = get().conversations.find((c) => c.id === id) ?? null;
     set({ viewingConversation: conv, activeTab: 'history' });
   },
-  deleteConversation: (id) => {
+  deleteConversation: async (id) => {
+    // Delete from DB
+    try {
+      const headers = await authHeaders();
+      await fetch(`/api/conversations/${id}`, { method: 'DELETE', headers });
+    } catch { /* ignore */ }
     set((s) => ({
       conversations: s.conversations.filter((c) => c.id !== id),
       viewingConversation: s.viewingConversation?.id === id ? null : s.viewingConversation,
@@ -321,6 +341,35 @@ export const useStore = create<AppState>((set, get) => ({
   },
   clearAllHistory: () => {
     set({ conversations: [], viewingConversation: null });
+  },
+  loadConversations: async () => {
+    try {
+      const headers = await authHeaders();
+      const res = await fetch('/api/conversations', { headers });
+      if (res.ok) {
+        const data = await res.json();
+        // Map DB rows to frontend Conversation shape
+        const conversations: Conversation[] = data.map((c: Record<string, unknown>) => ({
+          id: c.id as string,
+          title: c.title as string,
+          messages: ((c.messages as Record<string, unknown>[]) ?? []).map((m) => ({
+            id: m.id as string,
+            role: m.role as string,
+            content: m.content as string,
+            imageUrl: m.image_url as string | undefined,
+            voiceTranscript: m.voice_transcript as string | undefined,
+            agentId: m.agent_id as string | undefined,
+            timestamp: m.created_at as string,
+            inputModality: (m.input_modality as string) || 'text',
+            taskPlan: m.task_plan as Record<string, unknown> | undefined,
+            executionGraph: m.execution_graph as Record<string, unknown> | undefined,
+          })),
+          createdAt: c.created_at as string,
+          transparencyLevel: c.transparency_level as string,
+        }));
+        set({ conversations });
+      }
+    } catch { /* use cached localStorage data */ }
   },
 
   // Persistence (F9)
@@ -342,6 +391,25 @@ export const useStore = create<AppState>((set, get) => ({
     });
     set({ isLoading: true, imagePreview: null });
 
+    // Create conversation on first message if needed
+    let conversationId = get().currentConversationId;
+    if (!conversationId) {
+      try {
+        const headers = await authHeaders();
+        const title = message ? message.slice(0, 60) : 'New conversation';
+        const res = await fetch('/api/conversations', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ title, transparency_level: state.transparencyLevel }),
+        });
+        if (res.ok) {
+          const conv = await res.json();
+          conversationId = conv.id;
+          set({ currentConversationId: conversationId });
+        }
+      } catch { /* continue without persistence */ }
+    }
+
     try {
       // Send recent conversation history for multi-turn context
       const history = get().messages.slice(-10).map((m) => ({
@@ -349,15 +417,17 @@ export const useStore = create<AppState>((set, get) => ({
         content: m.content,
       }));
 
+      const headers = await authHeaders();
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           message,
           image_base64: imageBase64 ?? null,
           audio_base64: audioBase64 ?? null,
           input_modality: modality,
           conversation_history: history,
+          conversation_id: conversationId,
         }),
       });
       const data = await res.json();
@@ -473,10 +543,15 @@ export const useStore = create<AppState>((set, get) => ({
         })),
       };
 
+      const headers = await authHeaders();
       const res = await fetch('/api/execute', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: backendPlan, graph: state.graphState }),
+        headers,
+        body: JSON.stringify({
+          plan: backendPlan,
+          graph: state.graphState,
+          conversation_id: get().currentConversationId,
+        }),
       });
 
       const reader = res.body?.getReader();

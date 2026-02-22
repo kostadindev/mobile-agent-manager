@@ -150,6 +150,17 @@ const bg: Translations = {
   'msg.allCompleted': 'Всички задачи са изпълнени успешно!',
   'msg.executionFailed': 'Изпълнението се провали. Провери връзката със сървъра.',
 
+  // Auth
+  'auth.signIn': 'Вход',
+  'auth.signUp': 'Регистрация',
+  'auth.email': 'Имейл',
+  'auth.password': 'Парола',
+  'auth.switchToSignIn': 'Вече имаш акаунт? Влез',
+  'auth.switchToSignUp': 'Нямаш акаунт? Регистрирай се',
+  'auth.checkEmail': 'Провери имейла си за линк за потвърждение.',
+  'auth.error': 'Неуспешна автентикация. Опитай отново.',
+  'auth.signOut': 'Изход',
+
   // Guide
   'guide.title': 'Документи',
   'guide.subtitle': 'Научи как да използваш AgentFlow',

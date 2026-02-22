@@ -130,6 +130,16 @@ export type TranslationKey =
   | 'msg.error'
   | 'msg.allCompleted'
   | 'msg.executionFailed'
+  // Auth
+  | 'auth.signIn'
+  | 'auth.signUp'
+  | 'auth.email'
+  | 'auth.password'
+  | 'auth.switchToSignIn'
+  | 'auth.switchToSignUp'
+  | 'auth.checkEmail'
+  | 'auth.error'
+  | 'auth.signOut'
   // Guide
   | 'guide.title'
   | 'guide.subtitle'
@@ -297,6 +307,17 @@ const en: Translations = {
   'msg.error': 'Sorry, something went wrong. Please check that the server is running.',
   'msg.allCompleted': 'All tasks completed successfully!',
   'msg.executionFailed': 'Execution failed. Please check the server connection.',
+
+  // Auth
+  'auth.signIn': 'Sign In',
+  'auth.signUp': 'Sign Up',
+  'auth.email': 'Email',
+  'auth.password': 'Password',
+  'auth.switchToSignIn': 'Already have an account? Sign in',
+  'auth.switchToSignUp': "Don't have an account? Sign up",
+  'auth.checkEmail': 'Check your email for a confirmation link.',
+  'auth.error': 'Authentication failed. Please try again.',
+  'auth.signOut': 'Sign Out',
 
   // Guide
   'guide.title': 'Docs',

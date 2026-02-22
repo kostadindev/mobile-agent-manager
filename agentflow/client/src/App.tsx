@@ -1,5 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { App as KonstaApp } from 'konsta/react';
+import type { Session } from '@supabase/supabase-js';
+import { supabase } from './lib/supabase';
 import { useStore } from './state/store';
 import Shell from './components/Layout/Shell';
 import ChatView from './components/Chat/ChatView';
@@ -8,6 +10,7 @@ import ExecutionView from './components/Execution/ExecutionView';
 import GuideView from './components/Guide/GuideView';
 import SettingsSheet from './components/Settings/SettingsSheet';
 import VoiceOnlyView from './components/Voice/VoiceOnlyView';
+import AuthPage from './components/Auth/AuthPage';
 
 function useIsDark() {
   const themeMode = useStore((s) => s.themeMode);
@@ -39,11 +42,50 @@ function useDirection() {
 }
 
 export default function App() {
-  const { activeTab, modalityMode } = useStore();
+  const { activeTab, modalityMode, loadConversations } = useStore();
   const isDark = useIsDark();
   useDirection();
 
+  const [session, setSession] = useState<Session | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Load conversations from DB once authenticated
+  useEffect(() => {
+    if (session) {
+      loadConversations();
+    }
+  }, [session, loadConversations]);
+
   const isVoiceOnly = modalityMode === 'voice_only';
+
+  if (authLoading) {
+    return (
+      <KonstaApp theme="ios" dark={isDark} safeAreas className={isDark ? 'dark' : ''}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin h-8 w-8 border-2 border-[#7c6aef] border-t-transparent rounded-full" />
+        </div>
+      </KonstaApp>
+    );
+  }
+
+  if (!session) {
+    return (
+      <KonstaApp theme="ios" dark={isDark} safeAreas className={isDark ? 'dark' : ''}>
+        <AuthPage />
+      </KonstaApp>
+    );
+  }
 
   return (
     <KonstaApp theme="ios" dark={isDark} safeAreas className={isDark ? 'dark' : ''}>

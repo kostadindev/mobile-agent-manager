@@ -150,6 +150,17 @@ const ar: Translations = {
   'msg.allCompleted': 'كل المهام اتنفذت بنجاح!',
   'msg.executionFailed': 'التنفيذ فشل. تأكد من اتصال السيرفر.',
 
+  // Auth
+  'auth.signIn': 'تسجيل الدخول',
+  'auth.signUp': 'إنشاء حساب',
+  'auth.email': 'البريد الإلكتروني',
+  'auth.password': 'كلمة المرور',
+  'auth.switchToSignIn': 'عندك حساب؟ سجل دخول',
+  'auth.switchToSignUp': 'معندكش حساب؟ سجل جديد',
+  'auth.checkEmail': 'تحقق من بريدك الإلكتروني لرابط التأكيد.',
+  'auth.error': 'فشل التوثيق. حاول تاني.',
+  'auth.signOut': 'تسجيل الخروج',
+
   // Guide
   'guide.title': 'الدليل',
   'guide.subtitle': 'اتعلم ازاي تستخدم AgentFlow',

@@ -150,6 +150,17 @@ const zh: Translations = {
   'msg.allCompleted': '所有任务已成功完成！',
   'msg.executionFailed': '执行失败。请检查服务器连接。',
 
+  // Auth
+  'auth.signIn': '登录',
+  'auth.signUp': '注册',
+  'auth.email': '邮箱',
+  'auth.password': '密码',
+  'auth.switchToSignIn': '已有账号？登录',
+  'auth.switchToSignUp': '没有账号？注册',
+  'auth.checkEmail': '请查看邮箱中的确认链接。',
+  'auth.error': '认证失败，请重试。',
+  'auth.signOut': '退出登录',
+
   // Guide
   'guide.title': '文档',
   'guide.subtitle': '了解如何使用 AgentFlow',

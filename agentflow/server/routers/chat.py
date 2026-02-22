@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from crewai import LLM
 from openai import OpenAI
 
@@ -7,13 +7,15 @@ from crew.orchestrator import AgentFlowOrchestrator
 from services.agent_store import get_agents
 from services.image_analyzer import analyze_image
 from services.audio_transcriber import transcribe_audio
+from services import db
+from auth import get_current_user
 from config import settings
 
 router = APIRouter()
 
 
 @router.post("/api/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+async def chat(request: ChatRequest, user: dict = Depends(get_current_user)):
     """
     Main chat endpoint. Accepts text, image, and/or audio input.
     Analyzes multimodal input and returns a task plan with execution graph.
@@ -67,6 +69,10 @@ async def chat(request: ChatRequest):
 
     # Handle 0-step plans (non-research requests like "return this image", "hello")
     if step_count == 0:
+        # Persist messages to DB if conversation_id provided
+        if request.conversation_id:
+            db.insert_message(request.conversation_id, "user", user_message, input_modality=input_modality)
+            db.insert_message(request.conversation_id, "assistant", summary)
         return ChatResponse(
             message=summary,
             plan=None,
@@ -84,6 +90,17 @@ async def chat(request: ChatRequest):
         f"**{summary}** — {step_count} step(s) via {', '.join(agent_names)}."
         f"{modality_note}"
     )
+
+    # Persist messages to DB if conversation_id provided
+    if request.conversation_id:
+        db.insert_message(
+            request.conversation_id, "user", user_message,
+            voice_transcript=audio_transcript, input_modality=input_modality,
+        )
+        db.insert_message(
+            request.conversation_id, "assistant", message,
+            task_plan=result["plan"], execution_graph=result["graph"],
+        )
 
     return ChatResponse(
         message=message,

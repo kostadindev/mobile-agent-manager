@@ -1,6 +1,7 @@
 import { Sheet, Button } from 'konsta/react';
 import { useStore } from '../../state/store';
 import { useT, LANGUAGES } from '../../i18n';
+import { supabase } from '../../lib/supabase';
 import type { Language } from '../../i18n';
 
 function SegmentedControl<T extends string>({
@@ -105,6 +106,17 @@ export default function SettingsSheet() {
           className="!text-red-400 !border-red-400/40"
         >
           {t('settings.clearHistory')}
+        </Button>
+
+        <Button
+          outline
+          onClick={async () => {
+            await supabase.auth.signOut();
+            setShowSettings(false);
+          }}
+          className="!text-red-400 !border-red-400/40"
+        >
+          {t('auth.signOut')}
         </Button>
       </div>
     </Sheet>

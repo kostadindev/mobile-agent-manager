@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
 
@@ -9,6 +9,7 @@ from services.agent_store import (
     update_agent as store_update_agent,
     delete_agent as store_delete_agent,
 )
+from auth import get_current_user
 
 router = APIRouter()
 
@@ -30,18 +31,18 @@ class AgentCreate(BaseModel):
 
 
 @router.get("/api/agents")
-async def list_agents():
+async def list_agents(user: dict = Depends(get_current_user)):
     """Return all available agents."""
     return store_get_agents()
 
 
 @router.post("/api/agents")
-async def create_agent(agent: AgentCreate):
+async def create_agent(agent: AgentCreate, user: dict = Depends(get_current_user)):
     return store_create_agent(agent.model_dump(exclude_none=True))
 
 
 @router.put("/api/agents/{agent_id}")
-async def update_agent(agent_id: str, agent: AgentCreate):
+async def update_agent(agent_id: str, agent: AgentCreate, user: dict = Depends(get_current_user)):
     result = store_update_agent(agent_id, agent.model_dump(exclude_none=True))
     if result is None:
         raise HTTPException(status_code=404, detail="Agent not found")
@@ -49,7 +50,7 @@ async def update_agent(agent_id: str, agent: AgentCreate):
 
 
 @router.delete("/api/agents/{agent_id}")
-async def delete_agent(agent_id: str):
+async def delete_agent(agent_id: str, user: dict = Depends(get_current_user)):
     if not store_delete_agent(agent_id):
         raise HTTPException(status_code=404, detail="Agent not found")
     return {"ok": True}
