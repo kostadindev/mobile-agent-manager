@@ -7,6 +7,8 @@
   \providecommand\BibTeX{{%
     Bib\TeX}}}
 
+\graphicspath{{images/}}
+
 %% Rights management information.
 %%\setcopyright{acmlicensed}
 %%\copyrightyear{2025}
@@ -72,7 +74,45 @@ A multi-agent orchestrator is a particularly challenging AI \emph{design materia
 
 \subsection{Prototype Overview}
 
-MobileAgents is a fully functional prototype (React client, FastAPI server; full architecture in Appendix~\ref{app:architecture}--\ref{app:structure}). Because AI behaviour is emergent and opaque---unlike traditional deterministic software where outputs are fully specified---we focused prototyping not on pixel-perfect UI but on making \emph{invisible AI processes legible}: system intent (what the orchestrator plans to do), system limitations (uncertainty cues), user feedback loops (approval gates), and user mental models (the DAG visualisation)~\cite{Yang2019}. The core idea is \textbf{bring-your-own-agents}: users register any agent by defining its role, tools, and metadata via the Agents tab or the REST API. The orchestrator dynamically reads the current agent pool for every request, so adding, removing, or reconfiguring agents requires no code changes. Users interact via three modalities suited to mobile, on-the-go use: \textbf{text} chat, \textbf{voice} recording (transcribed by Whisper---ideal for hands-free queries while walking), and \textbf{image} capture (analysed by GPT-4.1 vision---e.g., photographing a conference poster to trigger a literature search). All modalities are unified into a single planning prompt. The orchestrator decomposes the request into a dependency graph of tasks across the user's personal agent pool; execution streams real-time updates via Server-Sent Events.
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.92\textwidth]{flow}
+  \caption{MobileAgents system overview. A user on the go issues a multimodal request (text, voice, or image) from their phone. The LLM Orchestrator decomposes it into a dependency-aware plan and dispatches tasks across the user's personal agent pool (ArXiv, Wikipedia, Proposal, Slack, Semantic Scholar). Results stream back to the mobile client in real time.}
+  \Description{Architecture flow diagram: person labeled User on the go sends text/voice/image to a phone labeled MobileAgents, which forwards a multimodal request to a purple LLM Orchestrator box that fans out to five colored agent boxes, with a streamed results arrow returning to the phone.}
+  \label{fig:flow}
+\end{figure*}
+
+MobileAgents is a fully functional prototype (Figure~\ref{fig:flow}; full architecture in Appendix~\ref{app:architecture}--\ref{app:structure}). The client is built in React with Konsta UI for mobile components as a Progressive Web App. The backend is a FastAPI server and communicates with the client through REST APIs and Server-Sent Events. The Orchestrator and demo agents are implemented with CrewAI and powered by GPT-4.1.
+
+
+
+\begin{figure*}[t]
+  \centering
+  \begin{minipage}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{multi_modal}\\[2pt]
+    \small (a) Multimodal mode
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{text+images}\\[2pt]
+    \small (b) Text + Images mode
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{voice_only}\\[2pt]
+    \small (c) Voice-only mode (listening)
+  \end{minipage}
+  \caption{MobileAgents input modes. (a)~Multimodal (b)~Text + Images. (c)~Voice-only}
+  \Description{Three mobile screenshots: (a) dark-themed chat home with multimodal input bar; (b) same screen with camera-only input; (c) full-screen voice recording with red microphone button and Listening indicator.}
+  \label{fig:chat}
+\end{figure*}
+
+\subsection{Modality Support}
+
+Users interact with three modalities optimized for mobile that can be configured in settings (Figure~\ref{fig:chat}). \textbf{Multimodal} supports text, images, and speech, and responds with text and visualizations, with an optional text-to-speech button. \textbf{Text and Image} mode supports text and images as input and responds with text and visualizations. \textbf{Voice-only} mode is unique as it supports only speech input and responds only in speech. While this enables convenience, it also restricts visualization, planning, and approval, and is designed to be more concise. The orchestrator decomposes the request into a dependency graph of tasks and assigns them to the corresponding agents. Responses are streamed in real-time updates via Server-Sent Events.
 
 \subsection{Design Rationale}
 
@@ -88,14 +128,10 @@ The \emph{technical investigation}~\cite{Friedman2002, Friedman2017} translated 
 
 We designed an AI orchestrator persona (full text in Appendix~\ref{app:backstories}): a concise research librarian that uses uncertainty-aware language (addressing Amershi et al.'s G13: ``mitigate social biases''~\cite{Amershi2019} by avoiding overconfident claims), prefers parallel execution, and never claims authority over institutional policy. Critically, the orchestrator's system prompt includes a user-editable ``constitution'' field---free-text guidelines that are appended at planning time. This lets users shape \emph{how} their personal agent pool is coordinated (e.g., ``always run ArXiv and Semantic Scholar in parallel,'' ``never send Slack messages without showing me a draft first''). The constitution operationalises co-design's core tenets~\cite{Sanders2008}: empowerment (giving users control over decisions that affect them), mutual learning (users discover orchestration possibilities while the system learns user preferences), and democratisation of design (opening up AI coordination rules that are normally developer-only). Sanders and Stappers~\cite{Sanders2008} call this moving users from ``passive consumer'' to ``co-creator.'' It also operationalises Amershi et al.'s G15 (``provide global controls'')~\cite{Amershi2019} and Shneiderman's~\cite{Shneiderman2020} principle that users should be able to set automation boundaries. Each worker agent can be enabled, disabled, inspected, or deleted from the Agents tab, giving users full control over which agents are available for orchestration. Sadek et al.'s~\cite{Sadek2025IJHCI} value-sensitive conversational agent co-design framework demonstrates that co-designing agent values with end users yields more contextually appropriate behaviour; their comprehensive review of co-design methods for conversational agents~\cite{Sadek2023} further recommends embedding value elicitation throughout iterative design cycles rather than treating it as a one-off activity. Our constitution mechanism extends this idea by making value alignment an ongoing, user-driven activity embedded in the runtime system itself. This also embodies VSD's principle of \emph{co-evolution of technology and social structure}~\cite{Friedman2017}: as users write new constitution rules, both the technology's behaviour and the social practices around it evolve together.
 
-\subsection{Accessibility and Inclusion}
-
-HCAI demands \emph{inclusivity}---designing for ``us'' rather than ``them,'' embracing diversity in age, language, culture, and ability level~\cite{Capel2023}. Costanza-Chock's~\cite{CostanzaChock2020} design justice framework goes further, arguing that design processes must centre the voices of those most affected by a system's failures---in our case, users with limited English proficiency, motor impairments, or constrained mobile data. The UI supports four languages (English, Chinese, Arabic with full RTL layout, Bulgarian), three themes (dark, light, auto), ARIA labels on all icon buttons, \texttt{aria-live} regions for screen readers, and \texttt{focus-visible} keyboard styles. Voice and image are optional parallel pathways, not replacements for text, ensuring users with different abilities or devices can participate fully. This addresses HCAI's contextual awareness principle: the system adapts to the user's environment (modality choice) and respects boundaries (consent dialogs) rather than imposing a single interaction pattern.
-
-\subsection{Three Design Configurations}
+\subsection{Execution Control}
 \label{sec:configs}
 
-Our independent variable is \textbf{transparency level}, operationalised as three configurations (Table~\ref{tab:transparency}):
+The three execution control settings are \textbf{Black Box}, \textbf{Plan Preview}, and \textbf{Full Transparency} (Figure~\ref{fig:configs}). Black Box enables the orchestrator and agents to execute tasks autonomously. Plan Preview proposes a plan that requires approval. Full Transparency proposes a plan that requires approval and embeds an execution graph that updates in real time as the multi-agent system executes tasks, providing full visibility into the system's operation. Transparency into agents is available through the agent tab, where users can view each agent, their available tools, and system prompts.
 
 \begin{table}[h]
   \caption{The three transparency configurations compared.}
@@ -105,14 +141,52 @@ Our independent variable is \textbf{transparency level}, operationalised as thre
     \toprule
     Configuration & What the user sees and can do \\
     \midrule
-    C1: Black Box & Query in, final answer out. No plan card, no graph, no approval step. Agents auto-execute. \\
-    C2: Plan Preview & Orchestrator's task plan shown as a card. User approves with one tap. A spinner indicates execution (no live graph). \\
-    C3: Full Transparency & Plan card \emph{plus} a live DAG graph with animated node/edge status, step-by-step results streaming in real time, and checkpoint approval gates for sensitive actions. \\
+    C1: Black Box & Query in, final answer out. Agents auto-execute. \\
+    C2: Plan Preview & Orchestrator's task plan. \\
+    C3: Full Transparency &  Plan with a real-time graph, and checkpoint approvals \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-These configurations operationalise Shneiderman's~\cite{Shneiderman2020} two-dimensional framework: C1 sits at high automation / low human control, C3 at high automation / high human control, and C2 in between. This lets us test the trade-off between V1~(efficiency) and V2~(control) while keeping modality support constant across conditions.
+\begin{figure*}[t]
+  \centering
+  \begin{minipage}[t]{0.22\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{blackbox}\\[2pt]
+    \small (a) C1: Black Box
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.22\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{task_plan}\\[2pt]
+    \small (b) C2: Plan Preview
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.22\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{full_control}\\[2pt]
+    \small (c) C3: Full Transparency
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.22\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{execution_graph}\\[2pt]
+    \small (d) Live DAG (C3 detail)
+  \end{minipage}
+  \caption{The three transparency configurations and the C3 graph. (a)~Black Box (b)~Plan Preview (c)~Full Transparency (d)~Graph Close-up of Full Transparency}
+  \Description{Four panels: Black Box output screen, Plan Preview card, Full Transparency with embedded DAG, and a close-up DAG showing orchestrator, agent, checkpoint, and output nodes.}
+  \label{fig:configs}
+\end{figure*}
+
+These configurations follow Shneiderman's~\cite{Shneiderman2020} framework of efficiency and control trade-off. C1 has high autonomy and low human control. C3 has at low automation with high human control. C2 is in between.
+
+\subsection{Agentic Control Settings}
+
+Additional control is given to the user through agentic settings. The Orchestrator takes in a Constitution inspired by Anthropic's Constitutions~\cite{Anthropic2023}. This constitution provides instructions to guide orchestration logic, planning, and response stylization. It is editable from the UI and does not require system updates. Furthermore, individual agents can be turned on or off, allowing users to control which agents are accessible to the orchestrator. This functionality works in tandem with the execution control settings discussed before to enable users to manage risk. For example, a high-risk agent can be deployed with full transparency mode, and a low-risk one can be used effectively in Black Box.
+
+\subsection{Accessibility and Inclusion}
+
+HCAI demands inclusivity across age, language, culture, and ability levels~\cite{Capel2023}. MobileAgents supports English, Chinese, Arabic with full RTL layout, and Bulgarian. It has dark, light, and auto color themes. Icon buttons contain ARIA labels. Users with different abilities and devices can utilize the product through multimodal inputs of text, voice, and images, with neither being a point-of-failure. The design was chosen with personalization in mind and to not impose a single interaction pattern.
 
 %% ============================================================
 \section{Methods: Research Question, Evaluation Methods, and Metrics}
@@ -546,6 +620,8 @@ Parameter aliases are normalised automatically (e.g., \texttt{message} $\rightar
 
 \textbf{Phase 2 --- Execution:} The execution tracker iterates the plan in topological order. For each step whose dependencies are satisfied, it: (1) activates incoming edges, (2) sets the node to \texttt{running}, (3) calls the tool function directly with resolved parameters, (4) records execution duration, and (5) marks the node as \texttt{completed} or \texttt{failed}. Steps without mutual dependencies execute in the order they become ready. After all steps complete, the tracker calls the synthesis LLM and emits the final result.
 
+The live DAG for a three-step task is shown as Figure~\ref{fig:configs}(d) in the main body: ArXiv search $\rightarrow$ summarise $\rightarrow$ Slack send, with a checkpoint node gating the Slack step.
+
 \subsection{SSE Event Protocol}
 
 Execution updates are streamed from \texttt{POST /api/execute} as Server-Sent Events. Table~\ref{tab:sse} documents the complete event protocol.
@@ -896,5 +972,71 @@ After completing all three configurations, participants were asked:
   \item Can you think of a situation where a system like this could cause harm---to you or someone else?
   \item What is the single most important change you would make to improve this system?
 \end{enumerate}
+
+%% ============================================================
+\section{Interface Screenshots}
+\label{app:screenshots}
+
+The following screenshots document the complete MobileAgents UI. Figures~\ref{fig:ss-agents}--\ref{fig:ss-docs} supplement the main-body figures (Figures~\ref{fig:chat} and~\ref{fig:configs}).
+
+\begin{figure*}[h]
+  \centering
+  \begin{minipage}[t]{0.30\textwidth}
+    \centering
+    \includegraphics[height=7cm]{agents_tab}\\[2pt]
+    \small (a) Agents tab (light theme)
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.30\textwidth}
+    \centering
+    \includegraphics[height=7cm]{orchestrator}\\[2pt]
+    \small (b) Orchestrator detail with constitution editor
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.30\textwidth}
+    \centering
+    \includegraphics[height=7cm]{agent_card}\\[2pt]
+    \small (c) Agent card (ArXiv agent, dark theme)
+  \end{minipage}
+  \caption{Agent management screens. (a)~The Agents tab lists the orchestrator (always active) and all registered worker agents with per-agent enable/disable toggles. (b)~Tapping the orchestrator opens its detail sheet, showing goal, tools, system prompt, and the editable constitution field. (c)~A worker agent card shows its goal, tool names, and full system prompt backstory.}
+  \Description{Three mobile screenshots: agents list with toggles, orchestrator detail sheet with constitution editor, and ArXiv agent card with system prompt.}
+  \label{fig:ss-agents}
+\end{figure*}
+
+\begin{figure*}[h]
+  \centering
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[height=7cm]{settings}\\[2pt]
+    \small (a) Settings panel
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[height=7cm]{Bulgarian}\\[2pt]
+    \small (b) Bulgarian localisation
+  \end{minipage}
+  \caption{Settings and localisation screens. (a)~Settings exposes all three transparency modes, input modes (Multimodal / Text+Images / Voice Only), theme (Dark/Light/Auto), and language (EN/AR/ZH/BG). (b)~Bulgarian localisation: the full UI---including navigation labels and suggested queries---renders in Bulgarian with full RTL support for Arabic (not shown).}
+  \Description{Two mobile screenshots: settings sheet with segmented controls for transparency, input mode, theme, and language; and Bulgarian-language chat home screen.}
+  \label{fig:ss-settings}
+\end{figure*}
+
+\begin{figure*}[h]
+  \centering
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[height=7cm]{slack}\\[2pt]
+    \small (a) Slack output (\#general channel)
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[height=7cm]{docs}\\[2pt]
+    \small (b) In-app documentation tab
+  \end{minipage}
+  \caption{Slack integration and in-app documentation. (a)~Result of a Slack send step after checkpoint approval: two arXiv paper summaries posted to \#general by the agentflow bot. (b)~The Docs tab provides an in-app guide covering input modes, transparency modes, the agents tab, and execution graph; it is available without leaving the app.}
+  \Description{Slack channel showing two paper summaries posted by the agentflow bot; and the Docs tab showing getting started, input modes, transparency modes, agents, and execution graph sections.}
+  \label{fig:ss-docs}
+\end{figure*}
 
 \end{document}
