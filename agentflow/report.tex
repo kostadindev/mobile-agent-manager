@@ -30,10 +30,6 @@
 
 \renewcommand{\shortauthors}{Anonymous}
 
-\begin{abstract}
-People increasingly rely on personal AI agents---for research, messaging, scheduling---but controlling these agents away from a desktop is cumbersome: typing complex instructions on a phone is slow, and existing orchestration frameworks offer no end-user interface at all. We designed MobileAgents, a mobile-first platform where users bring their own AI agents and control them on the go through text, voice, and camera input. An LLM orchestrator decomposes multimodal requests into a dependency-aware plan across the user's personal agent pool, and a live DAG streams execution progress. The architecture is agent-agnostic: any agent can be registered with its role and tools at runtime---no code changes required. To study how much of this orchestration to reveal, we compared three transparency configurations---Black Box, Plan Preview, and Full Transparency---in a mixed-methods study with 10 participants (think-aloud, surveys, interviews). Plan Preview offered the best balance of trust and efficiency for mobile use; voice and image input were valued for on-the-go scenarios but required consent gating. We discuss value trade-offs, automation bias risks, and design implications for mobile multimodal agent control.
-\end{abstract}
-
 \begin{CCSXML}
 <ccs2012>
  <concept>
@@ -60,32 +56,6 @@ People increasingly rely on personal AI agents---for research, messaging, schedu
 \section{Introduction: Use Case and Goals}
 %% ============================================================
 
-People increasingly assemble personal toolkits of AI agents---one for paper search, another for drafting, another for team messaging---but controlling these agents is tethered to the desktop. Typing multi-step instructions into a terminal or notebook is impractical when walking between meetings, commuting, or working from a phone. Current orchestration frameworks (CrewAI, LangGraph, AutoGen) compound this problem: they are developer-facing APIs with no end-user interface at all, let alone a mobile one. The demand for mobile agent control is real: Clawdbot~\cite{Clawdbot2025}, an open-source autonomous AI agent that operates via messaging platforms (WhatsApp, Telegram, Slack), grew to an estimated 300,000--400,000 users within months of its 2025 launch by letting people delegate tasks---reading emails, managing calendars, deploying code---from their phone. Yet Clawdbot operates as a single opaque agent with broad permissions and no plan preview, approval gates, or transparency into what it will do before it acts, drawing scrutiny from security researchers over misconfigured instances accessing sensitive services. AI systems always involve value-laden choices, even when they appear purely technical~\cite{SadekMougenot2025}; orchestration platforms are no exception, yet they offer no mechanism for users to inspect plans, intervene before irreversible actions, or issue commands via voice or camera. Shneiderman~\cite{Shneiderman2020} argues that human-centred AI must be simultaneously reliable, safe, and trustworthy. Amershi et al.~\cite{Amershi2019} distil 18 guidelines for human--AI interaction, including ``make clear what the system can do'' (G1) and ``support efficient correction'' (G2); agent orchestration platforms violate nearly all of them by design, since they have no user-facing layer at all.
-
-We designed \textbf{MobileAgents}, a mobile-first platform that lets users \emph{bring their own AI agents} and control them on the go through text, voice, and image input. The architecture is \textbf{agent-agnostic}: any agent can be registered at runtime by defining its role, tools, and metadata---no code changes to the orchestration or UI layer. An LLM orchestrator decomposes multimodal requests into a dependency-aware execution plan across the user's personal agent pool, and a live directed acyclic graph (DAG) streams progress in real time. The platform ships with five demo agents (ArXiv, Proposal, Wikipedia, Slack, Semantic Scholar), but these are illustrative; the value proposition is that users plug in \emph{whatever agents matter to them} and manage them from their phone through whichever modality suits the moment---voice while walking, a photo of a whiteboard in a meeting, or text at a desk.
-
-A multi-agent orchestrator is a particularly challenging AI \emph{design material}: its behaviour is emergent (plans depend on which agents are registered and what the LLM decides), data-dependent (multimodal inputs shape plans unpredictably), and opaque (multiple agents execute in parallel behind the scenes). Recent scaling studies show that multi-agent coordination amplifies errors---centralized architectures amplify errors 4.4$\times$ compared to 17.2$\times$ for independent agents~\cite{Kim2025}---motivating our centralized orchestrator design. Capel and Brereton~\cite{Capel2023} map the HCAI research landscape and identify transparency, user agency, and contextual awareness as under-explored in agentic systems. The central design question is therefore \emph{how much} of this internal orchestration to expose on a small screen. We operationalise this as three configurable \textbf{transparency modes}---Black Box, Plan Preview, and Full Transparency---and evaluate their impact on users.
-
-\textbf{Stakeholders and values.} We adopted the tripartite VSD methodology~\cite{Friedman2002, Friedman2017}---conceptual, empirical, and technical investigations---as our overarching design framework. In the \emph{conceptual investigation}, we identified direct and indirect stakeholders following Friedman et al.'s~\cite{Friedman2017} stakeholder analysis method and performed a \emph{value source analysis} to distinguish project-endorsed values (usability, performance) from stakeholder-held values that might diverge from designer assumptions~\cite{Friedman2017}. Primary stakeholders: researchers and professionals who maintain personal agent pools and need mobile access. Secondary: collaborators who receive agent-generated outputs (e.g., Slack messages sent on the user's behalf). Tertiary: IT administrators concerned with data governance when agents act across services. We then conducted an \emph{empirical investigation} using value-oriented semi-structured interviews~\cite{Friedman2017}: informal conversations with four graduate students, structured as participatory inquiry. Participatory design, rooted in Scandinavian workplace democracy movements of the 1970s, holds that people affected by a technology should have a voice in shaping it~\cite{Sanders2008}---not merely as consultees but as genuine collaborators. This co-design orientation ensured that values emerged from lived experience rather than designer assumptions. Three core values surfaced: \textbf{V1~Efficiency} (``I want to fire off a request from my phone and get a result---don't slow me down''), \textbf{V2~Control} (``I need to verify before it sends anything on my behalf''), and \textbf{V3~Privacy} (``I don't want my voice recorded or images stored''). These values are in tension---V1 favours opacity, V2 demands visibility, V3 constrains which modalities feel safe in public---a pattern Friedman et al.~\cite{Friedman2017} call \emph{value tensions}, which drive design trade-offs rather than admit simple resolution. This motivates our research question.
-
-%% ============================================================
-\section{Methods: System Design and Implementation}
-%% ============================================================
-
-\subsection{Prototype Overview}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.92\textwidth]{flow}
-  \caption{MobileAgents system overview. A user on the go issues a multimodal request (text, voice, or image) from their phone. The LLM Orchestrator decomposes it into a dependency-aware plan and dispatches tasks across the user's personal agent pool (ArXiv, Wikipedia, Proposal, Slack, Semantic Scholar). Results stream back to the mobile client in real time.}
-  \Description{Architecture flow diagram: person labeled User on the go sends text/voice/image to a phone labeled MobileAgents, which forwards a multimodal request to a purple LLM Orchestrator box that fans out to five colored agent boxes, with a streamed results arrow returning to the phone.}
-  \label{fig:flow}
-\end{figure*}
-
-MobileAgents is a fully functional prototype (Figure~\ref{fig:flow}; full architecture in Appendix~\ref{app:architecture}--\ref{app:structure}). The client is built in React with Konsta UI for mobile components as a Progressive Web App. The backend is a FastAPI server and communicates with the client through REST APIs and Server-Sent Events. The Orchestrator and demo agents are implemented with CrewAI and powered by GPT-4.1.
-
-
-
 \begin{figure*}[t]
   \centering
   \begin{minipage}[t]{0.3\textwidth}
@@ -110,28 +80,53 @@ MobileAgents is a fully functional prototype (Figure~\ref{fig:flow}; full archit
   \label{fig:chat}
 \end{figure*}
 
-\subsection{Modality Support}
+AI Agents are increasingly capable of performing personal and professional tasks~\cite{Kim2025}, which is motivating people to assemble personalized teams of agents. However, currently these agents need to be controlled via a programming interface or specialized desktop applications. However, the main value of these agents is that they can serve us semi- or fully autonomously while we are away from the workplace or a desktop computer. This has created strong demand for mobile applications that allow people to control their own agents while away from their workstations. This was demonstrated by the strong response to ClawdBot~\cite{Clawdbot2025}, an open-source autonomous AI agent controlled via messaging platforms such as WhatsApp. Yet Clawdbot operates as a single agent with difficult-to-control permissions, planning, and approval. Additionally, existing agentic management platforms, such as OpenAI Frontier and blah blah, are both commercial and not optimized for mobile use while on the go. This underscores the need for a fully open-source, fully mobile agent management platform that enables people to manage their custom agentic workflows with adjustable levels of control and governance while on the go.
 
-Users interact with three modalities optimized for mobile that can be configured in settings (Figure~\ref{fig:chat}). \textbf{Multimodal} supports text, images, and speech, and responds with text and visualizations, with an optional text-to-speech button. \textbf{Text and Image} mode supports text and images as input and responds with text and visualizations. \textbf{Voice-only} mode is unique as it supports only speech input and responds only in speech. While this enables convenience, it also restricts visualization, planning, and approval, and is designed to be more concise. The orchestrator decomposes the request into a dependency graph of tasks and assigns them to the corresponding agents. Responses are streamed in real-time updates via Server-Sent Events.
+We designed a mobile-first platform that lets users \emph{bring their own AI agents} and control them on the go through text, voice, and images (Figure~\ref{fig:flow}). The architecture is \textbf{agent-agnostic}. An LLM orchestrator breaks down requests, assigns tasks to agents, and waits for them to complete before returning a cohesive result. Multimodality is key in this design. Text is sent via a standard conversational interface that supports asynchronous communication with agents. Voice enables hands-free control while walking or cycling. Images allow you to snap a photo in the environment and send it as context to the agents. Given that these workflows may execute tasks with varying impact and risks, we prioritize having a highly customizable level of control. Certain tasks will be executed completely autonomously, while others may require approval, additional input, or real-time monitoring. [INSERT HOW THIS APP Is evaluated]. Multimodality and control are essential not only for providing the necessary flexibility to assemble custom multi-agent systems but also to enable mobility and easy-to-use interaction.
+
+We envision that mobile control of custom multi-agent systems will be essential in modern human-AI interaction and key to effective management of personal and professional agents. This open-source application is initially targeted at people with a technical background who already use agents in their day-to-day life. Examples may include academics, managing agents for explorative research, summarization, and documentation, software engineers remotely steering teams of long-running coding agents, or quantitative analysts who use agents for trading and financial data analysis. As agents become increasingly capable in more domains and familiar to non-technical users, the design of this application can be expanded to target anyone who utilizes AI.
+
+%% ============================================================
+\section{Methods: System Design and Implementation}
+%% ============================================================
+
+\subsection{Prototype Overview}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.92\textwidth]{flow}
+  \caption{MobileAgents system overview. A user on the go issues a multimodal request (text, voice, or image) from their phone. The LLM Orchestrator decomposes it into a dependency-aware plan and dispatches tasks across the user's personal agent pool (ArXiv, Wikipedia, Proposal, Slack, Semantic Scholar). Results stream back to the mobile client in real time.}
+  \Description{Architecture flow diagram: person labeled User on the go sends text/voice/image to a phone labeled MobileAgents, which forwards a multimodal request to a purple LLM Orchestrator box that fans out to five colored agent boxes, with a streamed results arrow returning to the phone.}
+  \label{fig:flow}
+\end{figure*}
+
+MobileAgents is a fully functional prototype (Figure~\ref{fig:flow}; full architecture in Appendix~\ref{app:architecture}--\ref{app:structure}).
 
 \subsection{Design Rationale}
 
-The \emph{technical investigation}~\cite{Friedman2002, Friedman2017} translated values into design requirements. We drew on Amershi et al.'s~\cite{Amershi2019} 18 HAI guidelines, Shneiderman's~\cite{Shneiderman2020} HCAI framework, and van de Poel's~\cite{vanDePoel2013} value-to-requirement hierarchy. Umbrello and van de Poel~\cite{Umbrello2021} demonstrate that VSD can be systematically mapped onto AI systems by treating values as first-class design constraints; Sadek et al.~\cite{Sadek2024CHI} provide concrete guidelines for integrating VSD into responsible AI toolkits, recommending that value--design mappings be documented and traceable. We followed this approach, mapping each stakeholder value to a concrete design implication and tracing it to specific HAI guidelines:
+To begin, I drew on human-centred AI principles from the lectures (reliability, safety, transparency)~\cite{Shneiderman2020} and looked online for interaction guidelines that emphasise: (a) setting expectations, (b) enabling efficient correction/repair, and (c) communicating uncertainty~\cite{Amershi2019}. I also used Value Sensitive Design (VSD)~\cite{Friedman2002} as inspiration into how to translate stakeholder values into concrete interaction requirements.
 
-\begin{itemize}
-  \item \textbf{V1$\rightarrow$D1:} Black Box mode for speed-oriented users (no plan, no graph, auto-execute). This prioritises Amershi et al.'s G5 (``match relevant social norms'') for users who expect instant results on mobile.
-  \item \textbf{V2$\rightarrow$D2:} Plan Preview and Full Transparency modes with approval gates before irreversible actions. This operationalises G1 (``make clear what the system can do''), G2 (``support efficient correction''), and G11 (``make clear why the system did what it did'')~\cite{Amershi2019}. Jerry et al.~\cite{Jerry2025} argue for \emph{human oversight-by-design}: embedding human judgment throughout the AI pipeline via risk detection and escalation, rather than appending it as a final review step. Our checkpoint gates realise this principle---they are distributed throughout the execution graph, not just at the end. Shneiderman's~\cite{Shneiderman2020} audit trail principle is realised through the live DAG, which provides a visual record of every agent action.
-  \item \textbf{V3$\rightarrow$D3:} Consent-gated multimodality---camera and microphone trigger a privacy dialog on first use explaining that data is sent to OpenAI; consent is revocable. This addresses G16 (``convey the consequences of user actions'')~\cite{Amershi2019} and Shneiderman's safety requirement.
-\end{itemize}
+\textbf{V1: Fast} ``It's a simple task; it should just do it instead of asking for permission.''
 
-\subsection{Persona, Tone, and Agent Customisation}
+\textbf{V2: Control} ``There should be guardrails and a control mechanism for sensitive tasks.''
 
-We designed an AI orchestrator persona (full text in Appendix~\ref{app:backstories}): a concise research librarian that uses uncertainty-aware language (addressing Amershi et al.'s G13: ``mitigate social biases''~\cite{Amershi2019} by avoiding overconfident claims), prefers parallel execution, and never claims authority over institutional policy. Critically, the orchestrator's system prompt includes a user-editable ``constitution'' field---free-text guidelines that are appended at planning time. This lets users shape \emph{how} their personal agent pool is coordinated (e.g., ``always run ArXiv and Semantic Scholar in parallel,'' ``never send Slack messages without showing me a draft first''). The constitution operationalises co-design's core tenets~\cite{Sanders2008}: empowerment (giving users control over decisions that affect them), mutual learning (users discover orchestration possibilities while the system learns user preferences), and democratisation of design (opening up AI coordination rules that are normally developer-only). Sanders and Stappers~\cite{Sanders2008} call this moving users from ``passive consumer'' to ``co-creator.'' It also operationalises Amershi et al.'s G15 (``provide global controls'')~\cite{Amershi2019} and Shneiderman's~\cite{Shneiderman2020} principle that users should be able to set automation boundaries. Each worker agent can be enabled, disabled, inspected, or deleted from the Agents tab, giving users full control over which agents are available for orchestration. Sadek et al.'s~\cite{Sadek2025IJHCI} value-sensitive conversational agent co-design framework demonstrates that co-designing agent values with end users yields more contextually appropriate behaviour; their comprehensive review of co-design methods for conversational agents~\cite{Sadek2023} further recommends embedding value elicitation throughout iterative design cycles rather than treating it as a one-off activity. Our constitution mechanism extends this idea by making value alignment an ongoing, user-driven activity embedded in the runtime system itself. This also embodies VSD's principle of \emph{co-evolution of technology and social structure}~\cite{Friedman2017}: as users write new constitution rules, both the technology's behaviour and the social practices around it evolve together.
+\textbf{V3: Mobility:} ``I should be able to reach my agents hands-free.''
 
-\subsection{Execution Control}
-\label{sec:configs}
+\textbf{V4:}
 
-The three execution control settings are \textbf{Black Box}, \textbf{Plan Preview}, and \textbf{Full Transparency} (Figure~\ref{fig:configs}). Black Box enables the orchestrator and agents to execute tasks autonomously. Plan Preview proposes a plan that requires approval. Full Transparency proposes a plan that requires approval and embeds an execution graph that updates in real time as the multi-agent system executes tasks, providing full visibility into the system's operation. Transparency into agents is available through the agent tab, where users can view each agent, their available tools, and system prompts.
+From these values, I drafted some initial resulting design implications, using methods from VSD~\cite{Friedman2002} and related work~\cite{vanDePoel2013}:
+
+\textbf{D1:} Design a setting giving the agent full autonomy for low-r\textbf{D2:} Propose a plan and ask for confirmation before executing in plan mode; Propose plan and render a real-time execution graph showing active processes (Figure~\ref{fig:configs}).
+
+\textbf{D3:} Support customization of orchestration policy and output stylization (Appendix~\ref{app:backstories}).
+
+\textbf{D4:} Provide the ability to turn agents on and off in the interface (Figure~\ref{fig:ss-agents}).
+
+\textbf{D5:} Support hand-free voice-only mode (Figure~\ref{fig:chat}c).
+
+\textbf{D6:} Support images for quick snaps of environmental context (whiteboards, notes, etc) (Figure~\ref{fig:chat}b).
+
+I used these to begin thinking about the prototype, which I called `Mobile Agents'. We support D1 and D2 via a control setting that includes Blackbox, Plan, and Transparency modes (Figure~\ref{fig:configs}; Table~\ref{tab:transparency}). In. Blackbox gives the system full autonomy to execute tasks. Planning mode constructs a structured plan and asks the user for permission before executing. Transparency mode does everything Plan mode does and provides a real-time graph of execution traces for full visibility into the task. Additional control is implemented through D3 and D4. D3 is implemented through a natural-language constitution provito the Orchestrator agent in the system prompt to guide orchestration behavior and output style. D5 and D6 are exercised through the modality setting. We support text and images, native voice input/output (push-to-talk), and multimodal (speech-to-text, text, and images) (Figure~\ref{fig:chat}). The text input is the baseline interaction with the multi-agent system and supports all control settings, mobile, and visualizations. Images are added to the text and are useful for capturing physical context (e.g., whiteboard, notes) using the device's camera. The voice-only setting enables hands-free use but does not support plan and transparency controls. Multimodal is similar to text and images mode but also supports speech input that is converted to text, which does not limit plan and transparency modes.
 
 \begin{table}[h]
   \caption{The three transparency configurations compared.}
@@ -178,15 +173,9 @@ The three execution control settings are \textbf{Black Box}, \textbf{Plan Previe
   \label{fig:configs}
 \end{figure*}
 
-These configurations follow Shneiderman's~\cite{Shneiderman2020} framework of efficiency and control trade-off. C1 has high autonomy and low human control. C3 has at low automation with high human control. C2 is in between.
-
-\subsection{Agentic Control Settings}
-
-Additional control is given to the user through agentic settings. The Orchestrator takes in a Constitution inspired by Anthropic's Constitutions~\cite{Anthropic2023}. This constitution provides instructions to guide orchestration logic, planning, and response stylization. It is editable from the UI and does not require system updates. Furthermore, individual agents can be turned on or off, allowing users to control which agents are accessible to the orchestrator. This functionality works in tandem with the execution control settings discussed before to enable users to manage risk. For example, a high-risk agent can be deployed with full transparency mode, and a low-risk one can be used effectively in Black Box.
-
 \subsection{Accessibility and Inclusion}
 
-HCAI demands inclusivity across age, language, culture, and ability levels~\cite{Capel2023}. MobileAgents supports English, Chinese, Arabic with full RTL layout, and Bulgarian. It has dark, light, and auto color themes. Icon buttons contain ARIA labels. Users with different abilities and devices can utilize the product through multimodal inputs of text, voice, and images, with neither being a point-of-failure. The design was chosen with personalization in mind and to not impose a single interaction pattern.
+HCAI demands inclusivity across age, language, culture, and ability levels~\cite{Capel2023}. MobileAgents supports English, Chinese, Arabic with full RTL layout, and Bulgarian. It has dark, light, and auto color themes (Figure~\ref{fig:ss-settings}). Icon buttons contain ARIA labels. Users with different abilities and devices can utilize the product through multimodal inputs of text, voice, and images, with neither being a point-of-failure. The design was chosen with personalization in mind and to not impose a single interaction pattern.
 
 %% ============================================================
 \section{Methods: Research Question, Evaluation Methods, and Metrics}
@@ -194,99 +183,197 @@ HCAI demands inclusivity across age, language, culture, and ability levels~\cite
 
 \subsection{Research Question}
 
-\textbf{RQ:} How does the level of transparency in a multi-agent AI orchestrator affect user trust, perceived control, and task efficiency?
+\textbf{RQ1:} Is there an efficiency/control tradeoff between the Blackbox, Plan, and Transparency modes?
+
+\textbf{RQ2:} Does the support of multiple modalities (text, voice, images) improve the mobile-first experience?
+
+\textbf{RQ3:} Are users able to tune the orchestration behavior through the constitution and on/off switches in the agent management tab (Figure~\ref{fig:ss-agents})?
 
 \subsection{Study Design}
 
-We conducted a within-subjects study: each participant used all three configurations in counterbalanced order (Latin square) to control for learning effects. To simulate realistic mobile, on-the-go scenarios, participants completed tasks using different modalities: (T1)~type a text query to find and compare two recent papers on a given topic, (T2)~photograph a printed paper abstract with the camera and ask the system to find related work and draft a proposal, and (T3)~use voice input to dictate a request to summarise results and send them to a Slack channel. These tasks exercise the full multimodal range and span the agent pool (ArXiv, Wikipedia, Proposal, Slack). Tasks were matched in complexity and counterbalanced across configurations.
+The study runs in three sequential phases, each targeting one RQ. All phases use a within-subjects design; order effects are controlled by counterbalancing with a Latin square.
+
+\textbf{Phase 1 --- Transparency modes (RQ1).} Each participant completes the same research task (find and compare two recent papers on an assigned topic) under all three transparency configurations (Table~\ref{tab:transparency})---Blackbox (C1), Plan Preview (C2), and Full Transparency (C3)---in counterbalanced order. The task is held constant so that any difference in time, approval behaviour, or subjective ratings is attributable to the configuration, not the task.
+
+\textbf{Phase 2 --- Modality comparison (RQ2).} Each participant completes a fixed multi-step workflow (find related work and draft a short proposal) using each of the three input modalities in counterbalanced order: (M1)~text only, (M2)~image (photograph a printed abstract), (M3)~voice dictation (Figure~\ref{fig:chat}). All three runs use Plan Preview (C2) as the transparency baseline so that modality is the only variable. This controls for configuration effects identified in Phase 1.
+
+\textbf{Phase 3 --- Agentic customisation (RQ3).} Participants receive an open-ended scenario: ``Configure the system so that it never sends Slack messages without showing you a draft first, and remove any agents you would not want running automatically.'' They are then asked to run a multi-step query and observe whether the system respects their settings. This phase is not counterbalanced; it is a single exploratory session designed to surface whether participants can locate, understand, and apply the constitution editor and agent on/off toggles (Figure~\ref{fig:ss-agents}).
+
+\textbf{Tasks.}
+\begin{itemize}
+  \item \textbf{T1} (Phase 1 \& 2 baseline): Type a text query to find and compare two recent papers on a given topic. Exercises ArXiv and Semantic Scholar agents.
+  \item \textbf{T2} (Phase 2, M2): Photograph a printed paper abstract with the device camera and ask the system to find related work and draft a proposal. Exercises image analysis, ArXiv, Wikipedia, and Proposal agents.
+  \item \textbf{T3} (Phase 2, M3): Use voice input to dictate a request to summarise results and send them to a Slack channel. Exercises voice transcription and the Slack agent with checkpoint approval.
+  \item \textbf{T4} (Phase 3): Edit the orchestrator constitution and toggle at least one agent off, then rerun T1 and verify the change in behaviour.
+\end{itemize}
 
 \subsection{Participants}
 
-We recruited 10 participants (6 male, 4 female; ages 22--28, $M=24.3$) from a university graduate programme. All had experience with LLM-based tools but none had used multi-agent systems. Participation was voluntary.
+We recruited 13 Cambridge students. All had experience with LLM-based tools. Participation was voluntary.
 
 \subsection{Evaluation Methods}
 
-Traditional usability metrics (task completion, click-through rates) are insufficient for AI systems, where evaluation must also capture trust calibration, mental model accuracy, perceived agency, and error tolerance~\cite{Buçinca2020}. We therefore used a mixed-methods approach---essential for capturing the full AI experience---with three methods, all directly involving users:
 
-\begin{enumerate}
-  \item \textbf{Think-aloud sessions} (user-involving, qualitative): Participants verbalised their thoughts while completing tasks. Sessions were screen-recorded and the researcher took timestamped notes on hesitations, errors, and interaction breakdowns. This method surfaces \emph{in-situ} mental model accuracy and trust calibration~\cite{Buçinca2020}---whether users' expectations of what the system will do match what it actually does---which surveys alone cannot capture.
-  \item \textbf{Post-task survey} (user-involving, quantitative): After each configuration, participants rated 7-point Likert items for \emph{trust}, \emph{perceived control}, and \emph{satisfaction} (full items in Appendix~\ref{app:survey}). Trust items draw on Jian et al.'s~\cite{Jian2000} empirically validated Trust in Automation scale, which measures trust as a function of perceived reliability and predictability. Usability items draw on Brooke's~\cite{Brooke1996} System Usability Scale. These constructs are well suited because our research question centres on how transparency mediates trust and control.
-  \item \textbf{Semi-structured interview} (user-involving, qualitative): After all three conditions, a 10-minute interview explored preferences, trust calibration, privacy concerns, and suggestions (questions in Appendix~\ref{app:interview}). Interview data was analysed alongside think-aloud transcripts.
-\end{enumerate}
+In phase 1, participants completed a 7-point Likert survey for  \emph{perceived control} and \emph{satisfaction} after each control setting. In phase 2, they also completed the NASA Task Load Index ~\cite{Hart1988} to test for cognitive load across modalities, and the Single Ease Question~\cite{Sauro2009} for usability. Participants rated the constitution and agent toggles on a 3-item perceived controllability scale. They shared live comments on the user experience as they tried out the application. An interview (questions in Appendix~\ref{app:interview})) explores transparency and modality preferences across RQ1 and RQ2. Additionally, it queries the usability and usefulness of agent controls for RQ3.
+
+
 
 \subsection{Metrics}
 
-\begin{enumerate}
-  \item \textbf{Trust, perceived control, and satisfaction} (Likert, 1--7): from the post-task survey, grounded in Jian et al.'s~\cite{Jian2000} trust dimensions.
-  \item \textbf{Task completion time} (seconds): measured from first input to final system response---an objective efficiency measure to complement subjective ratings.
-  \item \textbf{Qualitative themes}: from Braun and Clarke's~\cite{Braun2012} reflexive thematic analysis of think-aloud transcripts and interview responses. We followed their six-phase process (familiarisation, coding, theme generation, review, definition, write-up) to identify patterns across participants.
-\end{enumerate}
+\textbf{RQ1 --- Efficiency/control tradeoff:}
+\begin{itemize}
+  \item Trust, perceived control, and satisfaction (Likert, 1--7).
+  \item Qualitative opinions on over- or under-informed cases.
+\end{itemize}
+
+\textbf{RQ2 --- Multimodal mobile experience:}
+\begin{itemize}
+  \item NASA-TLX composite score and subscale scores per modality.
+  \item Single Ease Question (SEQ).
+  \item Modality preference between different contexts.
+\end{itemize}
+
+\textbf{RQ3 --- Orchestration tuning:}
+\begin{itemize}
+  \item Task success after customisation: binary measure of whether the system respected the user's constitution rule and agent configuration during T4.
+  \item Perceived controllability scale score (3-item Likert).
+  \item Qualitatively on discoverability, understanding, and ownership.
+\end{itemize}
 
 %% ============================================================
 \section{Results}
 %% ============================================================
-
 \subsection{Quantitative Findings}
 
-Table~\ref{tab:results} summarises survey scores and task times across the three configurations. Given the small sample ($N=10$), we report descriptive statistics rather than inferential tests.
-
 \begin{table}[h]
-  \caption{Mean (SD) survey scores (1--7 Likert) and task completion time (seconds) per configuration.}
+  \caption{Mean (SD) primary survey scores (1--7 Likert) per transparency configuration.}
   \label{tab:results}
   \small
   \begin{tabular}{p{0.22\columnwidth} p{0.17\columnwidth} p{0.17\columnwidth} p{0.25\columnwidth}}
     \toprule
     Metric & C1: Black Box & C2: Plan Preview & C3: Full Transp. \\
     \midrule
-    Trust          & 3.8 (1.2) & 5.6 (0.8) & 6.1 (0.7) \\
-    Control        & 2.4 (1.1) & 5.2 (0.9) & 6.3 (0.6) \\
-    Satisfaction   & 5.1 (1.0) & 5.8 (0.7) & 5.4 (1.1) \\
-    Time (s)       & 68 (14)   & 89 (18)   & 112 (22)  \\
+    Trust                & 4.3 (1.7) & 5.0 (1.5) & 5.8 (1.0) \\
+    Control              & 3.2 (2.1) & 5.4 (1.3) & 5.7 (1.1) \\
+    Satisfaction         & 4.4 (2.3) & 3.9 (1.1) & 5.8 (1.1) \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Trust and control increased monotonically with transparency, consistent with Shneiderman's~\cite{Shneiderman2020} argument that human oversight and automation are not zero-sum. However, satisfaction peaked at C2 (Plan Preview): C3's additional graph detail improved control but introduced cognitive overhead, with three participants describing the live DAG as ``a lot to take in''---a tension Amershi et al.~\cite{Amershi2019} anticipate in G3 (``time services based on context''), suggesting that mobile contexts demand lighter-weight feedback. Task time increased with transparency due to plan inspection and checkpoint approval steps.
 
-\subsection{Qualitative Themes}
+Table~\ref{tab:results} reveals that Trust and Control monotonically increasing from C1 to C3, which aligns with the increased level of human interactivity. In terms of satisfaction, C3 performed best (mean 5.8), and C2 performed worst (3.9), indicating users preferred either full autonomy or a high level of control. We compare the options sing a pairwise Wilcoxon signed-rank test with a Bonferroni correction (Table~\ref{tab:posthoc-rq1}). We do not find any significant differences in trust between any pairs. However, C2 and C3 are significant relative to C1 in terms of control. For satisfaction, only C3 has significant results over C2.
 
-Reflexive thematic analysis of think-aloud and interview data yielded four themes:
 
-\textbf{Theme 1: Intervention trumps observation.} Participants valued the ability to \emph{act}---approving, rejecting, or modifying a plan---more than passively watching execution. One participant noted: ``Seeing the graph is cool, but what actually makes me trust it is that I can stop it before it sends the Slack message.'' This directly validates Amershi et al.'s~\cite{Amershi2019} G2 (``support efficient correction'') and G18 (``support efficient dismissal'')---users trusted the system not because it was accurate, but because they could \emph{intervene}. This also aligns with Parasuraman and Riley's~\cite{Parasuraman1997} observation that trust in automation depends on the user's perceived ability to override it. The finding is particularly important given Pappu et al.'s~\cite{Pappu2025} recent result that unsupervised multi-agent teams \emph{degrade} expert performance by up to 37.6\% through ``integrative compromise''---averaging expert and non-expert agent views rather than appropriately weighting expertise. Human intervention may be essential not merely for trust, but to prevent multi-agent consensus from diluting output quality.
+These results motivate the decision to make transparency mode the default setting for the app. However, all options remain available in the settings, as they appear to offer distinct benefits.
 
-\textbf{Theme 2: Plan Preview as the `sweet spot.'} 7 of 10 participants preferred C2 for everyday use, describing it as ``enough to feel safe without being overwhelming.'' C3 was preferred for high-stakes tasks involving external actions (Slack sends). Hemmer et al.~\cite{Hemmer2023} find that AI delegation improves human task performance and satisfaction through increased self-efficacy---users feel more capable when the system handles subtask allocation. Plan Preview appears to maximise this effect: users experience the self-efficacy of delegation (the system proposes a competent plan) while retaining the agency of approval. This maps onto Shneiderman's~\cite{Shneiderman2020} HCAI framework: users want the \emph{option} of high human control (C3) but default to a middle ground that preserves both speed and oversight. It also suggests transparency should be \emph{adaptive to task risk}---a design direction consistent with Amershi et al.'s~\cite{Amershi2019} G9 (``support efficient invocation''), where the depth of the interface scales with the user's need.
 
-\textbf{Theme 3: Multimodal input essential for mobile, but privacy-gated.} Participants strongly valued voice and camera as \emph{mobile-native} modalities. One noted: ``If I'm walking to a lecture and want to kick off a search, I'm not going to type a paragraph---voice is the only realistic option.'' Image capture was praised for the photographed-abstract task: ``I just pointed my phone at the paper and it figured out what to search for.'' However, 6 of 10 said they would avoid voice or camera ``in a shared office,'' ``on the bus,'' or ``for anything personal.'' The consent dialog was well received (``at least it tells me''), but participants wanted per-session rather than permanent consent. This confirms that multimodal mobile interaction must offer parallel pathways---voice \emph{and} text \emph{and} camera---so users can choose the appropriate modality for their physical and social context.
+\begin{table}[h]
+  \caption{Post-hoc pairwise Wilcoxon signed-rank tests (Bonferroni-corrected, $k=3$) and Cohen's $d$ for primary RQ1 metrics. $^*p_{\mathrm{bon}}<.05$.}
+  \label{tab:posthoc-rq1}
+  \small
+  \begin{tabular}{p{0.18\columnwidth} p{0.10\columnwidth} p{0.08\columnwidth} p{0.12\columnwidth} p{0.08\columnwidth}}
+    \toprule
+    Metric & Pair & $W$ & $p_{\mathrm{bon}}$ & $d$ \\
+    \midrule
+    Trust          & C1-C2    & 16.0   & 0.756 & -0.33 \\
+    Trust          & C1-C3    & 9.5    & 0.120 & -0.69 \\
+    Trust          & C2-C3    & 18.0   & 0.621 & -0.44 \\
+    Control        & C1-C2    & 6.0    & 0.041$^*$ & -0.88 \\
+    Control        & C1-C3    & 3.0    & 0.012$^*$ & -1.03 \\
+    Control        & C2-C3    & 26.5   & 1.000 & -0.16 \\
+    Satisfaction   & C1-C2    & 29.0   & 1.000 & 0.15 \\
+    Satisfaction   & C1-C3    & 10.0   & 0.234 & -0.58 \\
+    Satisfaction   & C2-C3    & 2.0    & 0.012$^*$ & -1.16 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}[h]
+  \caption{Mean (SD) SEQ (1--7), NASA-TLX composite and subscales (1--10), and comfort ratings (1--7) per modality.}
+  \label{tab:results-modality}
+  \small
+  \begin{tabular}{p{0.22\columnwidth} p{0.17\columnwidth} p{0.17\columnwidth} p{0.20\columnwidth}}
+    \toprule
+    Metric & M1: Text & M2: Image & M3: Voice \\
+    \midrule
+    SEQ (ease, 1--7)     & 4.2 (2.0) & 4.5 (2.1) & 5.4 (1.6) \\
+    TLX composite        & 4.2 (0.6) & 4.1 (0.9) & 4.6 (0.6) \\
+    ~~Mental             & 5.5 (2.6) & 5.7 (2.9) & 5.6 (2.6) \\
+    ~~Physical           & 1.8 (0.9) & 1.8 (0.9) & 2.0 (0.8) \\
+    ~~Temporal           & 2.6 (1.4) & 2.8 (1.7) & 5.0 (1.6) \\
+    ~~Performance        & 7.3 (1.5) & 6.6 (1.5) & 5.8 (2.1) \\
+    ~~Effort             & 3.7 (1.9) & 4.2 (2.1) & 5.6 (1.8) \\
+    ~~Frustration        & 4.5 (1.6) & 3.5 (1.5) & 3.4 (2.1) \\
+    Felt natural (1--7)  & 4.2 (1.1) & 4.9 (1.7) & 4.1 (2.0) \\
+    OK in public (1--7)  & 4.0 (1.6) & 3.3 (1.4) & 2.8 (1.3) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\textbf{Theme 4: Uncertainty language builds trust.} Participants noticed and valued the orchestrator's hedged phrasing (``based on available results''). When the system stated results confidently, two participants flagged it as ``suspicious'' and cross-checked. This validates Amershi et al.'s~\cite{Amershi2019} G8 (``scope services when in doubt'') and Shneiderman's~\cite{Shneiderman2020} reliability requirement: calibrated confidence is not a weakness but a trust-building mechanism. Jian et al.'s~\cite{Jian2000} trust-in-automation framework predicts this---trust is highest when the system's expressed confidence matches its actual reliability.
+Table~\ref{tab:results-modality} reports on RQ2. blah blah blah
+
+Table~\ref{tab:results-rq3} reports on RQ3 assessing orchestration customization through the constitution and agent toggles. One-sample Wilcoxon tests against the midpoint show that Contrallability (p = .001), Effectiveness (p = 0.016), and Ownership (p=0.036) rated statistically significantly above neutral. Discoverability (p=0.545) and Adoption(p=0.717) did not differ from neutral. The feature that was most trusted was the live execution graph (seeing agents in real time) and the biggest complaint was the lack of an undo button.
+
+\begin{table}[h]
+  \caption{Mean (SD) customisation items (1--7 Likert), RQ3.}
+  \label{tab:results-rq3}
+  \small
+  \begin{tabular}{p{0.45\columnwidth} p{0.45\columnwidth}}
+    \toprule
+    Item & Mean (SD) \\
+    \midrule
+    Discoverability      & 3.8 (1.6) \\
+    Mental Model         & 4.5 (1.8) \\
+    Effectiveness        & 5.2 (1.4) \\
+    Controllability      & 5.7 (1.0) \\
+    Ownership            & 4.8 (1.1) \\
+    Adoption             & 4.2 (1.5) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+One-sample Wilcoxon tests against the scale midpoint (4) showed that Controllability ($W=0$, $p=.001$), Effectiveness ($W=6$, $p=.016$), and Ownership ($W=9$, $p=.036$) all rated significantly above neutral; Discoverability ($p=.545$) and Adoption ($p=.717$) did not differ from neutral. Controllability (agent on/off) scored highest (5.7 (1.0)), while constitution Effectiveness was lower (5.2 (1.4)), indicating that users could operate the controls but were less certain that edits changed system behaviour as expected. Discoverability (3.8 (1.6)) was the lowest-rated item, reflecting that the constitution editor remained hard to find without guidance. Overall trust in the system was 5.1 (1.4) and adoption intent was 5.0 (2.0). The most trusted feature was \emph{Live execution graph (seeing agents work in real time)}; the most cited friction point was \emph{Lack of undo functionality}.
+
+\subsection{Qualitative Assessment}
+
+Analysis of think-aloud and interviews was grouped into the following:
+
+\textbf{Intervention is better than observation.}
+Participants valued the ability to \emph{act}---approving, rejecting, or modifying a plan---more than passively watching execution. One participant noted: ``Seeing the graph is cool, but what actually makes me trust it is that I can stop it before it sends the Slack message.'' This directly validates Amershi et al.'s~\cite{Amershi2019} G2 (``support efficient correction'') and G18 (``support efficient dismissal''). The quantitative data reflects this: control scores rose sharply from C1 (3.2) to C2 (5.4) (Table~\ref{tab:results}) even though C2 adds only a plan card, not a live graph---suggesting that the \emph{ability to intervene} matters more than execution visibility.
+
+\textbf{High visibility is valued}
+
+While the participants expressed enthusiasm about AI capabilities, the trust in their behavior is still low. Thus, the high level of observability in transparency mode is valued, especially in tasks that involve irreversibile actions like sending out Slack messsages. This is also supported by the quantative assessment in RQ1 (Table~\ref{tab:results}; Table~\ref{tab:posthoc-rq1}).
+
+
+
+\textbf{Theme 3: Multimodal enables mobile}
+Participants strongly valued voice for on-the-go use. but consistently avoided it in shared or public spaces. However, they were hesitant to use it in public spaces and for sensitive tasks. Furthermore, images enable capture of the environment that would not be possible to easily and quickly describe in text. Text remains useful as the backup modality for more complex tasks.
+
+\textbf{Theme 4: Constitution is confusing; agent toggles are not.}
+Users struggled with using the constitution feature because it is difficult to discover and not immediately clear how to use. However, they found the agent toggles simple, easy, and effective to build teams.
 
 \subsection{Sample Interaction Excerpts}
 
-\textbf{Mobile camera + Full Transparency (C3):} A participant photographed a printed paper abstract with their phone camera and said ``find related work and draft a proposal.'' GPT-4.1 vision extracted the topic; the orchestrator produced a 3-step plan across three agents: (1)~ArXiv search, (2)~Wikipedia background, (3)~Proposal generation (depending on 1 and 2). The participant inspected the plan card, said ``that makes sense,'' and approved. The live DAG animated steps 1 and 2 in parallel, then step 3 sequentially. The participant commented: ``I just pointed my phone at it and it figured out the whole workflow. I can see it's doing both searches at once---that's efficient.''
-
-\textbf{Voice + Plan Preview (C2):} A participant used voice input while standing to say ``summarise what we found and send it to the team Slack channel.'' Whisper transcribed the request; the orchestrator planned a 2-step sequence (synthesise $\rightarrow$ Slack send, with a checkpoint). The plan card appeared; the participant tapped approve. When the checkpoint appeared before the Slack send, they said: ``Good---I want to see the message before it goes out.'' After approving, the message was sent and confirmed. This illustrates the mobile voice workflow: hands-free command, quick plan review, and human-in-the-loop approval for external actions.
-
 %% ============================================================
-\section{Discussion}
+\section{Discussion & Future Work}
 %% ============================================================
 
 \subsection{Ethical, Social, and Value-Related Reflection}
 
-\textbf{Automation vs.\ autonomy on mobile.} Toma\v{s}ev et al.~\cite{Tomasev2025} frame AI delegation as involving transfer of not just tasks but \emph{authority, responsibility, and accountability}---requiring clear role definitions and trust-building mechanisms between human and AI participants. The bring-your-own-agents model amplifies this delegation challenge~\cite{Shneiderman2020}: users may register agents with powerful capabilities (sending messages, posting to services) that they control from a small screen while distracted. Black Box mode maximises efficiency (V1) but eliminates user agency (V2)---risky when agents act on the user's behalf across external services. This directly contravenes HCAI's transparency and control principle, which holds that users must be able to understand how decisions are made and intervene when needed~\cite{Capel2023}. Full Transparency restores control but adds time cost that undermines the speed advantage of mobile voice/camera input. Our finding that Plan Preview balances these values suggests that \emph{selective} transparency---showing the plan but not every execution detail---is the pragmatic default for mobile agent control. In VSD terms, this is a \emph{value flow}~\cite{Friedman2017}: a design choice that advances multiple values simultaneously (efficiency \emph{and} control), whereas Black Box creates a \emph{value dam} that blocks control entirely. This connects to HCAI's contextual awareness principle: the right level of transparency depends on the user's environment and task risk, not a universal setting.
 
-\textbf{Privacy and consent in mobile contexts.} Mobile multimodal input intensifies privacy concerns (V3). Users record voice on buses and photograph whiteboards in shared offices---contexts where bystanders may be captured and ambient noise may leak sensitive content. Sending this data to OpenAI raises data governance concerns. Friedman et al.'s~\cite{Friedman2017} VSD method of \emph{informed consent modelling} demands that consent be specific, revocable, and contextually appropriate. Our consent dialog addresses informed consent but does not fully meet this standard: it does not solve data minimisation, since audio is transcribed server-side, meaning raw audio traverses the network. A production system should transcribe on-device or use end-to-end encryption. The agent-agnostic architecture adds a further dimension: if a user registers an agent that connects to a sensitive service (e.g., a CRM or health record), the privacy surface expands beyond what the platform can govern---a concern that VSD's \emph{scalable information dimensions} method~\cite{Friedman2017} is designed to surface, by probing how scale-related factors (data granularity, pervasiveness, number of connected services) impact values differently at different levels of adoption. The tertiary stakeholder (IT) would require per-agent data policies and audit logs that our prototype lacks. Responsible AI principles---anticipation, reflection, inclusion, and accountability~\cite{Sadek2025AIS}---demand that we \emph{anticipate} these risks at design time rather than deferring them to deployment~\cite{Umbrello2021}.
 
-\textbf{Trust calibration and over-reliance.} HCAI frames trust as built over time through transparency, predictability, reliability, and consistency---a function of perceived benevolence, competence, and integrity~\cite{Capel2023}. Higher transparency correlated with higher trust, but \emph{trust calibration}---whether trust matches actual system performance---is the real goal. Two participants in C3 accepted agent outputs without checking sources because ``I could see the whole process, so it must be right.'' This \emph{automation bias}~\cite{Parasuraman1997} is an unintended consequence of transparency: seeing the mechanism can substitute for evaluating the output. Bu\c{c}inca et al.~\cite{Buçinca2020} warn that subjective measures of explainability can be misleading---users may \emph{feel} they understand the system without actually being able to detect errors. Tang et al.'s~\cite{Tang2025} ``Human Tool'' framework offers one promising direction: rather than humans always directing AI, the system can proactively \emph{request} human input when it detects uncertainty---structured schemas define what humans can contribute (capabilities, domain knowledge, decision authority), enabling agents to invoke human participation intelligently. Future designs should pair process visibility with such active engagement mechanisms rather than passive observation.
+\textbf{Automation vs.\ autonomy on mobile.}
 
-\textbf{Inclusivity and access.} Voice input lowered barriers for one participant with a repetitive strain injury, but the English-only Whisper model disadvantaged a non-native speaker whose accent was poorly transcribed. The four-language UI helps, but speech recognition remains an equity gap. Amershi et al.'s~\cite{Amershi2019} G13 (``mitigate social biases'') applies directly: if voice is the primary mobile modality but ASR models perform unevenly across accents, the system systematically disadvantages certain user groups. Costanza-Chock's~\cite{CostanzaChock2020} design justice lens sharpens this: those most harmed by ASR bias---non-native speakers, speakers of under-resourced languages---are precisely the users whose needs should be centred in design, yet they are typically absent from training data and user studies alike. Multimodal systems must offer robust text pathways as a genuine fallback, not just a nominal alternative---van de Poel~\cite{vanDePoel2013} terms this a \emph{design for value} obligation, where inclusivity must be a design constraint rather than an afterthought.
+Our findings surface the difficulty of designing an agentic application that prioritizes both efficiency and control. Users want agents to be autonomous but do not want to give up control. Black Box scores lowest on trust and control. Yet, certain users preferred it for low-stakes queries. This issue is especially critical in mobile settings, as each additional tap undermines the motivation for ambient, on-the-go assistance. The transparency mode received the most trust. However, we recognize that the live graph may create an illusion of control and oversight. Overall, we chose to support all three settings and make switching easy, with transparency mode as the default. Future designs can explore an auto mode that can classify individual prompts into the appropriate control setting.
 
-\textbf{Societal impact and the value alignment problem.} The combination of mobile accessibility and agent-agnostic orchestration lowers the barrier to delegation dramatically: a voice command while walking can trigger a multi-agent workflow that searches, synthesises, and messages on the user's behalf. This frictionlessness risks deskilling---if users habitually delegate without engaging with intermediate results, they may not develop critical synthesis skills. It also risks \emph{action at a distance}: an agent sends a message or posts content while the user is distracted, with consequences they only discover later. The agent-agnostic architecture intensifies the \emph{value alignment problem}: because users register arbitrary agents with arbitrary capabilities, the platform cannot guarantee that agent behaviour aligns with user values at design time. The editable constitution and checkpoint gates are our mitigation, but they shift the burden of alignment onto the user---a tension that responsible AI frameworks flag as a risk of ``ethics washing''~\cite{Sadek2025AIS}. Sadek et al.'s~\cite{Sadek2025AIS} scoping review of responsible AI in practice warns that RAI risks becoming a ``McDonald's-isation'' of ethics: oversaturated with abstract principles but lacking enforceability and situated accountability. Our design attempts to avoid this by making ethical safeguards concrete and actionable (checkpoints, constitution rules) rather than abstract; however, the risk of passive compliance remains if users never edit the constitution or routinely auto-approve checkpoints. Reflective transparency (Plan Preview with mandatory checkpoints for external actions) mitigates this, echoing Yang et al.'s~\cite{Yang2018} framing of human--AI interaction as a relationship that should support growth, not bypass it.
+\textbf{Privacy & Security}
 
-\subsection{Limitations, Future Work, and Conclusion}
+We recognize that a single centralized agentic manager brings risks for data storage and prompt injection from malicious agents. Thus, we release the tool as an open-source solution so that individual users and organizations can self-host on-premises and own all of their data. The current system is vulnerable to adversarial attacks from the integrated agents. In the current version, we recommend bringing only trusted agents. Future work should research the risks and integrate guardrails and safety mechanisms to prevent unintended behavior.
 
-\textbf{Limitations.} The sample ($N=10$) is small and drawn from one university, limiting generalisability. The within-subjects design risks carry-over effects despite counterbalancing. Tasks were simulated (participants did not have real research deadlines), which may inflate satisfaction scores and limit ecological validity. The study was cross-sectional; Yang et al.~\cite{Yang2018} emphasise that human--AI relationships evolve over time, so trust calibration may shift substantially with extended use. Our VSD analysis applied the tripartite framework~\cite{Friedman2002, Friedman2017} but did not employ the full breadth of Friedman et al.'s~\cite{Friedman2017} 17 catalogued VSD methods---we did not use envisioning cards, value scenarios, value sketches, scalable information dimensions, or multi-lifespan timelines to explore long-term and indirect value implications. Sadek and Mougenot~\cite{SadekMougenot2025} identify this as a common challenge in VSD for AI: practitioner interviews reveal that time constraints and the opacity of AI behaviour make systematic value elicitation difficult in practice. The tertiary stakeholder group (IT administrators) was not directly consulted, and our participatory engagement~\cite{Sanders2008} was limited to informal conversations rather than structured co-design workshops---risking what participatory design literature warns against as tokenistic consultation rather than genuine collaboration.
+\textbf{Inclusivity and access.}
 
-\textbf{Future work.} (1)~A longitudinal deployment (diary study) where users register their own agents and use MobileAgents as their daily mobile control surface, to study how trust calibration and transparency preferences evolve over time---critical because, as HCAI research emphasises, human--AI relationships are dynamic, not static~\cite{Capel2023, Yang2018}. (2)~Adaptive transparency that automatically adjusts based on task risk (e.g., auto-elevate to Full Transparency when an agent will perform an external action), operationalising HCAI's contextual awareness principle. (3)~On-device speech transcription and local image analysis to address the mobile privacy gap. (4)~Counterfactual testing~\cite{Buçinca2020} where participants see alternative AI plans and evaluate whether their mental models accurately predict system behaviour. (5)~Participatory co-design workshops~\cite{Sanders2008} with diverse stakeholder groups---including IT administrators and non-native English speakers---using VSD envisioning cards, value scenarios, and multi-lifespan timelines~\cite{Friedman2017} to surface long-term value implications (e.g., how habitual agent delegation reshapes professional practices across generations). (6)~Applying the value-sensitive action-reflection model~\cite{Friedman2017} in iterative design sprints, embedding reflective value prompts into each design cycle to guard against value drift as features accumulate. (7)~Integration with messaging-based agent platforms such as Clawdbot~\cite{Clawdbot2025}, which already reach hundreds of thousands of users via WhatsApp and Telegram but lack plan visibility and approval mechanisms. MobileAgents's transparency layer (plan cards, checkpoint gates, live DAG) could be delivered as rich message cards within these messaging interfaces, bringing human-centred oversight to the channels where users already control their agents---without requiring them to switch to a separate app. (8)~Adopting emerging interoperability standards to fully realise the bring-your-own-agents vision. The Model Context Protocol (MCP)~\cite{MCP2024}, an open standard introduced by Anthropic and now maintained under the Linux Foundation, defines a client--server protocol for connecting AI systems to external tools and data sources; MobileAgents could act as an MCP client, allowing users to point the orchestrator at \emph{any} MCP-compatible tool server---databases, APIs, local file systems---and have it appear as a registered agent capability, with no platform-specific integration required. Google's Agent2Agent (A2A) protocol~\cite{A2A2025} complements this at the agent level: agents advertise their capabilities via JSON ``Agent Cards,'' enabling dynamic discovery across networks. Together, MCP (for tools) and A2A (for agents) would let MobileAgents users bring not only their own agents but their own tool ecosystems, connecting to arbitrary services from their phone while MobileAgents's transparency layer ensures human oversight over what these tools do. (9)~Cross-device continuity, where a plan started via voice on mobile can be reviewed and refined at a desktop.
+Mobile Agents is built around inclusivity and broad access through deep customization. We support multiple modalities, multiple languages, RTL layout, and light/dark themes. However, our design and testing have been limited in scope and size and is not currently representative of the wide range of potential users. Users with lower technical literacy may struggle to utilize our architecture. Certain features like the constitution and bring-your-own agent archiecture is currently only accessible to power users. While we have a tab with documentation, it should be expanded to cover the topics in simpler, more accessible language. We should support easier integration with agents through MCP servers and expand current accessibility coverage.
+
 
 \textbf{Conclusion.} MobileAgents demonstrates that personal AI agents can be made controllable from a mobile device through multimodal input (text, voice, camera) and an agent-agnostic orchestration layer. The bring-your-own-agents architecture means users are not locked into a fixed agent set---they plug in whatever tools matter to them and manage them from their phone. Configurable transparency lets users match oversight to context: Plan Preview for quick mobile use, Full Transparency for high-stakes actions. The ability to \emph{intervene}---not merely observe---drove trust more than visual complexity. Consent-gated multimodality respected privacy in mobile contexts, though speech recognition equity and automation bias remain open challenges. These findings contribute to the design space of mobile, multimodal, user-controllable multi-agent AI systems.
 
@@ -301,19 +388,6 @@ Reflexive thematic analysis of think-aloud and interview data yielded four theme
 %% ============================================================
 \appendix
 %% ============================================================
-
-\section{Architecture Diagram}
-\label{app:architecture}
-
-Figure~\ref{fig:arch} illustrates the end-to-end data flow across the three system layers.
-
-\begin{figure}[h]
-  \centering
-  \fbox{\parbox{0.9\columnwidth}{\centering\vspace{1.5cm}[Insert architecture diagram here]\vspace{1.5cm}}}
-  \caption{MobileAgents system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time.}
-  \Description{Three-layer architecture diagram: React client (ChatView, AgentList, ExecutionGraph), FastAPI server (orchestrator, execution tracker, agent registry, tool functions), and external services (GPT-4.1, Whisper).}
-  \label{fig:arch}
-\end{figure}
 
 %% ============================================================
 \section{Project Structure}
@@ -373,12 +447,8 @@ agentflow/
 \section{System Prompts}
 \label{app:prompts}
 
-This appendix documents every LLM prompt used in the system. All prompts are reproduced verbatim from the source code.
-
 \subsection{Orchestrator Backstory}
 \label{app:orchestrator-backstory}
-
-Injected as the CrewAI agent's \texttt{backstory} parameter. The agent's role is ``Task Orchestrator'' and its goal is ``Analyze user requests and create structured execution plans that delegate work to specialized research agents.'' At runtime, the list of enabled agents and the user-editable constitution are appended dynamically.
 
 {\small
 \begin{verbatim}
@@ -415,8 +485,6 @@ Constitution (user-defined guidelines):
 
 \subsection{Planning Task Prompt}
 \label{app:planning-prompt}
-
-Sent to the orchestrator for every user request. Variables in braces are interpolated at runtime. The optional image analysis and audio transcript blocks are only included when the corresponding modality is present. Conversation history is included to resolve ambiguous references (e.g., ``do it'', ``yes'', ``go ahead'').
 
 {\small
 \begin{verbatim}
@@ -467,8 +535,6 @@ Rules:
 \subsection{Synthesis Prompt}
 \label{app:synthesis-prompt}
 
-Called after all agent steps complete. The system prompt constrains output for mobile readability. The user message aggregates the original request, plan summary, and all step results. Model: GPT-4.1, max tokens: 800.
-
 \textbf{System prompt:}
 
 {\small
@@ -517,8 +583,6 @@ Guidelines:
 \subsection{Image Analysis Prompt}
 \label{app:image-prompt}
 
-Sent to GPT-4.1 vision when the user provides an image. The image is passed as a base64-encoded JPEG in the \texttt{image\_url} content block. Max tokens: 300.
-
 {\small
 \begin{verbatim}
 Analyze this image in the context of a research
@@ -529,15 +593,9 @@ Be concise.
 \end{verbatim}
 }
 
-\subsection{Audio Transcription}
-\label{app:audio}
-
-Audio is recorded via the browser's MediaRecorder API as WebM, base64-encoded, and sent to the server. The server decodes the base64 payload, writes it to a temporary \texttt{.webm} file, and passes it to the OpenAI Whisper API (\texttt{whisper-1} model). The resulting plain-text transcript replaces the user's text message in the planning prompt.
-
 \subsection{Modality Notes}
 \label{app:modality-notes}
 
-A modality-specific note is injected into the planning context based on the input type:
 
 \begin{table}[h]
   \caption{Modality notes injected into the planning prompt.}
@@ -558,8 +616,6 @@ A modality-specific note is injected into the planning context based on the inpu
 \section{Agent Backstories}
 \label{app:backstories}
 
-Each worker agent has a backstory injected as its CrewAI \texttt{backstory} parameter. These define the agent's persona and constrain its behaviour during tool execution.
-
 \textbf{ArXiv Agent:} ``You are an expert research analyst who monitors arXiv daily. You can search for papers by topic, summarize their key findings, and identify trends across recent publications. You excel at distilling complex papers into clear, actionable summaries.''
 
 \textbf{Proposal Agent:} ``You are a seasoned research strategist who has helped write dozens of successful grant proposals and research plans. You understand how to identify research gaps, formulate compelling research questions, and outline rigorous methodologies. You synthesize information from literature into coherent proposals.''
@@ -573,8 +629,6 @@ Each worker agent has a backstory injected as its CrewAI \texttt{backstory} para
 %% ============================================================
 \section{Tool Implementations}
 \label{app:tools}
-
-Table~\ref{tab:tools} lists all tool functions available to agents. Each tool is implemented as a standalone Python function and registered in a per-agent tool map. The orchestrator assigns agents to steps; the execution tracker calls the tool function directly (bypassing CrewAI at execution time) for predictable, streamable results.
 
 \begin{table*}[t]
   \caption{Complete tool registry. Each function is mapped to one or more agents and called directly during execution.}
@@ -597,34 +651,10 @@ Table~\ref{tab:tools} lists all tool functions available to agents. Each tool is
   \end{tabular}
 \end{table*}
 
-\subsection{Dependency-Aware Parameter Resolution}
-
-When a step depends on a previous step's output, the execution tracker performs automatic parameter resolution:
-
-\begin{itemize}
-  \item \textbf{\texttt{arxiv\_summarize}:} If no explicit \texttt{paper\_url} is provided, arXiv URLs are extracted from the parent step's result using the regex \texttt{http://arxiv\.org/abs/[\textbackslash w.]+}.
-  \item \textbf{\texttt{wiki\_summarize}:} Wikipedia titles are extracted from the parent step's Markdown-bold text (\texttt{**Title**}).
-  \item \textbf{\texttt{generate\_proposal} / \texttt{outline\_methodology}:} The step description is used as the topic and all prior results are concatenated as context.
-  \item \textbf{\texttt{slack\_send\_message}:} If the \texttt{text} parameter contains a placeholder, the previous step's result is substituted. The channel defaults to \texttt{\#general}.
-\end{itemize}
-
-Parameter aliases are normalised automatically (e.g., \texttt{message} $\rightarrow$ \texttt{text}, \texttt{recipient} $\rightarrow$ \texttt{channel}, \texttt{doi} $\rightarrow$ \texttt{paper\_id}).
-
-%% ============================================================
-\section{Execution Engine}
-\label{app:execution}
-
-\subsection{Two-Phase Architecture}
-
-\textbf{Phase 1 --- Planning:} The orchestrator (a CrewAI agent backed by GPT-4.1) receives the user's multimodal input and produces a structured \texttt{TaskPlan} with a dependency graph encoded in each step's \texttt{depends\_on} field. A corresponding \texttt{ExecutionGraphState} is generated with typed nodes (input, orchestrator, agent, checkpoint, output) and edges. Node positions are computed by the client using the Dagre layout algorithm.
-
-\textbf{Phase 2 --- Execution:} The execution tracker iterates the plan in topological order. For each step whose dependencies are satisfied, it: (1) activates incoming edges, (2) sets the node to \texttt{running}, (3) calls the tool function directly with resolved parameters, (4) records execution duration, and (5) marks the node as \texttt{completed} or \texttt{failed}. Steps without mutual dependencies execute in the order they become ready. After all steps complete, the tracker calls the synthesis LLM and emits the final result.
-
-The live DAG for a three-step task is shown as Figure~\ref{fig:configs}(d) in the main body: ArXiv search $\rightarrow$ summarise $\rightarrow$ Slack send, with a checkpoint node gating the Slack step.
 
 \subsection{SSE Event Protocol}
 
-Execution updates are streamed from \texttt{POST /api/execute} as Server-Sent Events. Table~\ref{tab:sse} documents the complete event protocol.
+Execution updates are streamed as Server-Sent Events.
 
 \begin{table}[h]
   \caption{SSE event types streamed during execution.}
@@ -644,23 +674,9 @@ Execution updates are streamed from \texttt{POST /api/execute} as Server-Sent Ev
   \end{tabular}
 \end{table}
 
-\subsection{Checkpoint Approval Flow}
-
-When a step has \texttt{requires\_approval = true}, the execution tracker inserts a checkpoint node between the orchestrator and the agent node. Upon reaching the checkpoint:
-
-\begin{enumerate}
-  \item The checkpoint node is set to \texttt{awaiting\_approval}.
-  \item A \texttt{checkpoint\_reached} SSE event is emitted.
-  \item The client displays an approval dialog (approve/reject).
-  \item The user's decision is sent via \texttt{POST /api/approve/\{step\_id\}}.
-  \item If approved, the checkpoint is marked \texttt{approved} and execution continues. If rejected, the step is skipped.
-\end{enumerate}
-
 %% ============================================================
 \section{Data Schemas}
 \label{app:schemas}
-
-All data models are defined as Pydantic \texttt{BaseModel} classes on the server and TypeScript interfaces on the client.
 
 \subsection{Request and Response Models}
 
@@ -787,8 +803,6 @@ All data models are defined as Pydantic \texttt{BaseModel} classes on the server
 \section{Agent Registry Schema}
 \label{app:registry}
 
-Each agent in the persistent registry (\texttt{agents\_config.json}) follows this schema:
-
 {\small
 \begin{verbatim}
 {
@@ -809,67 +823,12 @@ Each agent in the persistent registry (\texttt{agents\_config.json}) follows thi
 \end{verbatim}
 }
 
-The \texttt{isOrchestrator} flag (only \texttt{true} for the orchestrator) prevents it from being disabled or deleted via the UI or API. The \texttt{constitution} field is only used by the orchestrator and is appended to its backstory at planning time. The \texttt{requiresApproval} flag causes a checkpoint node to be inserted in the DAG before the agent's execution step. The \texttt{enabled} flag controls whether the agent appears in the orchestrator's available agent list.
-
-%% ============================================================
-\section{Client State Management}
-\label{app:state}
-
-The client uses a single Zustand store with the following state slices:
-
-\begin{table}[h]
-  \caption{Zustand store state slices.}
-  \label{tab:state}
-  \small
-  \begin{tabular}{p{0.25\columnwidth} p{0.65\columnwidth}}
-    \toprule
-    Slice & Contents \\
-    \midrule
-    Navigation & \texttt{activeTab}: chat $|$ agents $|$ history $|$ guide \\
-    Chat & \texttt{messages}: ChatMessage[], \texttt{isLoading}: boolean \\
-    Planning & \texttt{currentPlan}: TaskPlan $|$ null, \texttt{graphState}: ExecutionGraphState $|$ null, \texttt{isExecuting}: boolean \\
-    Agents & \texttt{agents}: Agent[], \texttt{toggleAgent(id)}, \texttt{updateConstitution(id, text)} \\
-    Settings & \texttt{transparencyLevel}: black\_box $|$ plan\_preview $|$ full\_transparency; \texttt{modalityMode}: multimodal $|$ text\_image $|$ voice\_only; \texttt{themeMode}: dark $|$ light $|$ auto; \texttt{language}: en $|$ ar $|$ zh $|$ bg \\
-    History & \texttt{conversations}: Conversation[], \texttt{currentConversationId}, \texttt{loadConversations()}, \texttt{startNewConversation()}, \texttt{deleteConversation(id)} \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-Key methods:
-\begin{itemize}
-  \item \textbf{\texttt{sendChat(message, imageBase64?, modality?, audioBase64?)}}: Posts to \texttt{/api/chat} and updates the message list and plan/graph state.
-  \item \textbf{\texttt{executePlan()}}: Streams SSE events from \texttt{/api/execute} and delegates each event to \texttt{processSSEEvent()}.
-  \item \textbf{\texttt{processSSEEvent(event)}}: Applies real-time graph mutations (node status, edge status, checkpoint, completion).
-\end{itemize}
-
-All state is persisted to \texttt{localStorage} via a Zustand subscriber on every state change. On page load, the store re-hydrates from the persisted snapshot.
-
-%% ============================================================
-\section{Internationalisation Keys}
-\label{app:i18n}
-
-The UI is fully localised into four languages: English (\texttt{en}), Chinese Simplified (\texttt{zh}), Arabic (\texttt{ar}), and Bulgarian (\texttt{bg}). The translation system uses a \texttt{useT()} hook that returns a function mapping translation keys to localised strings with variable interpolation (e.g., \texttt{t('plan.steps', \{count: '3'\})}). Over 160 keys cover:
-
-\begin{itemize}
-  \item UI chrome: tab labels, settings headers, button labels
-  \item Chat: suggestions, loading states, empty states, markdown rendering
-  \item Agent interface: agent list headers, detail sheet labels, constitution editor
-  \item Task plan: step statuses, approval controls, plan summary
-  \item Execution graph: node labels, legend items, status descriptions
-  \item Privacy: consent dialog text, data handling notices
-  \item Voice: listening, speaking, and thinking state labels
-  \item Authentication: sign in, sign up, error messages
-\end{itemize}
-
-Arabic includes full RTL layout support. The language switcher in settings triggers a re-render of all localised strings and updates the document direction attribute.
 
 %% ============================================================
 \section{CSS Animations and Theming}
 \label{app:css}
 
 \subsection{Theme Variables}
-
-The interface supports Dark, Light, and Auto (system preference) themes via CSS custom properties:
 
 \begin{table}[h]
   \caption{Theme colour tokens (selected).}
@@ -888,19 +847,6 @@ The interface supports Dark, Light, and Auto (system preference) themes via CSS 
   \end{tabular}
 \end{table}
 
-\subsection{Graph Animations}
-
-Three CSS keyframe animations drive the execution graph visualisation:
-
-\begin{itemize}
-  \item \textbf{\texttt{pulse-ring}} (1.5\,s, cubic-bezier) --- Pulsing ring on nodes in the \texttt{running} state. Scales from 1$\times$ to 1.5$\times$ with fading opacity.
-  \item \textbf{\texttt{dash-flow}} (0.6\,s, linear, infinite) --- Animated dashed stroke on \texttt{active} edges, creating a flow effect along the edge path.
-  \item \textbf{\texttt{checkpoint-glow}} (2\,s, ease-in-out, infinite) --- Glowing border on checkpoint nodes in the \texttt{awaiting\_approval} state.
-\end{itemize}
-
-\subsection{Accessibility Styles}
-
-All interactive elements (buttons, inputs, textareas, links) receive a \texttt{focus-visible} outline: 2\,px solid \texttt{\#7c6aef} with a 2\,px offset, ensuring keyboard navigability without affecting mouse/touch interactions.
 
 %% ============================================================
 \section{Authentication and Data Persistence}
@@ -908,7 +854,7 @@ All interactive elements (buttons, inputs, textareas, links) receive a \texttt{f
 
 \subsection{Authentication}
 
-The server uses Supabase for authentication. All API endpoints are protected by a \texttt{get\_current\_user} FastAPI dependency that:
+The server uses Supabase for authentication.
 
 \begin{enumerate}
   \item Extracts the Bearer token from the \texttt{Authorization} header.
@@ -929,17 +875,27 @@ Conversations, messages, execution records, and approval decisions are persisted
   \item \textbf{Approvals:} Create, resolve (approve/reject with optional comment), and query by step ID.
 \end{itemize}
 
-Agent configurations are stored separately in \texttt{agents\_config.json} on the server filesystem.
-
-\subsection{Client-Side Persistence}
-
-As a fallback and for offline access, the client persists the full Zustand store to \texttt{localStorage} on every state change. On page load, the store re-hydrates from the persisted snapshot before fetching fresh data from the server.
-
 %% ============================================================
-\section{Post-Task Survey Items}
+\section{Survey Instrument}
 \label{app:survey}
 
-After each transparency configuration, participants rated the following items on a 7-point Likert scale (1 = Strongly Disagree, 7 = Strongly Agree):
+All Likert items use a 7-point scale (1 = Strongly Disagree, 7 = Strongly Agree) unless otherwise noted.
+
+%% --- S0 ---
+\subsection*{Part 0: Background (before study begins)}
+
+\begin{enumerate}
+  \item Age range. \emph{(18--21 / 22--25 / 26--30 / 31--40 / 40+)}
+  \item Gender. \emph{(Male / Female / Non-binary / Prefer not to say)}
+  \item How often do you use AI assistants (e.g., ChatGPT, Copilot)? \emph{(Daily / Several times a week / Weekly / Monthly / Rarely or Never)}
+  \item Have you used a multi-agent AI system before? \emph{(Yes / No / I'm not sure)}
+  \item Which AI tools do you use regularly? \emph{(Select all: ChatGPT, Copilot, Gemini, Claude, Cursor, Perplexity, Other)}
+\end{enumerate}
+
+%% --- S1 ---
+\subsection*{Part 1: After each transparency condition (C1, C2, C3) --- RQ1}
+
+Completed three times, once per configuration. Items 1--3 are primary metrics; items 4--7 are supplementary.
 
 \begin{enumerate}
   \item I trusted the system's output enough to act on it. \emph{(Trust)}
@@ -949,9 +905,76 @@ After each transparency configuration, participants rated the following items on
   \item It was easy to correct or stop the system when needed. \emph{(Repairability)}
   \item I understood why the system made the decisions it did. \emph{(Explainability)}
   \item I felt comfortable with the information I shared during this task. \emph{(Privacy Comfort)}
+  \item[--] Any comments about this mode? \emph{(open text, optional)}
 \end{enumerate}
 
-Items 1--3 were used as primary metrics. Items 4--7 provided supplementary insight for the qualitative analysis.
+After all three conditions:
+\begin{enumerate}
+  \item[8.] Which transparency mode would you prefer for everyday use? \emph{(C1 Blackbox / C2 Plan Preview / C3 Full Transparency)}
+  \item[9.] Which mode would you prefer for high-stakes tasks (e.g., sending a Slack message on your behalf)? \emph{(C1 / C2 / C3)}
+  \item[10.] Why did you prefer that mode? \emph{(open text, optional)}
+\end{enumerate}
+
+%% --- S2 ---
+\subsection*{Part 2: After each modality condition (M1, M2, M3) --- RQ2}
+
+Completed three times, once per modality (text, image, voice). The NASA-TLX uses a 1--10 scale (Very Low--Very High); Performance is reversed (1 = Perfect, 10 = Failure).
+
+\textbf{Single Ease Question (SEQ):}
+\begin{enumerate}
+  \item Overall, how would you rate the difficulty of this task? \emph{(1 = Very Difficult, 7 = Very Easy)}
+\end{enumerate}
+
+\textbf{NASA Task Load Index~\cite{Hart1988}:}
+\begin{enumerate}
+  \item[2.] Mental Demand --- How much mental and perceptual activity was required? \emph{(1--10)}
+  \item[3.] Physical Demand --- How much physical activity was required? \emph{(1--10)}
+  \item[4.] Temporal Demand --- How much time pressure did you feel? \emph{(1--10)}
+  \item[5.] Performance --- How successful were you in accomplishing the task? \emph{(1 = Perfect, 10 = Failure)}
+  \item[6.] Effort --- How hard did you have to work to accomplish the task? \emph{(1--10)}
+  \item[7.] Frustration --- How irritated, stressed, or annoyed did you feel? \emph{(1--10)}
+\end{enumerate}
+
+\textbf{Modality comfort (7-point Likert):}
+\begin{enumerate}
+  \item[8.] Using this modality felt natural for this type of task. \emph{(Modality Comfort)}
+  \item[9.] I would use this modality in a public or shared space. \emph{(Context Appropriateness)}
+  \item[--] In what situations would you choose or avoid this modality? \emph{(open text, optional)}
+\end{enumerate}
+
+After all three modality conditions:
+\begin{enumerate}
+  \item[10.] Which input modality would you use most often on a mobile device? \emph{(Text / Voice / Image / It depends)}
+  \item[11.] Which modalities felt well-suited to on-the-go use? \emph{(Select all: Text / Voice / Image)}
+  \item[--] Was there a modality that surprised you -- positively or negatively? \emph{(open text, optional)}
+\end{enumerate}
+
+%% --- S3 ---
+\subsection*{Part 3: After the customisation task (Phase 3) --- RQ3}
+
+\begin{enumerate}
+  \item I was able to find the constitution editor without help. \emph{(Discoverability)}
+  \item I understood what the constitution field does. \emph{(Mental Model)}
+  \item Editing the constitution changed the system's behaviour as I expected. \emph{(Effectiveness)}
+  \item The agent on/off toggles were easy to understand and use. \emph{(Controllability)}
+  \item After customising the system, I felt more in control. \emph{(Perceived Ownership)}
+  \item I would use the constitution and agent controls regularly. \emph{(Adoption Intent)}
+  \item[7.] Which type of change did you make to the constitution? \emph{(Constraint / Style / Routing / Did not edit / Other)}
+  \item[--] Describe what you changed and whether the system behaved as expected. \emph{(open text)}
+\end{enumerate}
+
+%% --- S4 ---
+\subsection*{Part 4: Overall post-study feedback}
+
+\begin{enumerate}
+  \item Overall, I would trust this system to act on my behalf on a mobile device. \emph{(Overall Trust)}
+  \item I felt this system respected my privacy. \emph{(Privacy)}
+  \item I would use this application in my day-to-day work. \emph{(Adoption Intent)}
+  \item[4.] Which single feature contributed most to your trust? \emph{(Plan Preview / Checkpoint approval / Live DAG / Agent on/off / Constitution / Multimodal input)}
+  \item[5.] Which single feature caused the most friction or concern? \emph{(Plan approval steps / Live graph overwhelming / Voice risky in shared spaces / Camera awkward / Agent controls hard to find / Constitution unclear)}
+  \item[--] What is the single most important improvement you would make? \emph{(open text)}
+  \item[--] Any other comments or suggestions? \emph{(open text)}
+\end{enumerate}
 
 %% ============================================================
 \section{Semi-Structured Interview Questions}

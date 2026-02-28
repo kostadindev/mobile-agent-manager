@@ -2,96 +2,68 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{Kim2025}
 \citation{Clawdbot2025}
-\citation{SadekMougenot2025}
 \citation{Shneiderman2020}
 \citation{Amershi2019}
-\citation{Kim2025}
-\citation{Capel2023}
-\citation{Friedman2002,Friedman2017}
-\citation{Friedman2017}
-\citation{Friedman2017}
-\citation{Friedman2017}
-\citation{Sanders2008}
-\citation{Friedman2017}
+\citation{Friedman2002}
 \@writefile{toc}{\contentsline {section}{Abstract}{1}{section*.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction: Use Case and Goals}{1}{section.1}\protected@file@percent }
-\citation{Anthropic2023}
-\citation{Friedman2002,Friedman2017}
-\citation{Amershi2019}
-\citation{Shneiderman2020}
-\citation{vanDePoel2013}
-\citation{Umbrello2021}
-\citation{Sadek2024CHI}
-\citation{Amershi2019}
-\citation{Jerry2025}
-\citation{Shneiderman2020}
-\citation{Amershi2019}
-\citation{Amershi2019}
-\citation{Sanders2008}
-\citation{Sanders2008}
-\citation{Amershi2019}
-\citation{Shneiderman2020}
-\citation{Sadek2025IJHCI}
-\citation{Sadek2023}
-\citation{Friedman2017}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Methods: System Design and Implementation}{2}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Prototype Overview}{2}{subsection.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Design Rationale}{2}{subsection.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Persona, Tone, and Agent Customisation}{2}{subsection.2.3}\protected@file@percent }
-\citation{Shneiderman2020}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces MobileAgents system overview. A user on the go issues a multimodal request (text, voice, or image) from their phone. The LLM Orchestrator decomposes it into a dependency-aware plan and dispatches tasks across the user's personal agent pool (ArXiv, Wikipedia, Proposal, Slack, Semantic Scholar). Results stream back to the mobile client in real time.}}{3}{figure.caption.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Methods: System Design and Implementation}{1}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Prototype Overview}{1}{subsection.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces MobileAgents input modes. (a)\nonbreakingspace Multimodal (b)\nonbreakingspace Text + Images. (c)\nonbreakingspace Voice-only}}{2}{figure.caption.5}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:flow}{{1}{3}{MobileAgents system overview. A user on the go issues a multimodal request (text, voice, or image) from their phone. The LLM Orchestrator decomposes it into a dependency-aware plan and dispatches tasks across the user's personal agent pool (ArXiv, Wikipedia, Proposal, Slack, Semantic Scholar). Results stream back to the mobile client in real time}{figure.caption.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Execution Control}{3}{subsection.2.4}\protected@file@percent }
-\newlabel{sec:configs}{{2.4}{3}{Execution Control}{subsection.2.4}{}}
+\newlabel{fig:chat}{{1}{2}{MobileAgents input modes. (a)~Multimodal (b)~Text + Images. (c)~Voice-only}{figure.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces MobileAgents system overview. A user on the go issues a multimodal request (text, voice, or image) from their phone. The LLM Orchestrator decomposes it into a dependency-aware plan and dispatches tasks across the user's personal agent pool (ArXiv, Wikipedia, Proposal, Slack, Semantic Scholar). Results stream back to the mobile client in real time.}}{2}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:flow}{{2}{2}{MobileAgents system overview. A user on the go issues a multimodal request (text, voice, or image) from their phone. The LLM Orchestrator decomposes it into a dependency-aware plan and dispatches tasks across the user's personal agent pool (ArXiv, Wikipedia, Proposal, Slack, Semantic Scholar). Results stream back to the mobile client in real time}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Design Rationale}{2}{subsection.2.2}\protected@file@percent }
+\citation{Friedman2002}
+\citation{vanDePoel2013}
+\citation{Capel2023}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces The three transparency configurations compared.}}{3}{table.caption.7}\protected@file@percent }
 \newlabel{tab:transparency}{{1}{3}{The three transparency configurations compared}{table.caption.7}{}}
-\citation{Capel2023}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces MobileAgents input modes. (a)\nonbreakingspace Multimodal: text, camera, and microphone all active. (b)\nonbreakingspace Text + Images: camera available but voice disabled. (c)\nonbreakingspace Voice-only: full-screen recording interface; responses are played back via TTS. All three modes unify into the same planning prompt.}}{4}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:chat}{{2}{4}{MobileAgents input modes. (a)~Multimodal: text, camera, and microphone all active. (b)~Text + Images: camera available but voice disabled. (c)~Voice-only: full-screen recording interface; responses are played back via TTS. All three modes unify into the same planning prompt}{figure.caption.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces The three transparency configurations and the C3 execution DAG. (a)\nonbreakingspace Black Box: final answer only, no plan or graph. (b)\nonbreakingspace Plan Preview: task plan card with Execute/Cancel before agents run. (c)\nonbreakingspace Full Transparency: plan card plus live DAG. (d)\nonbreakingspace DAG close-up showing orchestrator, agent step nodes, animated edges, and a checkpoint gate before the Slack send step.}}{4}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:configs}{{3}{4}{The three transparency configurations and the C3 execution DAG. (a)~Black Box: final answer only, no plan or graph. (b)~Plan Preview: task plan card with Execute/Cancel before agents run. (c)~Full Transparency: plan card plus live DAG. (d)~DAG close-up showing orchestrator, agent step nodes, animated edges, and a checkpoint gate before the Slack send step}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Accessibility and Inclusion}{4}{subsection.2.5}\protected@file@percent }
-\citation{Buçinca2020}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Accessibility and Inclusion}{3}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Methods: Research Question, Evaluation Methods, and Metrics}{3}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Research Question}{3}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Study Design}{3}{subsection.3.2}\protected@file@percent }
 \citation{Buçinca2020}
 \citation{Jian2000}
-\citation{Brooke1996}
-\citation{Jian2000}
+\citation{Hart1988}
+\citation{Sauro2009}
+\citation{Buçinca2020}
 \citation{Braun2012}
-\citation{Shneiderman2020}
-\citation{Amershi2019}
-\citation{Amershi2019}
-\citation{Parasuraman1997}
-\citation{Pappu2025}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Methods: Research Question, Evaluation Methods, and Metrics}{5}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Research Question}{5}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Study Design}{5}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Participants}{5}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Evaluation Methods}{5}{subsection.3.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces The three transparency configurations and the C3 graph. (a)\nonbreakingspace Black Box (b)\nonbreakingspace Plan Preview (c)\nonbreakingspace Full Transparency (d)\nonbreakingspace Graph Close-up of Full Transparency}}{4}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:configs}{{3}{4}{The three transparency configurations and the C3 graph. (a)~Black Box (b)~Plan Preview (c)~Full Transparency (d)~Graph Close-up of Full Transparency}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Participants}{4}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Evaluation Methods}{4}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Evaluation methods by research question.}}{4}{table.caption.9}\protected@file@percent }
+\newlabel{tab:methods-rq}{{2}{4}{Evaluation methods by research question}{table.caption.9}{}}
+\citation{Jian2000}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Metrics}{5}{subsection.3.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {4}Results}{5}{section.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Quantitative Findings}{5}{subsection.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Mean (SD) survey scores (1--7 Likert) and task completion time (seconds) per configuration.}}{5}{table.caption.9}\protected@file@percent }
-\newlabel{tab:results}{{2}{5}{Mean (SD) survey scores (1--7 Likert) and task completion time (seconds) per configuration}{table.caption.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Qualitative Themes}{5}{subsection.4.2}\protected@file@percent }
-\citation{Hemmer2023}
-\citation{Shneiderman2020}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Mean (SD) primary survey scores (1--7 Likert) per transparency configuration.}}{5}{table.caption.10}\protected@file@percent }
+\newlabel{tab:results}{{3}{5}{Mean (SD) primary survey scores (1--7 Likert) per transparency configuration}{table.caption.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Mean (SD) supplementary survey scores (1--7 Likert) per transparency configuration.}}{5}{table.caption.11}\protected@file@percent }
+\newlabel{tab:results-supp}{{4}{5}{Mean (SD) supplementary survey scores (1--7 Likert) per transparency configuration}{table.caption.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Post-hoc pairwise Wilcoxon signed-rank tests (Bonferroni-corrected, $k=3$) and Cohen's $d$ for primary RQ1 metrics. $^*p_{\mathrm  {bon}}<.05$.}}{5}{table.caption.12}\protected@file@percent }
+\newlabel{tab:posthoc-rq1}{{5}{5}{Post-hoc pairwise Wilcoxon signed-rank tests (Bonferroni-corrected, $k=3$) and Cohen's $d$ for primary RQ1 metrics. $^*p_{\mathrm {bon}}<.05$}{table.caption.12}{}}
 \citation{Amershi2019}
-\citation{Amershi2019}
 \citation{Shneiderman2020}
-\citation{Jian2000}
 \citation{Tomasev2025}
 \citation{Shneiderman2020}
 \citation{Capel2023}
 \citation{Friedman2017}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Mean (SD) SEQ (1--7), NASA-TLX composite and subscales (1--10), and comfort ratings (1--7) per modality.}}{6}{table.caption.13}\protected@file@percent }
+\newlabel{tab:results-modality}{{6}{6}{Mean (SD) SEQ (1--7), NASA-TLX composite and subscales (1--10), and comfort ratings (1--7) per modality}{table.caption.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Mean (SD) customisation items (1--7 Likert), RQ3.}}{6}{table.caption.14}\protected@file@percent }
+\newlabel{tab:results-rq3}{{7}{6}{Mean (SD) customisation items (1--7 Likert), RQ3}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Qualitative Themes}{6}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Sample Interaction Excerpts}{6}{subsection.4.3}\protected@file@percent }
 \citation{Friedman2017}
 \citation{Friedman2017}
 \citation{Sadek2025AIS}
 \citation{Umbrello2021}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Sample Interaction Excerpts}{6}{subsection.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion}{6}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Ethical, Social, and Value-Related Reflection}{6}{subsection.5.1}\protected@file@percent }
 \citation{Capel2023}
 \citation{Parasuraman1997}
 \citation{Buçinca2020}
@@ -107,6 +79,8 @@
 \citation{Friedman2017}
 \citation{SadekMougenot2025}
 \citation{Sanders2008}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion}{7}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Ethical, Social, and Value-Related Reflection}{7}{subsection.5.1}\protected@file@percent }
 \citation{Capel2023,Yang2018}
 \citation{Buçinca2020}
 \citation{Sanders2008}
@@ -115,7 +89,6 @@
 \citation{Clawdbot2025}
 \citation{MCP2024}
 \citation{A2A2025}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Limitations, Future Work, and Conclusion}{7}{subsection.5.2}\protected@file@percent }
 \bibstyle{ACM-Reference-Format}
 \bibdata{references}
 \bibcite{Amershi2019}{{1}{2019}{{Amershi et~al\mbox  {.}}}{{}}}
@@ -131,6 +104,8 @@
 \bibcite{Jian2000}{{11}{2000}{{Jian et~al\mbox  {.}}}{{}}}
 \bibcite{Kim2025}{{12}{2025}{{Kim et~al\mbox  {.}}}{{}}}
 \bibcite{Pappu2025}{{13}{2025}{{Pappu et~al\mbox  {.}}}{{}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Limitations, Future Work, and Conclusion}{8}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{8}{section*.16}\protected@file@percent }
 \bibcite{Parasuraman1997}{{14}{1997}{{Parasuraman and Riley}}{{}}}
 \bibcite{Sadek2023}{{15}{2023}{{Sadek et~al\mbox  {.}}}{{}}}
 \bibcite{Sadek2025IJHCI}{{16}{2025a}{{Sadek et~al\mbox  {.}}}{{}}}
@@ -145,31 +120,30 @@
 \bibcite{vanDePoel2013}{{25}{2013}{{van~de Poel}}{{}}}
 \bibcite{Yang2018}{{26}{2018}{{Yang et~al\mbox  {.}}}{{}}}
 \bibcite{Yang2019}{{27}{2019}{{Yang et~al\mbox  {.}}}{{}}}
-\@writefile{toc}{\contentsline {section}{References}{8}{section*.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {A}Architecture Diagram}{8}{appendix.A}\protected@file@percent }
-\newlabel{app:architecture}{{A}{8}{Architecture Diagram}{appendix.A}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}Project Structure}{8}{appendix.B}\protected@file@percent }
-\newlabel{app:structure}{{B}{8}{Project Structure}{appendix.B}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces MobileAgents system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time.}}{9}{figure.caption.12}\protected@file@percent }
-\newlabel{fig:arch}{{4}{9}{MobileAgents system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Architecture Diagram}{9}{appendix.A}\protected@file@percent }
+\newlabel{app:architecture}{{A}{9}{Architecture Diagram}{appendix.A}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces MobileAgents system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time.}}{9}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:arch}{{4}{9}{MobileAgents system architecture. The mobile React client communicates with the FastAPI server over REST and SSE. The server delegates planning to a CrewAI orchestrator and streams execution updates back to the client in real time}{figure.caption.17}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Project Structure}{9}{appendix.B}\protected@file@percent }
+\newlabel{app:structure}{{B}{9}{Project Structure}{appendix.B}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {C}System Prompts}{9}{appendix.C}\protected@file@percent }
 \newlabel{app:prompts}{{C}{9}{System Prompts}{appendix.C}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Orchestrator Backstory}{9}{subsection.C.1}\protected@file@percent }
 \newlabel{app:orchestrator-backstory}{{C.1}{9}{Orchestrator Backstory}{subsection.C.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Planning Task Prompt}{9}{subsection.C.2}\protected@file@percent }
-\newlabel{app:planning-prompt}{{C.2}{9}{Planning Task Prompt}{subsection.C.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Planning Task Prompt}{10}{subsection.C.2}\protected@file@percent }
+\newlabel{app:planning-prompt}{{C.2}{10}{Planning Task Prompt}{subsection.C.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Synthesis Prompt}{10}{subsection.C.3}\protected@file@percent }
 \newlabel{app:synthesis-prompt}{{C.3}{10}{Synthesis Prompt}{subsection.C.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {C.4}Image Analysis Prompt}{10}{subsection.C.4}\protected@file@percent }
 \newlabel{app:image-prompt}{{C.4}{10}{Image Analysis Prompt}{subsection.C.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.5}Audio Transcription}{10}{subsection.C.5}\protected@file@percent }
-\newlabel{app:audio}{{C.5}{10}{Audio Transcription}{subsection.C.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.6}Modality Notes}{10}{subsection.C.6}\protected@file@percent }
-\newlabel{app:modality-notes}{{C.6}{10}{Modality Notes}{subsection.C.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Modality notes injected into the planning prompt.}}{10}{table.caption.13}\protected@file@percent }
-\newlabel{tab:modality-notes}{{3}{10}{Modality notes injected into the planning prompt}{table.caption.13}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D}Agent Backstories}{10}{appendix.D}\protected@file@percent }
-\newlabel{app:backstories}{{D}{10}{Agent Backstories}{appendix.D}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.5}Audio Transcription}{11}{subsection.C.5}\protected@file@percent }
+\newlabel{app:audio}{{C.5}{11}{Audio Transcription}{subsection.C.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.6}Modality Notes}{11}{subsection.C.6}\protected@file@percent }
+\newlabel{app:modality-notes}{{C.6}{11}{Modality Notes}{subsection.C.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Modality notes injected into the planning prompt.}}{11}{table.caption.18}\protected@file@percent }
+\newlabel{tab:modality-notes}{{8}{11}{Modality notes injected into the planning prompt}{table.caption.18}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Agent Backstories}{11}{appendix.D}\protected@file@percent }
+\newlabel{app:backstories}{{D}{11}{Agent Backstories}{appendix.D}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {E}Tool Implementations}{11}{appendix.E}\protected@file@percent }
 \newlabel{app:tools}{{E}{11}{Tool Implementations}{appendix.E}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {E.1}Dependency-Aware Parameter Resolution}{11}{subsection.E.1}\protected@file@percent }
@@ -178,33 +152,38 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {F.1}Two-Phase Architecture}{11}{subsection.F.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {F.2}SSE Event Protocol}{11}{subsection.F.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {F.3}Checkpoint Approval Flow}{11}{subsection.F.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {G}Data Schemas}{11}{appendix.G}\protected@file@percent }
-\newlabel{app:schemas}{{G}{11}{Data Schemas}{appendix.G}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}Request and Response Models}{11}{subsection.G.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {G.2}Task Plan Models}{11}{subsection.G.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Complete tool registry. Each function is mapped to one or more agents and called directly during execution.}}{12}{table.caption.14}\protected@file@percent }
-\newlabel{tab:tools}{{4}{12}{Complete tool registry. Each function is mapped to one or more agents and called directly during execution}{table.caption.14}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces SSE event types streamed during execution.}}{12}{table.caption.15}\protected@file@percent }
-\newlabel{tab:sse}{{5}{12}{SSE event types streamed during execution}{table.caption.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Complete tool registry. Each function is mapped to one or more agents and called directly during execution.}}{12}{table.caption.19}\protected@file@percent }
+\newlabel{tab:tools}{{9}{12}{Complete tool registry. Each function is mapped to one or more agents and called directly during execution}{table.caption.19}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces SSE event types streamed during execution.}}{12}{table.caption.20}\protected@file@percent }
+\newlabel{tab:sse}{{10}{12}{SSE event types streamed during execution}{table.caption.20}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Data Schemas}{12}{appendix.G}\protected@file@percent }
+\newlabel{app:schemas}{{G}{12}{Data Schemas}{appendix.G}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}Request and Response Models}{12}{subsection.G.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.2}Task Plan Models}{12}{subsection.G.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {G.3}Execution Graph Models}{12}{subsection.G.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {H}Agent Registry Schema}{12}{appendix.H}\protected@file@percent }
-\newlabel{app:registry}{{H}{12}{Agent Registry Schema}{appendix.H}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {H}Agent Registry Schema}{13}{appendix.H}\protected@file@percent }
+\newlabel{app:registry}{{H}{13}{Agent Registry Schema}{appendix.H}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Client State Management}{13}{appendix.I}\protected@file@percent }
 \newlabel{app:state}{{I}{13}{Client State Management}{appendix.I}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Zustand store state slices.}}{13}{table.caption.16}\protected@file@percent }
-\newlabel{tab:state}{{6}{13}{Zustand store state slices}{table.caption.16}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Zustand store state slices.}}{13}{table.caption.21}\protected@file@percent }
+\newlabel{tab:state}{{11}{13}{Zustand store state slices}{table.caption.21}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {J}Internationalisation Keys}{13}{appendix.J}\protected@file@percent }
 \newlabel{app:i18n}{{J}{13}{Internationalisation Keys}{appendix.J}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {K}CSS Animations and Theming}{13}{appendix.K}\protected@file@percent }
-\newlabel{app:css}{{K}{13}{CSS Animations and Theming}{appendix.K}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {K.1}Theme Variables}{13}{subsection.K.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Theme colour tokens (selected).}}{13}{table.caption.17}\protected@file@percent }
-\newlabel{tab:theme}{{7}{13}{Theme colour tokens (selected)}{table.caption.17}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {K.2}Graph Animations}{13}{subsection.K.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {K.3}Accessibility Styles}{13}{subsection.K.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {L}Authentication and Data Persistence}{13}{appendix.L}\protected@file@percent }
-\newlabel{app:auth}{{L}{13}{Authentication and Data Persistence}{appendix.L}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {L.1}Authentication}{13}{subsection.L.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {K}CSS Animations and Theming}{14}{appendix.K}\protected@file@percent }
+\newlabel{app:css}{{K}{14}{CSS Animations and Theming}{appendix.K}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {K.1}Theme Variables}{14}{subsection.K.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Theme colour tokens (selected).}}{14}{table.caption.22}\protected@file@percent }
+\newlabel{tab:theme}{{12}{14}{Theme colour tokens (selected)}{table.caption.22}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {K.2}Graph Animations}{14}{subsection.K.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {K.3}Accessibility Styles}{14}{subsection.K.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {L}Authentication and Data Persistence}{14}{appendix.L}\protected@file@percent }
+\newlabel{app:auth}{{L}{14}{Authentication and Data Persistence}{appendix.L}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {L.1}Authentication}{14}{subsection.L.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {L.2}Server-Side Persistence}{14}{subsection.L.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {L.3}Client-Side Persistence}{14}{subsection.L.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {M}Survey Instrument}{14}{appendix.M}\protected@file@percent }
+\newlabel{app:survey}{{M}{14}{Survey Instrument}{appendix.M}{}}
+\citation{Hart1988}
 \newlabel{tocindent-1}{0pt}
 \newlabel{tocindent0}{0pt}
 \newlabel{tocindent1}{7.551pt}
@@ -212,19 +191,15 @@
 \newlabel{tocindent3}{0pt}
 \newlabel{tocindent4}{0pt}
 \newlabel{tocindent5}{0pt}
-\@writefile{toc}{\contentsline {subsection}{\numberline {L.2}Server-Side Persistence}{14}{subsection.L.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {L.3}Client-Side Persistence}{14}{subsection.L.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {M}Post-Task Survey Items}{14}{appendix.M}\protected@file@percent }
-\newlabel{app:survey}{{M}{14}{Post-Task Survey Items}{appendix.M}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {N}Semi-Structured Interview Questions}{14}{appendix.N}\protected@file@percent }
-\newlabel{app:interview}{{N}{14}{Semi-Structured Interview Questions}{appendix.N}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {O}Interface Screenshots}{14}{appendix.O}\protected@file@percent }
-\newlabel{app:screenshots}{{O}{14}{Interface Screenshots}{appendix.O}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Agent management screens. (a)\nonbreakingspace The Agents tab lists the orchestrator (always active) and all registered worker agents with per-agent enable/disable toggles. (b)\nonbreakingspace Tapping the orchestrator opens its detail sheet, showing goal, tools, system prompt, and the editable constitution field. (c)\nonbreakingspace A worker agent card shows its goal, tool names, and full system prompt backstory.}}{15}{figure.caption.18}\protected@file@percent }
-\newlabel{fig:ss-agents}{{5}{15}{Agent management screens. (a)~The Agents tab lists the orchestrator (always active) and all registered worker agents with per-agent enable/disable toggles. (b)~Tapping the orchestrator opens its detail sheet, showing goal, tools, system prompt, and the editable constitution field. (c)~A worker agent card shows its goal, tool names, and full system prompt backstory}{figure.caption.18}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Settings and localisation screens. (a)\nonbreakingspace Settings exposes all three transparency modes, input modes (Multimodal / Text+Images / Voice Only), theme (Dark/Light/Auto), and language (EN/AR/ZH/BG). (b)\nonbreakingspace Bulgarian localisation: the full UI---including navigation labels and suggested queries---renders in Bulgarian with full RTL support for Arabic (not shown).}}{15}{figure.caption.19}\protected@file@percent }
-\newlabel{fig:ss-settings}{{6}{15}{Settings and localisation screens. (a)~Settings exposes all three transparency modes, input modes (Multimodal / Text+Images / Voice Only), theme (Dark/Light/Auto), and language (EN/AR/ZH/BG). (b)~Bulgarian localisation: the full UI---including navigation labels and suggested queries---renders in Bulgarian with full RTL support for Arabic (not shown)}{figure.caption.19}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Slack integration and in-app documentation. (a)\nonbreakingspace Result of a Slack send step after checkpoint approval: two arXiv paper summaries posted to \#general by the agentflow bot. (b)\nonbreakingspace The Docs tab provides an in-app guide covering input modes, transparency modes, the agents tab, and execution graph; it is available without leaving the app.}}{16}{figure.caption.20}\protected@file@percent }
-\newlabel{fig:ss-docs}{{7}{16}{Slack integration and in-app documentation. (a)~Result of a Slack send step after checkpoint approval: two arXiv paper summaries posted to \#general by the agentflow bot. (b)~The Docs tab provides an in-app guide covering input modes, transparency modes, the agents tab, and execution graph; it is available without leaving the app}{figure.caption.20}{}}
-\newlabel{TotPages}{{16}{16}{}{page.16}{}}
-\gdef \@abspage@last{16}
+\@writefile{toc}{\contentsline {section}{\numberline {N}Semi-Structured Interview Questions}{15}{appendix.N}\protected@file@percent }
+\newlabel{app:interview}{{N}{15}{Semi-Structured Interview Questions}{appendix.N}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {O}Interface Screenshots}{15}{appendix.O}\protected@file@percent }
+\newlabel{app:screenshots}{{O}{15}{Interface Screenshots}{appendix.O}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Agent management screens. (a)\nonbreakingspace The Agents tab lists the orchestrator (always active) and all registered worker agents with per-agent enable/disable toggles. (b)\nonbreakingspace Tapping the orchestrator opens its detail sheet, showing goal, tools, system prompt, and the editable constitution field. (c)\nonbreakingspace A worker agent card shows its goal, tool names, and full system prompt backstory.}}{16}{figure.caption.28}\protected@file@percent }
+\newlabel{fig:ss-agents}{{5}{16}{Agent management screens. (a)~The Agents tab lists the orchestrator (always active) and all registered worker agents with per-agent enable/disable toggles. (b)~Tapping the orchestrator opens its detail sheet, showing goal, tools, system prompt, and the editable constitution field. (c)~A worker agent card shows its goal, tool names, and full system prompt backstory}{figure.caption.28}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Settings and localisation screens. (a)\nonbreakingspace Settings exposes all three transparency modes, input modes (Multimodal / Text+Images / Voice Only), theme (Dark/Light/Auto), and language (EN/AR/ZH/BG). (b)\nonbreakingspace Bulgarian localisation: the full UI---including navigation labels and suggested queries---renders in Bulgarian with full RTL support for Arabic (not shown).}}{16}{figure.caption.29}\protected@file@percent }
+\newlabel{fig:ss-settings}{{6}{16}{Settings and localisation screens. (a)~Settings exposes all three transparency modes, input modes (Multimodal / Text+Images / Voice Only), theme (Dark/Light/Auto), and language (EN/AR/ZH/BG). (b)~Bulgarian localisation: the full UI---including navigation labels and suggested queries---renders in Bulgarian with full RTL support for Arabic (not shown)}{figure.caption.29}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Slack integration and in-app documentation. (a)\nonbreakingspace Result of a Slack send step after checkpoint approval: two arXiv paper summaries posted to \#general by the agentflow bot. (b)\nonbreakingspace The Docs tab provides an in-app guide covering input modes, transparency modes, the agents tab, and execution graph; it is available without leaving the app.}}{17}{figure.caption.30}\protected@file@percent }
+\newlabel{fig:ss-docs}{{7}{17}{Slack integration and in-app documentation. (a)~Result of a Slack send step after checkpoint approval: two arXiv paper summaries posted to \#general by the agentflow bot. (b)~The Docs tab provides an in-app guide covering input modes, transparency modes, the agents tab, and execution graph; it is available without leaving the app}{figure.caption.30}{}}
+\newlabel{TotPages}{{17}{17}{}{page.17}{}}
+\gdef \@abspage@last{17}
