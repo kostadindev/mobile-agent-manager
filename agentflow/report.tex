@@ -687,19 +687,19 @@ area.
   \caption{Complete tool registry. Each function is mapped to one or more agents and called directly during execution.}
   \label{tab:tools}
   \small
-  \begin{tabular}{p{0.14\textwidth} p{0.08\textwidth} p{0.2\textwidth} p{0.5\textwidth}}
+  \begin{tabular}{p{0.18\textwidth} p{0.12\textwidth} p{0.6\textwidth}}
     \toprule
-    Function & Agent & Parameters & Behaviour \\
+    Function & Agent & Parameters \\
     \midrule
-    \texttt{arxiv\_search} & ArXiv & \texttt{query}: str, \texttt{max\_results}: int (default 5) & Queries the arXiv API sorted by submission date (descending). Returns titles, authors, URLs, and truncated abstracts (300 chars). Timeout: 15\,s. \\
-    \texttt{arxiv\_summarize} & ArXiv & \texttt{paper\_url}: str & Fetches a single paper by arXiv ID. Returns title, authors, categories, and full abstract. \\
-    \texttt{generate\_proposal} & Proposal & \texttt{topic}: str, \texttt{context}: str & Generates a Markdown research proposal with sections: Introduction, Research Questions, Methodology, Expected Contributions, Timeline. Context from prior steps is incorporated. \\
-    \texttt{outline\_methodology} & Proposal & \texttt{approach}: str, \texttt{domain}: str & Generates a methodology section with Data Collection, Approach Details, Evaluation Metrics, and Reproducibility. \\
-    \texttt{wiki\_search} & Wikipedia & \texttt{query}: str & Searches the Wikipedia API; returns up to 5 results with snippets. User-Agent: \texttt{MobileAgents/1.0}. Timeout: 10\,s. \\
-    \texttt{wiki\_summarize} & Wikipedia & \texttt{title}: str & Fetches the Wikipedia REST API summary for a page. Returns title, URL, and extract. \\
-    \texttt{slack\_send\_message} & Slack & \texttt{channel}: str, \texttt{text}: str & POSTs to the Slack API with a Bearer token (\texttt{SLACK\_BOT\_TOKEN}). Returns confirmation or error. Requires checkpoint approval. Timeout: 10\,s. \\
-    \texttt{semantic\_scholar\_search} & Sem.\ Scholar & \texttt{query}: str, \texttt{max\_results}: int (default 5) & Queries the Semantic Scholar API. Returns title, year, citation count, influential citation count, authors, URL, and abstract. Timeout: 15\,s. \\
-    \texttt{semantic\_scholar\_cite} & Sem.\ Scholar & \texttt{paper\_id}: str & Fetches citation details for a paper by Semantic Scholar ID, DOI, or \texttt{ARXIV:<id>}. Returns citation count, influential citation count, reference count, authors. Handles 404 gracefully. Timeout: 15\,s. \\
+    \texttt{arxiv\_search} & ArXiv & \texttt{query}: str, \texttt{max\_results}: int (default 5) \\
+    \texttt{arxiv\_summarize} & ArXiv & \texttt{paper\_url}: str \\
+    \texttt{generate\_proposal} & Proposal & \texttt{topic}: str, \texttt{context}: str \\
+    \texttt{outline\_methodology} & Proposal & \texttt{approach}: str, \texttt{domain}: str \\
+    \texttt{wiki\_search} & Wikipedia & \texttt{query}: str \\
+    \texttt{wiki\_summarize} & Wikipedia & \texttt{title}: str \\
+    \texttt{slack\_send\_message} & Slack & \texttt{channel}: str, \texttt{text}: str \\
+    \texttt{semantic\_scholar\_search} & Sem.\ Scholar & \texttt{query}: str, \texttt{max\_results}: int (default 5) \\
+    \texttt{semantic\_scholar\_cite} & Sem.\ Scholar & \texttt{paper\_id}: str \\
     \bottomrule
   \end{tabular}
 \end{table*}
