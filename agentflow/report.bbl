@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{27}
+\begin{thebibliography}{7}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -53,41 +53,6 @@
 \href{https://doi.org/10.1145/3290605.3300233}{doi:\nolinkurl{10.1145/3290605.3300233}}
 
 
-\bibitem[Braun and Clarke(2012)]%
-        {Braun2012}
-\bibfield{author}{\bibinfo{person}{Virginia Braun} {and}
-  \bibinfo{person}{Victoria Clarke}.} \bibinfo{year}{2012}\natexlab{}.
-\newblock \showarticletitle{Thematic Analysis}.
-\newblock \bibinfo{journal}{\emph{APA Handbook of Research Methods in
-  Psychology}}  \bibinfo{volume}{2} (\bibinfo{year}{2012}),
-  \bibinfo{pages}{57--71}.
-\newblock
-
-
-\bibitem[Brooke(1996)]%
-        {Brooke1996}
-\bibfield{author}{\bibinfo{person}{John Brooke}.}
-  \bibinfo{year}{1996}\natexlab{}.
-\newblock \showarticletitle{{SUS}: A `Quick and Dirty' Usability Scale}.
-\newblock \bibinfo{journal}{\emph{Usability Evaluation in Industry}}
-  (\bibinfo{year}{1996}), \bibinfo{pages}{189--194}.
-\newblock
-
-
-\bibitem[Bu\c{c}inca et~al\mbox{.}(2020)]%
-        {Buçinca2020}
-\bibfield{author}{\bibinfo{person}{Zana Bu\c{c}inca}, \bibinfo{person}{Phoebe
-  Lin}, \bibinfo{person}{Krzysztof~Z. Gajos}, {and} \bibinfo{person}{Elena~L.
-  Glassman}.} \bibinfo{year}{2020}\natexlab{}.
-\newblock \showarticletitle{Proxy Tasks and Subjective Measures Can Be
-  Misleading in Evaluating Explainable {AI} Systems}. In
-  \bibinfo{booktitle}{\emph{Proceedings of the 25th International Conference on
-  Intelligent User Interfaces}}. \bibinfo{publisher}{ACM},
-  \bibinfo{pages}{454--464}.
-\newblock
-\href{https://doi.org/10.1145/3377325.3377498}{doi:\nolinkurl{10.1145/3377325.3377498}}
-
-
 \bibitem[Capel and Brereton(2023)]%
         {Capel2023}
 \bibfield{author}{\bibinfo{person}{Tara Capel} {and} \bibinfo{person}{Margot
@@ -100,30 +65,6 @@
 \href{https://doi.org/10.1145/3544548.3580959}{doi:\nolinkurl{10.1145/3544548.3580959}}
 
 
-\bibitem[Costanza-Chock(2020)]%
-        {CostanzaChock2020}
-\bibfield{author}{\bibinfo{person}{Sasha Costanza-Chock}.}
-  \bibinfo{year}{2020}\natexlab{}.
-\newblock \bibinfo{booktitle}{\emph{Design Justice: Community-Led Practices to
-  Build the Worlds We Need}}.
-\newblock \bibinfo{publisher}{MIT Press}.
-\newblock
-\href{https://doi.org/10.7551/mitpress/12255.001.0001}{doi:\nolinkurl{10.7551/mitpress/12255.001.0001}}
-
-
-\bibitem[Friedman et~al\mbox{.}(2017)]%
-        {Friedman2017}
-\bibfield{author}{\bibinfo{person}{Batya Friedman}, \bibinfo{person}{David~G.
-  Hendry}, {and} \bibinfo{person}{Alan Borning}.}
-  \bibinfo{year}{2017}\natexlab{}.
-\newblock \showarticletitle{A Survey of Value Sensitive Design Methods}.
-\newblock In \bibinfo{booktitle}{\emph{Foundations and Trends in
-  Human--Computer Interaction}}. Vol.~\bibinfo{volume}{11}.
-  \bibinfo{publisher}{Now Publishers}, \bibinfo{pages}{63--125}.
-\newblock
-\href{https://doi.org/10.1561/1100000015}{doi:\nolinkurl{10.1561/1100000015}}
-
-
 \bibitem[Friedman et~al\mbox{.}(2002)]%
         {Friedman2002}
 \bibfield{author}{\bibinfo{person}{Batya Friedman}, \bibinfo{person}{Peter~H.
@@ -132,46 +73,6 @@
 \newblock \showarticletitle{Value Sensitive Design: Theory and Methods}.
 \newblock \bibinfo{journal}{\emph{University of Washington Technical Report}}
   \bibinfo{number}{02-12-01} (\bibinfo{year}{2002}).
-\newblock
-
-
-\bibitem[Hemmer et~al\mbox{.}(2023)]%
-        {Hemmer2023}
-\bibfield{author}{\bibinfo{person}{Patrick Hemmer}, \bibinfo{person}{Monika
-  Westphal}, \bibinfo{person}{Max Schemmer}, \bibinfo{person}{Sebastian
-  Vetter}, \bibinfo{person}{Michael V{\"o}ssing}, {and}
-  \bibinfo{person}{Gerhard Satzger}.} \bibinfo{year}{2023}\natexlab{}.
-\newblock \showarticletitle{Human-{AI} Collaboration: The Effect of {AI}
-  Delegation on Human Task Performance and Task Satisfaction}. In
-  \bibinfo{booktitle}{\emph{Proceedings of the 28th International Conference on
-  Intelligent User Interfaces}}. \bibinfo{publisher}{ACM},
-  \bibinfo{pages}{453--463}.
-\newblock
-\href{https://doi.org/10.1145/3581641.3584052}{doi:\nolinkurl{10.1145/3581641.3584052}}
-
-
-\bibitem[Jerry et~al\mbox{.}(2025)]%
-        {Jerry2025}
-\bibfield{author}{\bibinfo{person}{Blessing Jerry}, \bibinfo{person}{Lourdes
-  Moreno}, {and} \bibinfo{person}{Paloma Mart{\'\i}nez}.}
-  \bibinfo{year}{2025}\natexlab{}.
-\newblock \showarticletitle{Human Oversight-by-Design for Accessible Generative
-  {IUIs}}.
-\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2602.13745}}
-  (\bibinfo{year}{2025}).
-\newblock
-
-
-\bibitem[Jian et~al\mbox{.}(2000)]%
-        {Jian2000}
-\bibfield{author}{\bibinfo{person}{Jiun-Yin Jian}, \bibinfo{person}{Ann~M.
-  Bisantz}, {and} \bibinfo{person}{Colin~G. Drury}.}
-  \bibinfo{year}{2000}\natexlab{}.
-\newblock \showarticletitle{Foundations for an Empirically Determined Scale of
-  Trust in Automated Systems}.
-\newblock \bibinfo{journal}{\emph{International Journal of Cognitive
-  Ergonomics}} \bibinfo{volume}{4}, \bibinfo{number}{1} (\bibinfo{year}{2000}),
-  \bibinfo{pages}{53--71}.
 \newblock
 
 
@@ -187,107 +88,6 @@
 \newblock
 
 
-\bibitem[Pappu et~al\mbox{.}(2025)]%
-        {Pappu2025}
-\bibfield{author}{\bibinfo{person}{Aneesh Pappu}, \bibinfo{person}{Batu El},
-  \bibinfo{person}{Hancheng Cao}, \bibinfo{person}{Carmelo di Nolfo},
-  \bibinfo{person}{Yanchao Sun}, \bibinfo{person}{Meng Cao}, {and}
-  \bibinfo{person}{James Zou}.} \bibinfo{year}{2025}\natexlab{}.
-\newblock \showarticletitle{Multi-Agent Teams Hold Experts Back}.
-\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2602.01011}}
-  (\bibinfo{year}{2025}).
-\newblock
-
-
-\bibitem[Parasuraman and Riley(1997)]%
-        {Parasuraman1997}
-\bibfield{author}{\bibinfo{person}{Raja Parasuraman} {and}
-  \bibinfo{person}{Victor Riley}.} \bibinfo{year}{1997}\natexlab{}.
-\newblock \showarticletitle{Humans and Automation: Use, Misuse, Disuse, Abuse}.
-\newblock \bibinfo{journal}{\emph{Human Factors}} \bibinfo{volume}{39},
-  \bibinfo{number}{2} (\bibinfo{year}{1997}), \bibinfo{pages}{230--253}.
-\newblock
-\href{https://doi.org/10.1518/001872097778543886}{doi:\nolinkurl{10.1518/001872097778543886}}
-
-
-\bibitem[Sadek et~al\mbox{.}(2023)]%
-        {Sadek2023}
-\bibfield{author}{\bibinfo{person}{Malak Sadek}, \bibinfo{person}{Rafael~A.
-  Calvo}, {and} \bibinfo{person}{C\'{e}line Mougenot}.}
-  \bibinfo{year}{2023}\natexlab{}.
-\newblock \showarticletitle{Co-Designing Conversational Agents: A Comprehensive
-  Review and Recommendations for Best Practices}.
-\newblock \bibinfo{journal}{\emph{Design Studies}}  \bibinfo{volume}{89}
-  (\bibinfo{year}{2023}).
-\newblock
-\href{https://doi.org/10.1016/j.destud.2023.101230}{doi:\nolinkurl{10.1016/j.destud.2023.101230}}
-
-
-\bibitem[Sadek et~al\mbox{.}(2025a)]%
-        {Sadek2025IJHCI}
-\bibfield{author}{\bibinfo{person}{Malak Sadek}, \bibinfo{person}{Rafael~A.
-  Calvo}, {and} \bibinfo{person}{C\'{e}line Mougenot}.}
-  \bibinfo{year}{2025}\natexlab{a}.
-\newblock \showarticletitle{The Value-Sensitive Conversational Agent Co-Design
-  Framework}.
-\newblock \bibinfo{journal}{\emph{International Journal of Human--Computer
-  Interaction}}  \bibinfo{volume}{41} (\bibinfo{year}{2025}),
-  \bibinfo{pages}{9533--9564}.
-\newblock
-\href{https://doi.org/10.1080/10447318.2024.2426737}{doi:\nolinkurl{10.1080/10447318.2024.2426737}}
-
-
-\bibitem[Sadek et~al\mbox{.}(2024)]%
-        {Sadek2024CHI}
-\bibfield{author}{\bibinfo{person}{Malak Sadek}, \bibinfo{person}{Marios
-  Constantinides}, \bibinfo{person}{Daniele Quercia}, \bibinfo{person}{Cecilia
-  Mascolo}, {and} \bibinfo{person}{Thomas Bohn\'{e}}.}
-  \bibinfo{year}{2024}\natexlab{}.
-\newblock \showarticletitle{Guidelines for Integrating Value Sensitive Design
-  in Responsible {AI} Toolkits}. In \bibinfo{booktitle}{\emph{Proceedings of
-  the 2024 CHI Conference on Human Factors in Computing Systems}}.
-  \bibinfo{publisher}{ACM}, \bibinfo{pages}{1--18}.
-\newblock
-\href{https://doi.org/10.1145/3613904.3642810}{doi:\nolinkurl{10.1145/3613904.3642810}}
-
-
-\bibitem[Sadek et~al\mbox{.}(2025b)]%
-        {Sadek2025AIS}
-\bibfield{author}{\bibinfo{person}{Malak Sadek}, \bibinfo{person}{Emma
-  Kallina}, \bibinfo{person}{Thomas Bohn\'{e}}, {et~al\mbox{.}}}
-  \bibinfo{year}{2025}\natexlab{b}.
-\newblock \showarticletitle{Challenges of Responsible {AI} in Practice: Scoping
-  Review and Recommended Actions}.
-\newblock \bibinfo{journal}{\emph{AI \& Society}}  \bibinfo{volume}{40}
-  (\bibinfo{year}{2025}), \bibinfo{pages}{199--215}.
-\newblock
-\href{https://doi.org/10.1007/s00146-024-01880-9}{doi:\nolinkurl{10.1007/s00146-024-01880-9}}
-
-
-\bibitem[Sadek and Mougenot(2025)]%
-        {SadekMougenot2025}
-\bibfield{author}{\bibinfo{person}{Malak Sadek} {and}
-  \bibinfo{person}{C\'{e}line Mougenot}.} \bibinfo{year}{2025}\natexlab{}.
-\newblock \showarticletitle{Challenges in Value-Sensitive {AI} Design: Insights
-  from {AI} Practitioner Interviews}.
-\newblock \bibinfo{journal}{\emph{International Journal of Human--Computer
-  Interaction}} \bibinfo{volume}{41}, \bibinfo{number}{17}
-  (\bibinfo{year}{2025}), \bibinfo{pages}{10877--10894}.
-\newblock
-\href{https://doi.org/10.1080/10447318.2024.2439021}{doi:\nolinkurl{10.1080/10447318.2024.2439021}}
-
-
-\bibitem[Sanders and Stappers(2008)]%
-        {Sanders2008}
-\bibfield{author}{\bibinfo{person}{Elizabeth B.-N. Sanders} {and}
-  \bibinfo{person}{Pieter~Jan Stappers}.} \bibinfo{year}{2008}\natexlab{}.
-\newblock \showarticletitle{Co-creation and the New Landscapes of Design}.
-\newblock \bibinfo{journal}{\emph{CoDesign}} \bibinfo{volume}{4},
-  \bibinfo{number}{1} (\bibinfo{year}{2008}), \bibinfo{pages}{5--18}.
-\newblock
-\href{https://doi.org/10.1080/15710880701875068}{doi:\nolinkurl{10.1080/15710880701875068}}
-
-
 \bibitem[Shneiderman(2020)]%
         {Shneiderman2020}
 \bibfield{author}{\bibinfo{person}{Ben Shneiderman}.}
@@ -301,41 +101,18 @@
 \href{https://doi.org/10.1080/10447318.2020.1741118}{doi:\nolinkurl{10.1080/10447318.2020.1741118}}
 
 
-\bibitem[Tang et~al\mbox{.}(2025)]%
-        {Tang2025}
-\bibfield{author}{\bibinfo{person}{Yuanrong Tang}, \bibinfo{person}{Huiling
-  Peng}, \bibinfo{person}{Bingxi Zhao}, \bibinfo{person}{Hengyang Ding},
-  \bibinfo{person}{Hanchao Song}, \bibinfo{person}{Tianhong Wang},
-  \bibinfo{person}{Chen Zhong}, {and} \bibinfo{person}{Jiangtao Gong}.}
+\bibitem[Steinberger(2025)]%
+        {Clawdbot2025}
+\bibfield{author}{\bibinfo{person}{Peter Steinberger}.}
   \bibinfo{year}{2025}\natexlab{}.
-\newblock \showarticletitle{Human Tool: An {MCP}-Style Framework for
-  Human-Agent Collaboration}.
-\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2602.12953}}
-  (\bibinfo{year}{2025}).
+\newblock \bibinfo{title}{Clawdbot: Personal {AI} Assistant}.
 \newblock
-
-
-\bibitem[Toma\v{s}ev et~al\mbox{.}(2025)]%
-        {Tomasev2025}
-\bibfield{author}{\bibinfo{person}{Nenad Toma\v{s}ev}, \bibinfo{person}{Matija
-  Franklin}, {and} \bibinfo{person}{Simon Osindero}.}
-  \bibinfo{year}{2025}\natexlab{}.
-\newblock \showarticletitle{Intelligent {AI} Delegation}.
-\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2602.11865}}
-  (\bibinfo{year}{2025}).
+\urldef\tempurl%
+\url{https://clawd.bot}
+\showURL{%
+\tempurl}
 \newblock
-
-
-\bibitem[Umbrello and van~de Poel(2021)]%
-        {Umbrello2021}
-\bibfield{author}{\bibinfo{person}{Steven Umbrello} {and} \bibinfo{person}{Ibo
-  van~de Poel}.} \bibinfo{year}{2021}\natexlab{}.
-\newblock \showarticletitle{Mapping Value Sensitive Design onto {AI} for Social
-  Good Principles}.
-\newblock \bibinfo{journal}{\emph{AI and Ethics}} \bibinfo{volume}{1},
-  \bibinfo{number}{3} (\bibinfo{year}{2021}), \bibinfo{pages}{283--296}.
-\newblock
-\href{https://doi.org/10.1007/s43681-021-00038-3}{doi:\nolinkurl{10.1007/s43681-021-00038-3}}
+\shownote{Open-source autonomous AI agent; later renamed OpenClaw}.
 
 
 \bibitem[van~de Poel(2013)]%
@@ -347,33 +124,6 @@
   Practice, Principles and Process}} (\bibinfo{year}{2013}),
   \bibinfo{pages}{253--266}.
 \newblock
-
-
-\bibitem[Yang et~al\mbox{.}(2018)]%
-        {Yang2018}
-\bibfield{author}{\bibinfo{person}{Qian Yang}, \bibinfo{person}{Aaron
-  Steinfeld}, \bibinfo{person}{Carolyn Ros{\'e}}, {and} \bibinfo{person}{John
-  Zimmerman}.} \bibinfo{year}{2018}\natexlab{}.
-\newblock \showarticletitle{Grounding Interactive Machine Learning Tool Design
-  in How Non-Experts Actually Build Models}. In
-  \bibinfo{booktitle}{\emph{Proceedings of the 2018 Designing Interactive
-  Systems Conference}}. \bibinfo{publisher}{ACM}, \bibinfo{pages}{573--584}.
-\newblock
-\href{https://doi.org/10.1145/3196709.3196729}{doi:\nolinkurl{10.1145/3196709.3196729}}
-
-
-\bibitem[Yang et~al\mbox{.}(2019)]%
-        {Yang2019}
-\bibfield{author}{\bibinfo{person}{Qian Yang}, \bibinfo{person}{John
-  Zimmerman}, \bibinfo{person}{Aaron Steinfeld}, {and} \bibinfo{person}{Jodi
-  Forlizzi}.} \bibinfo{year}{2019}\natexlab{}.
-\newblock \showarticletitle{Mapping Machine Learning Advances from {HCI}
-  Research to Reveal Starting Places for Design Innovation}. In
-  \bibinfo{booktitle}{\emph{Proceedings of the 2019 CHI Conference on Human
-  Factors in Computing Systems}}. \bibinfo{publisher}{ACM},
-  \bibinfo{pages}{1--11}.
-\newblock
-\href{https://doi.org/10.1145/3290605.3300682}{doi:\nolinkurl{10.1145/3290605.3300682}}
 
 
 \end{thebibliography}
