@@ -1,4 +1,4 @@
-\documentclass[sigconf, anonymous, review]{acmart}
+\documentclass[sigconf, anonymous]{acmart}
 
 %% For camera-ready (after acceptance), change the line above to:
 %% \documentclass[sigconf]{acmart}
@@ -9,13 +9,6 @@
 
 \graphicspath{{images/}}
 
-%% Rights management information.
-%%\setcopyright{acmlicensed}
-%%\copyrightyear{2025}
-%%\acmYear{2025}
-%%\acmDOI{XXXXXXX.XXXXXXX}
-%%\acmConference[CHI '25]{Proceedings of the 2025 CHI Conference on Human Factors in Computing Systems}{April 26--May 1, 2025}{Yokohama, Japan}
-%%\acmISBN{978-1-4503-XXXX-X/2025/04}
 
 \begin{document}
 
@@ -59,18 +52,17 @@
 \begin{figure}[t]
   \centering
   \includegraphics[width=\columnwidth]{flow}
-  \caption{MobileAgents system overview. A user on the go issues a multimodal request (text, voice, or image) from their phone. The LLM Orchestrator decomposes it into a dependency-aware plan and dispatches tasks across the user's personal agent pool (ArXiv, Wikipedia, Proposal, Slack, Semantic Scholar). Results stream back to the mobile client in real time.}
-  \Description{Architecture flow diagram: person labeled User on the go sends text/voice/image to a phone labeled MobileAgents, which forwards a multimodal request to a purple LLM Orchestrator box that fans out to five colored agent boxes, with a streamed results arrow returning to the phone.}
+  \caption{MobileAgents system overview. Users issue a multimodal request on their mobile device. The LLM orchestrator breaks it down into a plan and assigns tasks to the appropriate agents.}
   \label{fig:flow}
 \end{figure}
 
-AI Agents are increasingly capable~\cite{Kim2025}. However, these agents need to be controlled programmatically or through desktop applications. However, the value of these agents is that they can perform tasks while we are away, introducing demand for mobile agentic managers. This was demonstrated by ClawdBot~\cite{Clawdbot2025}, an AI agent controlled via messaging platforms. This underscores the need for a mobile agent platform that enables management of agents with adjustable levels of control and governance.
+AI Agents are increasingly capable~\cite{Kim2025, staufer20262025aiagentindex, guo2024largelanguagemodelbased}. However, these agents need to be controlled programmatically or through desktop applications. An important use case for these agents is that they can perform tasks while we are away from the workspace. This was demonstrated by OpenClaw~\cite{a2026_openclaw}, an AI agent controlled via messaging apps. This underscores the need for a mobile agent platform that enables frictionless management of agents while on-the-go with adjustable levels of control and governance.
 
-We designed a mobile-first platform that lets users \emph{bring their own AI agents} and control them on the go through text, voice, and images (Figure~\ref{fig:flow}). Text is sent via a standard conversational interface that supports asynchronous communication with agents. Voice enables hands-free control. Images allow you to send pictures from the phone camera.
+We designed a MobileAgents that lets users \emph{bring their own AI agents} and manage them via text, voice, and images (Figure~\ref{fig:flow}). Text is sent via a standard conversational interface that supports asynchronous communication with agents. Voice enables hands-free control. Images allow you to send pictures from the phone camera.
 
-Given that these workflows may execute tasks with varying impact and risks, we prioritize having a highly customizable level of control. Certain tasks will be executed completely autonomously, while others may require approval, additional input, or real-time monitoring.
+Given that these workflows may execute tasks with varying impact and risks, we prioritize having a highly customizable level of control. Depending on the user’s preference, certain tasks are executed completely autonomously, while others require human oversight.
 
-This open-source application is initially targeted at technical people who use agents in their day-to-day lives. Examples may include academics, managing agents for explorative research, summarization, and documentation, or software engineers remotely steering teams of long-running coding agents.
+This open-source application is initially targeted at people with a technical background who already utilize agents extensively and wish to extend their reach through mobile devices. Examples may include academics, managing agents for explorative research, summarization, and documentation, or software engineers remotely steering teams of long-running coding agents.
 
 %% ============================================================
 \section{Methods: System Design and Implementation}
@@ -79,26 +71,26 @@ This open-source application is initially targeted at technical people who use a
 \subsection{Prototype Overview}
 
 
-MobileAgents is a functional open-source application (Figure~\ref{fig:flow}). All system prompts are available in Appendix ~\ref{app:backstories} for reproducibility.
+MobileAgents is a functional open-source application (FastAPI backend, React frontend, PostgreSQL database, CrewAI orchestration). The system flow is visible in Figure~\ref{fig:flow}. All system prompts are available in Appendix ~\ref{app:backstories} for reproducibility.
+
 
 \subsection{Design Rationale}
 
-We prioritize human-centred principles, such as reliability, safety, and transparency ~\cite{Shneiderman2020}. We utilized Value Sensitive Design (VSD)~\cite{Friedman2002} to implement design choices based on values.
+We prioritize human-centred principles, such as reliability, safety, and transparency ~\cite{Shneiderman2020}. We used Value Sensitive Design (VSD)~\cite{Friedman2002} to inform our design choices.
 
 \textbf{V1: Mobility:} ``I should be able to reach my agents on the go.''
 
 \textbf{V2: Control} ``I should understand what the agents are doing and be able to supervise them.''
 
-\textbf{V3: Ease} ``MobileAgents should be simple and clear''
+\textbf{V3: Ease} ``MobileAgents should be simple and intuitive''
 
 
-\textbf{D1:} Support hand-free voice-only mode, images, and text (Figure~\ref{fig:chat}c, .
+\textbf{D1:} Support hand-free voice-only mode, images, and text for mobile use cases (Figure~\ref{fig:chat}).
 
-\textbf{D2:} Propose a plan and ask for confirmation before executing in plan mode, render a real-time execution graph (Figure~\ref{fig:configs}), and support customization of orchestration policy (Appendix~\ref{app:backstories}).
+\textbf{D2:} Propose a plan for approval before running, render a real-time execution graph, and support customization of orchestration policy.
 
 
-\textbf{D3:} Have clear settings, switches for agents, concise responses, clear visualization, and documentation.
-.
+\textbf{D3:} Have simple settings, switches for agents, concise responses, clear visualization, and documentation.
 
 \begin{figure*}[t]
   \centering
@@ -120,7 +112,6 @@ We prioritize human-centred principles, such as reliability, safety, and transpa
     \small (c) Voice-only mode (listening)
   \end{minipage}
   \caption{MobileAgents input modes. (a)~Multimodal (b)~Text + Images. (c)~Voice-only}
-  \Description{Three mobile screenshots: (a) dark-themed chat home with multimodal input bar; (b) same screen with camera-only input; (c) full-screen voice recording with red microphone button and Listening indicator.}
   \label{fig:chat}
 \end{figure*}
 
@@ -147,10 +138,9 @@ We prioritize human-centred principles, such as reliability, safety, and transpa
   \begin{minipage}[t]{0.22\textwidth}
     \centering
     \includegraphics[height=6.5cm]{execution_graph}\\[2pt]
-    \small (d) Live DAG (C3 detail)
+    \small (d) Live Tasks Graph
   \end{minipage}
-  \caption{The three transparency configurations and the C3 graph. (a)~Black Box (b)~Plan Preview (c)~Full Transparency (d)~Graph Close-up of Full Transparency}
-  \Description{Four panels: Black Box output screen, Plan Preview card, Full Transparency with embedded DAG, and a close-up DAG showing orchestrator, agent, checkpoint, and output nodes.}
+  \caption{The three transparency configurations and the C3 graph. (a)~Black Box (b)~Plan Preview (c)~Full Transparency (d)~Real-time Execution Graph}
   \label{fig:configs}
 \end{figure*}
 
@@ -171,16 +161,17 @@ We prioritize human-centred principles, such as reliability, safety, and transpa
   \begin{minipage}[t]{0.30\textwidth}
     \centering
     \includegraphics[height=7cm]{agent_card}\\[2pt]
-    \small (c) Agent card (ArXiv agent, dark theme)
+    \small (c) Agent card (ArXiv agent)
   \end{minipage}
-  \caption{Agent management screens. (a)~The Agents tab lists the orchestrator (always active) and all registered worker agents with per-agent enable/disable toggles. (b)~Tapping the orchestrator opens its detail sheet, showing goal, tools, system prompt, and the editable constitution field. (c)~A worker agent card shows its goal, tool names, and full system prompt backstory.}
-  \Description{Three mobile screenshots: agents list with toggles, orchestrator detail sheet with constitution editor, and ArXiv agent card with system prompt.}
+  \caption{Agent management screens. (a)~The Agents tab lists the orchestrator and all registered worker agents with enable/disable toggles. (b)~Tapping the orchestrator opens its detail sheet, showing goal, tools, system prompt, and the editable constitution field. (c)~A worker agent card shows its goal, tool names, and full system prompt backstory.}
   \label{fig:ss-agents}
 \end{figure*}
 
-D1 is realized through the modality setting. We support text and images, native voice input/output (push-to-talk), and multimodal (speech-to-text, text, and images) (Figure~\ref{fig:chat}). The text input is the baseline interaction with the multi-agent system and supports all control settings, mobile, and visualizations. Images are added to the text and are useful for capturing physical context (e.g., whiteboard, notes) using the device's camera. The voice-only setting enables hands-free use but does not support plan and transparency controls. Multimodal is similar to text and images mode but also supports speech input that is converted to text, which does not limit plan and transparency modes.
+We implement mobility (V1 → D1) through support for text and images, native voice input/output (push-to-talk), and multimodal interaction (Figure~\ref{fig:chat}). Text is the baseline modality that supports all control settings and visualizations. Images are added to the text to capture physical context (e.g., whiteboard, notes) using the device's camera. The voice-only setting enables hands-free use but does not support plan and transparency controls. Multimodal is similar to text and images mode but also supports speech input that is converted to text, which does not limit plan and transparency modes.
 
-We support D2 via Blackbox, Plan, and Transparency modes (Figure~\ref{fig:configs}; Table~\ref{tab:transparency}). Blackbox allows full autonomy; Plan mode requests permission for a plan before execution. Transparency mode builds on plan mode, providing a real-time graph of execution traces for full visibility. Advanced control is available through agent toggles and a natural-language constitution that guides orchestration policy and stylization.
+We support control (V2 → D2) through black box, plan, and transparency modes (Figure~\ref{fig:configs}; Table~\ref{tab:transparency}) guided by established frameworks on levels of automation ~\cite{10.1109/3468.844354}. Black box allows full autonomy. Plan mode requests permission before execution. Transparency mode builds on plan mode, adding an execution trace graph for full real-time visibility. Advanced control is available through agent toggles and a natural-language constitution (inspired by Anthropic's Constitutional AI ~\cite{bai2022constitutionalaiharmlessnessai}) that guides orchestration policy and stylization.
+
+We address ease (V3 → D3) through simple settings, and the agent management and documentation tabs (Figure ~\ref{fig:ss-settings}a, Figure ~\ref{fig:ss-docs}b, Figure ~\ref{fig:ss-agents}a).
 
 \begin{table}[h]
   \caption{The three transparency configurations compared.}
@@ -211,7 +202,7 @@ We support D2 via Blackbox, Plan, and Transparency modes (Figure~\ref{fig:config
 
 \subsection{Study Design}
 
-The study comprises three sequential phases, counterbalanced using a Latin square.
+The study comprises three sequential phases.
 
 \textbf{Phase 1 --- Control (RQ1).} Participants complete the same research task (find recent HCI papers and distribute in Slack) under all control configurations (Table~\ref{tab:transparency})---black box (C1), plan (C2), and transparency (C3)---in counterbalanced order.
 
@@ -226,7 +217,7 @@ We recruited 13 volunteers with experience in LLM-based tools.
 \subsection{Evaluation}
 
 
-In phase 1, participants completed a 7-point Likert survey for  \emph{control} and \emph{satisfaction}. In phase 2, they fill the NASA Task Load Index ~\cite{Hart1988} to test cognitive load across modalities, and the Single Ease Question~\cite{Sauro2009} for usability. Participants rated the constitution and toggles on a 3-item perceived controllability scale and shared comments on the user experience. The detailed survey is available in Appendix~\ref{app:interview}.
+In phase 1, participants complete a 7-point Likert survey for  \emph{control} and \emph{satisfaction}. In phase 2, they fill the NASA Task Load Index ~\cite{Hart1988} to test cognitive load across modalities, and the Single Ease Question~\cite{Sauro2009} for usability. Participants rate the constitution and toggles on a 3-item perceived controllability scale and shared comments on the user experience. The detailed survey is available in Appendix~\ref{app:interview}.
 
 
 \subsection{Metrics}
@@ -247,7 +238,7 @@ In phase 1, participants completed a 7-point Likert survey for  \emph{control} a
 \textbf{RQ3 --- Orchestration policy:}
 \begin{itemize}
   \item Perceived controllability scale score (3-item Likert).
-  \item Qualitatively on discoverability, understanding, and ownership.
+  \item Interviews on discoverability, understanding, and ownership.
 \end{itemize}
 
 %% ============================================================
@@ -271,7 +262,7 @@ In phase 1, participants completed a 7-point Likert survey for  \emph{control} a
 \end{table}
 
 
-Table~\ref{tab:results} reveals that Trust and Control monotonically increase from C1 to C3, aligning with an increased interactivity. In terms of satisfaction, C3 scored highest (mean 5.8), whereas C2 performed worst (3.9), indicating that users preferred either full autonomy or high control. We compare the options using a pairwise Wilcoxon signed-rank test with a Bonferroni correction (Table~\ref{tab:posthoc-rq1}). We do not find significant differences in trust between any pairs. However, C2 and C3 are significant relative to C1 in terms of control. For satisfaction, only C3 has significant results over C2.
+Table~\ref{tab:results} reveals that Trust and Control monotonically increase from C1 to C3, in alignment with increased interactivity. C3 scored highest (mean 5.8) in satisfaction, whereas C2 performed the worst (3.9), indicating that users preferred either full autonomy or high control. We compare the options using a pairwise Wilcoxon signed-rank test ~\cite{doi:https://doi.org/10.1002/9780471462422.eoct979} with a Bonferroni correction (Table~\ref{tab:posthoc-rq1}). We do not find significant differences in trust between any pairs. C2 and C3 are significant improvements in control relative to C1. Only C3 has significant results over C2 for satisfaction.
 
 
 \begin{table}[h]
@@ -298,9 +289,9 @@ Table~\ref{tab:results} reveals that Trust and Control monotonically increase fr
   \caption{Mean (SD) SEQ (1--7), NASA-TLX composite and subscales (1--10), and comfort ratings (1--7) per modality.}
   \label{tab:results-modality}
   \small
-  \begin{tabular}{p{0.22\columnwidth} p{0.17\columnwidth} p{0.17\columnwidth} p{0.20\columnwidth}}
+  \begin{tabular}{p{0.25\columnwidth} p{0.15\columnwidth} p{0.15\columnwidth} p{0.20\columnwidth}}
     \toprule
-    Metric & M1: Text & M2: Image & M3: Voice \\
+    Metric & M1: Multimodal & M2: Text + Image & M3: Voice-only \\
     \midrule
     SEQ (ease, 1--7)     & 4.2 (2.0) & 4.5 (2.1) & 5.4 (1.6) \\
     TLX composite        & 4.2 (0.6) & 4.1 (0.9) & 4.6 (0.6) \\
@@ -316,7 +307,7 @@ Table~\ref{tab:results} reveals that Trust and Control monotonically increase fr
   \end{tabular}
 \end{table}
 
-Table~\ref{tab:results-modality} reports on RQ2. blah blah blah
+Table~\ref{tab:results-modality} reports on modality comparison (RQ2), showing no single modality dominating with statistical significance. That being said, voice scored highest on SEQ (5.4) and NASA-TLX composite (4.6), but also lowest on being natural (4.1) and appropriate in public (2.8). Text + Image scored highest for being natural (4.9), and Multimodal scored best in public (4.0). Overall, the modalities are complementary and are all kept in the settings (Figure ~\ref{fig:ss-settings}).
 
 \begin{table}[h]
   \caption{Mean (SD) customisation items (1--7 Likert), RQ3.}
@@ -339,22 +330,17 @@ For RQ3, a one-sample Wilcoxon showed controllability ($p=.001$), effectiveness 
 
 \subsection{Qualitative Assessment}
 
-Analysis of think-aloud and interviews was grouped into the following:
+Analysis of think-aloud and interviews was grouped into the following.
 
-\textbf{Intervention is powerful with observation}
-Participants valued the ability to act while observing the real-time execution of tasks. One participant noted: “The graph reveals wrong directions quickly'' This directly validates Amershi et al.'s~\cite{Amershi2019} G2 (``support efficient correction'') and G18 (``support efficient dismissal'').
-
-\textbf{High visibility is valued}
-
-While participants expressed enthusiasm about AI capabilities, trust in their behavior remains low. Thus, the high level of observability in transparency mode is valued, especially in tasks that involve irreversible actions like sending out Slack messages (Figure~\ref{fig:ss-docs}a). This is also supported by the quantitative assessment in RQ1 (Table~\ref{tab:results}; Table~\ref{tab:posthoc-rq1}).
+\textbf{Intervention is powerful with high observability.}
+Participants valued the ability to act while observing the real-time execution of tasks. One participant noted: “The graph reveals wrong directions as they begin'' This directly validates Amershi et al.'s~\cite{amershi2019guidelines} G2 (``support efficient correction'') and G18 (``support efficient dismissal''). This is especially needed in tasks that involve irreversible actions like sending out Slack messages (Figure~\ref{fig:ss-docs}a).
 
 
+\textbf{Multimodal enables mobile.}
+Participants strongly valued voice for on-the-go use but refused to use it in public spaces, supporting findings in past research ~\cite{10.1145/3173574.3174214}. They reported images as useful for quickly capturing notes. Text remains the standard modality for sensitive tasks.
 
-\textbf{Theme 3: Multimodal enables mobile}
-Participants strongly valued voice for on-the-go use but refused to use it in public spaces. They reported images as useful for quickly capturing notes. Text remains the standard modality for sensitive tasks.
-
-\textbf{Theme 4: Constitution is confusing; agent toggles are not.}
-Users struggled with using the constitution feature as it was unfamiliar (Figure~\ref{fig:ss-docs}b). However, they found the agent toggles simple, easy, and effective to build teams.
+\textbf{ The constitution is confusing while the agent toggles are not.}
+Users struggled with the constitution feature (Figure ~\ref{fig:ss-agents}b) and noted it unfamiliar. However, they found the agent toggles (Figure ~\ref{fig:ss-agents}b) simple and effective to compose teams.
 
 
 
@@ -371,8 +357,7 @@ Users struggled with using the constitution feature as it was unfamiliar (Figure
     \includegraphics[height=7cm]{docs}\\[2pt]
     \small (b) In-app documentation tab
   \end{minipage}
-  \caption{Slack integration and in-app documentation. (a)~Result of a Slack send step after checkpoint approval: two arXiv paper summaries posted to \#general by the agentflow bot. (b)~The Docs tab provides an in-app guide covering input modes, transparency modes, the agents tab, and execution graph; it is available without leaving the app.}
-  \Description{Slack channel showing two paper summaries posted by the agentflow bot; and the Docs tab showing getting started, input modes, transparency modes, agents, and execution graph sections.}
+  \caption{Slack meessage posted to \#general by the Slack agent. (b)~The Docs tab.}
   \label{fig:ss-docs}
 \end{figure*}
 
@@ -389,34 +374,30 @@ Users struggled with using the constitution feature as it was unfamiliar (Figure
     \includegraphics[height=7cm]{Bulgarian}\\[2pt]
     \small (b) Bulgarian localisation
   \end{minipage}
-  \caption{Settings and localisation screens. (a)~Settings exposes all three transparency modes, input modes (Multimodal / Text+Images / Voice Only), theme (Dark/Light/Auto), and language (EN/AR/ZH/BG). (b)~Bulgarian localisation: the full UI---including navigation labels and suggested queries---renders in Bulgarian with full RTL support for Arabic (not shown).}
-  \Description{Two mobile screenshots: settings sheet with segmented controls for transparency, input mode, theme, and language; and Bulgarian-language chat home screen.}
+  \caption{Settings and localisation screens. (a)~Settings exposes all controls, modalities, themes, and languages (EN/AR/ZH/BG). (b)~Bulgarian localisation}
   \label{fig:ss-settings}
 \end{figure*}
 
-\clearpage
 %% ============================================================
-\section{Discussion & Future Work}
+\section{Discussion and Future Work}
 %% ============================================================
 
 \subsection{Ethical, Social, and Value-Related Reflection}
 
+\textbf{Automation vs.\ Control on mobile.} Our findings for mobile reinforce the challenges of designing for both automation and control ~\cite{doi:10.1518/hfes,doi:10.1518/001872097778543886}. Users want the agent to handle work autonomously, but do not want to give up control when critical.
 
-
-\textbf{Automation vs.\ autonomy on mobile.}
-
-Our findings surface the difficulty of designing an agentic application that prioritizes both efficiency and control. Users want agents to be autonomous but do not want to give up control. Black Box scores lowest on trust and control. Yet, certain users preferred it for low-stakes queries. This issue is especially critical in mobile settings, as each additional tap undermines the motivation for ambient, on-the-go assistance. The transparency mode received the most trust. However, we recognize that the live graph may create an illusion of control and oversight. Future designs can explore an auto mode that can classify individual prompts into the appropriate control setting.
-
-\textbf{Privacy & Security}
-
-We recognize that a single centralized agentic manager brings risks for data storage and prompt injection from malicious agents. Thus, we release the tool as an open-source solution so that individual users and organizations can self-host on-premises and own all of their data. The current system is vulnerable to adversarial attacks from the integrated agents. In the current version, we recommend bringing only trusted agents. Future work should research the risks and integrate guardrails and safety mechanisms to prevent unintended behavior.
+\textbf{Privacy and Security.} We recognize that a centralized, agentic manager introduces risks of data storage and prompt injection ~\cite{10.1145/3605764.3623985} by malicious agents. Thus, we release the tool as an open-source solution so that individual users and organizations can self-host on-premises and own all of their data. Future work should assess the risks and integrate guardrails and safety mechanisms to prevent adversarial attacks by agents in the system.
 
 \textbf{Inclusivity and access.}
 
-Mobile Agents is built around inclusivity and broad access through deep customization. However, our design and testing have been limited in scope and size and is not currently representative of the wide range of potential users. Users with lower technical literacy may struggle to utilize our architecture. Certain features like the constitution and bring-your-own agent archiecture is currently only accessible to power users. While we have a tab with documentation, it should be expanded to cover the topics in simpler, more accessible language. We should support easier integration with agents through MCP servers and expand current accessibility coverage.
+MobileAgents is designed for inclusivity and accessibility, supporting multiple languages and themes (Figure ~\ref{ss-settings}, Appendix ~\ref{app:css}]). Going forward, we should expand language coverage, test for accessibility, and lower the technical entry barrier by providing a user interface that connects external agents through MCP ~\cite{anthropic_2024_introducing} and APIs.
+
+\textbf{Limitations.} Our evaluation is preliminary and has many constraints. Our participants are all university students with LLM experience, which does not accurately reflect the full target population. The single research task used in Phase 1 may not generalize to other agentic workflows, such as code execution or data analysis. Finally, the low statistical power $(N=13)$ is insufficient for conclusive results.
+
+\textbf{Conclusion.}  MobileAgents is a mobile agent management platform balancing automation, control, and usability. Our limited evaluation with 13 students shows a tension between control and efficiency. The participants voted the live execution graph as the feature that built the most trust when delivered together with the plan proposal. They also selected voice-input as an unlocking feature for hands-free use, but recognized the necessity for text and the benefits of images. Participants found the agent toggles an easy-to-use and effective feature, while the constitution remains a feature for power users. Ultimately, all control and modality options remain available in settings, with multimodal and transparency modes as defaults, supporting high levels of customization without overwhelming  new users with complex settings. Advanced features, such as the constitution and the bring-your-own-agent architecture, remain essential for power users to enable flexible human oversight and interactivity.
 
 
-\textbf{Conclusion.} MobileAgents demonstrates that personal AI agents can be made controllable from a mobile device through multimodal input (text, voice, camera) and an agent-agnostic orchestration layer. The bring-your-own-agents architecture means users are not locked into a fixed agent set---they plug in whatever tools matter to them and manage them from their phone. Configurable transparency lets users match oversight to context: Plan Preview for quick mobile use, Full Transparency for high-stakes actions. The ability to \emph{intervene}---not merely observe---drove trust more than visual complexity. Consent-gated multimodality respected privacy in mobile contexts, though speech recognition equity and automation bias remain open challenges. These findings contribute to the design space of mobile, multimodal, user-controllable multi-agent AI systems.
+
 
 %% ============================================================
 \begin{acks}
@@ -900,37 +881,6 @@ Execution updates are streamed as Server-Sent Events.
   \end{tabular}
 \end{table}
 
-
-%% ============================================================
-\section{Authentication and Data Persistence}
-\label{app:auth}
-
-\subsection{Authentication}
-
-The server uses Supabase for authentication.
-
-\begin{enumerate}
-  \item Extracts the Bearer token from the \texttt{Authorization} header.
-  \item Validates it via \texttt{supabase.auth.get\_user(token)}, which works with both HS256 and ES256 JWT keys.
-  \item Returns the following object or raises HTTP~401:
-{\small\begin{verbatim}
-{"sub": "user_id", "email": "user_email"}
-\end{verbatim}
-}
-\end{enumerate}
-
-The client stores the Supabase session token and includes it in all API requests.
-
-\subsection{Server-Side Persistence}
-
-Conversations, messages, execution records, and approval decisions are persisted to Supabase (PostgreSQL). The database layer (\texttt{services/db.py}) provides:
-
-\begin{itemize}
-  \item \textbf{Conversations:} Create, list (by user), get, delete. Each conversation stores a title and transparency level.
-  \item \textbf{Messages:} Insert and list (by conversation). Each message stores role, content, optional image URL, voice transcript, agent ID, input modality, task plan, and execution graph.
-  \item \textbf{Executions:} Create (with plan and graph snapshots) and complete (with status, summary, and step results).
-  \item \textbf{Approvals:} Create, resolve (approve/reject with optional comment), and query by step ID.
-\end{itemize}
 
 %% ============================================================
 \section{Survey Instrument}

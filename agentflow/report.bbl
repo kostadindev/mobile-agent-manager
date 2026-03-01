@@ -53,18 +53,6 @@
 \href{https://doi.org/10.1145/3290605.3300233}{doi:\nolinkurl{10.1145/3290605.3300233}}
 
 
-\bibitem[Capel and Brereton(2023)]%
-        {Capel2023}
-\bibfield{author}{\bibinfo{person}{Tara Capel} {and} \bibinfo{person}{Margot
-  Brereton}.} \bibinfo{year}{2023}\natexlab{}.
-\newblock \showarticletitle{What is Human-Centered about Human-Centered {AI}?
-  {A} Map of the Research Landscape}. In \bibinfo{booktitle}{\emph{Proceedings
-  of the 2023 CHI Conference on Human Factors in Computing Systems}}.
-  \bibinfo{publisher}{ACM}, \bibinfo{pages}{1--23}.
-\newblock
-\href{https://doi.org/10.1145/3544548.3580959}{doi:\nolinkurl{10.1145/3544548.3580959}}
-
-
 \bibitem[Friedman et~al\mbox{.}(2002)]%
         {Friedman2002}
 \bibfield{author}{\bibinfo{person}{Batya Friedman}, \bibinfo{person}{Peter~H.
@@ -74,6 +62,20 @@
 \newblock \bibinfo{journal}{\emph{University of Washington Technical Report}}
   \bibinfo{number}{02-12-01} (\bibinfo{year}{2002}).
 \newblock
+
+
+\bibitem[Hart and Staveland(1988)]%
+        {Hart1988}
+\bibfield{author}{\bibinfo{person}{Sandra~G. Hart} {and}
+  \bibinfo{person}{Lowell~E. Staveland}.} \bibinfo{year}{1988}\natexlab{}.
+\newblock \showarticletitle{Development of {NASA-TLX} ({Task Load Index}):
+  Results of Empirical and Theoretical Research}.
+\newblock In \bibinfo{booktitle}{\emph{Human Mental Workload}},
+  \bibfield{editor}{\bibinfo{person}{Peter~A. Hancock} {and}
+  \bibinfo{person}{Najmedin Meshkati}} (Eds.).
+  \bibinfo{publisher}{North-Holland}, \bibinfo{pages}{139--183}.
+\newblock
+\href{https://doi.org/10.1016/S0166-4115(08)62386-9}{doi:\nolinkurl{10.1016/S0166-4115(08)62386-9}}
 
 
 \bibitem[Kim et~al\mbox{.}(2025)]%
@@ -86,6 +88,18 @@
 \newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2512.08296}}
   (\bibinfo{year}{2025}).
 \newblock
+
+
+\bibitem[Sauro and Dumas(2009)]%
+        {Sauro2009}
+\bibfield{author}{\bibinfo{person}{Jeff Sauro} {and} \bibinfo{person}{Joseph~S.
+  Dumas}.} \bibinfo{year}{2009}\natexlab{}.
+\newblock \showarticletitle{Comparison of Three One-Question, Post-Task
+  Usability Questionnaires}. In \bibinfo{booktitle}{\emph{Proceedings of the
+  27th International Conference on Human Factors in Computing Systems}}.
+  \bibinfo{publisher}{ACM}, \bibinfo{pages}{1599--1608}.
+\newblock
+\href{https://doi.org/10.1145/1518701.1518946}{doi:\nolinkurl{10.1145/1518701.1518946}}
 
 
 \bibitem[Shneiderman(2020)]%
@@ -113,17 +127,6 @@
 \tempurl}
 \newblock
 \shownote{Open-source autonomous AI agent; later renamed OpenClaw}.
-
-
-\bibitem[van~de Poel(2013)]%
-        {vanDePoel2013}
-\bibfield{author}{\bibinfo{person}{Ibo van~de Poel}.}
-  \bibinfo{year}{2013}\natexlab{}.
-\newblock \showarticletitle{Translating Values into Design Requirements}.
-\newblock \bibinfo{journal}{\emph{Philosophy and Engineering: Reflections on
-  Practice, Principles and Process}} (\bibinfo{year}{2013}),
-  \bibinfo{pages}{253--266}.
-\newblock
 
 
 \end{thebibliography}
