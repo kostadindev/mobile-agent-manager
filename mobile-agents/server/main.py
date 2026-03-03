@@ -1,0 +1,32 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from routers import chat, execute, approve, agents, conversations
+from services.agent_store import load_agents
+from config import settings
+
+app = FastAPI(title="MobileAgents API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(chat.router)
+app.include_router(execute.router)
+app.include_router(approve.router)
+app.include_router(agents.router)
+app.include_router(conversations.router)
+
+
+@app.on_event("startup")
+async def startup():
+    load_agents()
+
+
+@app.get("/api/health")
+async def health():
+    return {"status": "ok", "app": settings.app_name}

@@ -1,0 +1,1006 @@
+\documentclass[sigconf, anonymous]{acmart}
+
+%% For camera-ready (after acceptance), change the line above to:
+%% \documentclass[sigconf]{acmart}
+
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+\graphicspath{{images/}}
+
+
+\begin{document}
+
+\title{MobileAgents: Designing and Evaluating a Mobile Multimodal Interface for Controlling Personal AI Agents On the Go}
+
+\author{Anonymous Author}
+\email{anonymous@university.edu}
+\affiliation{%
+  \institution{Anonymous University}
+  \city{City}
+  \country{Country}}
+
+\renewcommand{\shortauthors}{Anonymous}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+  <concept_id>10003120.10003121.10003129</concept_id>
+  <concept_desc>Human-centered computing~Interactive systems and tools</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10003120.10003121.10003125.10011752</concept_id>
+  <concept_desc>Human-centered computing~Empirical studies in HCI</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Human-centered computing~Interactive systems and tools}
+\ccsdesc[500]{Human-centered computing~Empirical studies in HCI}
+
+\keywords{multimodal interaction, agent orchestration, transparency, human-in-the-loop, trust, human--AI interaction}
+
+\maketitle
+
+%% ============================================================
+\section{Introduction: Use Case and Goals}
+%% ============================================================
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{flow}
+  \caption{MobileAgents system overview. Users issue a multimodal request on their mobile device. The LLM orchestrator breaks it down into a plan and assigns tasks to the appropriate agents.}
+  \label{fig:flow}
+\end{figure}
+
+AI Agents are increasingly capable~\cite{Kim2025, staufer20262025aiagentindex, guo2024largelanguagemodelbased}. However, these agents need to be controlled programmatically or through desktop applications. An important use case for these agents is that they can perform tasks while we are away from the workspace. This was demonstrated by OpenClaw~\cite{a2026_openclaw}, an AI agent controlled via messaging apps. This underscores the need for a mobile agent platform that enables frictionless management of agents while on-the-go with adjustable levels of control and governance.
+
+We designed a MobileAgents that lets users \emph{bring their own AI agents} and manage them via text, voice, and images (Figure~\ref{fig:flow}). Text is sent via a standard conversational interface that supports asynchronous communication with agents. Voice enables hands-free control. Images allow you to send pictures from the phone camera.
+
+Given that these workflows may execute tasks with varying impact and risks, we prioritize having a highly customizable level of control. Depending on the user’s preference, certain tasks are executed completely autonomously, while others require human oversight.
+
+This open-source application is initially targeted at people with a technical background who already utilize agents extensively and wish to extend their reach through mobile devices. Examples may include academics, managing agents for explorative research, summarization, and documentation, or software engineers remotely steering teams of long-running coding agents.
+
+%% ============================================================
+\section{Methods: System Design and Implementation}
+%% ============================================================
+
+\subsection{Prototype Overview}
+
+
+MobileAgents is a functional open-source application (FastAPI backend, React frontend, PostgreSQL database, CrewAI orchestration). The system flow is visible in Figure~\ref{fig:flow}. All system prompts are available in Appendix ~\ref{app:backstories} for reproducibility.
+
+
+\subsection{Design Rationale}
+
+We prioritize human-centred principles, such as reliability, safety, and transparency ~\cite{Shneiderman2020}. We used Value Sensitive Design (VSD)~\cite{Friedman2002} to inform our design choices.
+
+\textbf{V1: Mobility:} ``I should be able to reach my agents on the go.''
+
+\textbf{V2: Control} ``I should understand what the agents are doing and be able to supervise them.''
+
+\textbf{V3: Ease} ``MobileAgents should be simple and intuitive''
+
+
+\textbf{D1:} Support hand-free voice-only mode, images, and text for mobile use cases (Figure~\ref{fig:chat}).
+
+\textbf{D2:} Propose a plan for approval before running, render a real-time execution graph, and support customization of orchestration policy.
+
+
+\textbf{D3:} Have simple settings, switches for agents, concise responses, clear visualization, and documentation.
+
+\begin{figure*}[t]
+  \centering
+  \begin{minipage}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{multi_modal}\\[2pt]
+    \small (a) Multimodal mode
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{text+images}\\[2pt]
+    \small (b) Text + Images mode
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.3\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{voice_only}\\[2pt]
+    \small (c) Voice-only mode (listening)
+  \end{minipage}
+  \caption{MobileAgents input modes. (a)~Multimodal (b)~Text + Images. (c)~Voice-only}
+  \label{fig:chat}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \begin{minipage}[t]{0.22\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{blackbox}\\[2pt]
+    \small (a) C1: Black Box
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.22\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{task_plan}\\[2pt]
+    \small (b) C2: Plan Preview
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.22\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{full_control}\\[2pt]
+    \small (c) C3: Full Transparency
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.22\textwidth}
+    \centering
+    \includegraphics[height=6.5cm]{execution_graph}\\[2pt]
+    \small (d) Live Tasks Graph
+  \end{minipage}
+  \caption{The three transparency configurations and the C3 graph. (a)~Black Box (b)~Plan Preview (c)~Full Transparency (d)~Real-time Execution Graph}
+  \label{fig:configs}
+\end{figure*}
+
+\begin{figure*}[b]
+  \centering
+  \begin{minipage}[t]{0.30\textwidth}
+    \centering
+    \includegraphics[height=7cm]{agents_tab}\\[2pt]
+    \small (a) Agents tab (light theme)
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.30\textwidth}
+    \centering
+    \includegraphics[height=7cm]{orchestrator}\\[2pt]
+    \small (b) Orchestrator detail with constitution editor
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.30\textwidth}
+    \centering
+    \includegraphics[height=7cm]{agent_card}\\[2pt]
+    \small (c) Agent card (ArXiv agent)
+  \end{minipage}
+  \caption{Agent management screens. (a)~The Agents tab lists the orchestrator and all registered worker agents with enable/disable toggles. (b)~Tapping the orchestrator opens its detail sheet, showing goal, tools, system prompt, and the editable constitution field. (c)~A worker agent card shows its goal, tool names, and full system prompt backstory.}
+  \label{fig:ss-agents}
+\end{figure*}
+
+We implement mobility (V1 → D1) through support for text and images, native voice input/output (push-to-talk), and multimodal interaction (Figure~\ref{fig:chat}). Text is the baseline modality that supports all control settings and visualizations. Images are added to the text to capture physical context (e.g., whiteboard, notes) using the device's camera. The voice-only setting enables hands-free use but does not support plan and transparency controls. Multimodal is similar to text and images mode but also supports speech input that is converted to text, which does not limit plan and transparency modes.
+
+We support control (V2 → D2) through black box, plan, and transparency modes (Figure~\ref{fig:configs}; Table~\ref{tab:transparency}) guided by established frameworks on levels of automation ~\cite{10.1109/3468.844354}. Black box allows full autonomy. Plan mode requests permission before execution. Transparency mode builds on plan mode, adding an execution trace graph for full real-time visibility. Advanced control is available through agent toggles and a natural-language constitution (inspired by Anthropic's Constitutional AI ~\cite{bai2022constitutionalaiharmlessnessai}) that guides orchestration policy and stylization.
+
+We address ease (V3 → D3) through simple settings, and the agent management and documentation tabs (Figure ~\ref{fig:ss-settings}a, Figure ~\ref{fig:ss-docs}b, Figure ~\ref{fig:ss-agents}a).
+
+\begin{table}[h]
+  \caption{The three transparency configurations compared.}
+  \label{tab:transparency}
+  \small
+  \begin{tabular}{p{0.3\columnwidth} p{0.5\columnwidth}}
+    \toprule
+    Configuration & What the user sees and can do \\
+    \midrule
+    C1: Black Box & Agents auto-execute. \\
+    C2: Plan Preview & Approve orchestrator's task plan. \\
+    C3: Transparency &  Plan with a real-time graph \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+%% ============================================================
+\section{Methods: Research Question and Evaluation}
+%% ============================================================
+
+\subsection{Research Question}
+
+\textbf{RQ1:} Is there an efficiency/control tradeoff between black box, plan, and transparency?
+
+\textbf{RQ2:} Does the support of multiple modalities improve the mobile-first experience?
+
+\textbf{RQ3:} Are users able to guide orchestration behavior through the advanced agent controls (constitution and agent switches) (Figure~\ref{fig:ss-agents})?
+
+\subsection{Study Design}
+
+The study comprises three sequential phases.
+
+\textbf{Phase 1 --- Control (RQ1).} Participants complete the same research task (find recent HCI papers and distribute in Slack) under all control configurations (Table~\ref{tab:transparency})---black box (C1), plan (C2), and transparency (C3)---in counterbalanced order.
+
+\textbf{Phase 2 --- Modality  (RQ2).} Each participant completes a fixed multi-step workflow (find related work and summarize) using all modalities in counterbalanced order: (M1)~text and images, (M2)~Multimodal (photograph a printed abstract), (M3)~voice only  (Figure~\ref{fig:chat}). All runs use black-box mode, so modality is the only variable.
+
+\textbf{Phase 3 --- Orchestration (RQ3).} Participants are asked: ``Configure the system so that it never sends Slack messages without showing you a draft first, and remove any agents you do not want included.' This is a single exploratory session designed to expose whether the constitution and agent toggles can be located, understood, and utilized (Figure~\ref{fig:ss-agents}).
+
+\subsection{Participants}
+
+We recruited 13 volunteers with experience in LLM-based tools.
+
+\subsection{Evaluation}
+
+
+In phase 1, participants complete a 7-point Likert survey for  \emph{control} and \emph{satisfaction}. In phase 2, they fill the NASA Task Load Index ~\cite{Hart1988} to test cognitive load across modalities, and the Single Ease Question~\cite{Sauro2009} for usability. Participants rate the constitution and toggles on a 3-item perceived controllability scale and shared comments on the user experience. The detailed survey is available in Appendix~\ref{app:interview}.
+
+
+\subsection{Metrics}
+
+\textbf{RQ1 --- Efficiency/control tradeoff:}
+\begin{itemize}
+  \item Trust, control, and satisfaction (Likert, 1--7).
+  \item Qualitative opinions on over- or under-informed cases.
+\end{itemize}
+
+\textbf{RQ2 --- Multimodal mobile experience:}
+\begin{itemize}
+  \item NASA-TLX composite score and subscale scores per modality.
+  \item Single Ease Question (SEQ).
+  \item Modality preference between different contexts.
+\end{itemize}
+
+\textbf{RQ3 --- Orchestration policy:}
+\begin{itemize}
+  \item Perceived controllability scale score (3-item Likert).
+  \item Interviews on discoverability, understanding, and ownership.
+\end{itemize}
+
+%% ============================================================
+\section{Results}
+%% ============================================================
+\subsection{Quantitative Findings}
+
+\begin{table}[h]
+  \caption{Mean (SD) primary survey scores (1--7 Likert).}
+  \label{tab:results}
+  \small
+  \begin{tabular}{p{0.22\columnwidth} p{0.17\columnwidth} p{0.17\columnwidth} p{0.25\columnwidth}}
+    \toprule
+    Metric & C1: Black Box & C2: Plan & C3: Transparency \\
+    \midrule
+    Trust                & 4.3 (1.7) & 5.0 (1.5) & 5.8 (1.0) \\
+    Control              & 3.2 (2.1) & 5.4 (1.3) & 5.7 (1.1) \\
+    Satisfaction         & 4.4 (2.3) & 3.9 (1.1) & 5.8 (1.1) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+Table~\ref{tab:results} reveals that Trust and Control monotonically increase from C1 to C3, in alignment with increased interactivity. C3 scored highest (mean 5.8) in satisfaction, whereas C2 performed the worst (3.9), indicating that users preferred either full autonomy or high control. We compare the options using a pairwise Wilcoxon signed-rank test ~\cite{doi:https://doi.org/10.1002/9780471462422.eoct979} with a Bonferroni correction (Table~\ref{tab:posthoc-rq1}). We do not find significant differences in trust between any pairs. C2 and C3 are significant improvements in control relative to C1. Only C3 has significant results over C2 for satisfaction.
+
+
+\begin{table}[h]
+  \caption{Post-hoc pairwise Wilcoxon signed-rank tests (Bonferroni-corrected, $k=3$) and Cohen's $d$ for primary RQ1 metrics. $^*p_{\mathrm{bon}}<.05$.}
+  \label{tab:posthoc-rq1}
+  \small
+  \begin{tabular}{p{0.18\columnwidth} p{0.10\columnwidth} p{0.08\columnwidth} p{0.12\columnwidth} p{0.08\columnwidth}}
+    \toprule
+    Metric & Pair & $W$ & $p_{\mathrm{bon}}$ & $d$ \\
+    \midrule
+    Trust          & C1-C2    & 16.0   & 0.756 & -0.33 \\
+    Trust          & C1-C3    & 9.5    & 0.120 & -0.69 \\
+    Trust          & C2-C3    & 18.0   & 0.621 & -0.44 \\
+    Control        & C1-C2    & 6.0    & 0.041$^*$ & -0.88 \\
+    Control        & C1-C3    & 3.0    & 0.012$^*$ & -1.03 \\
+    Control        & C2-C3    & 26.5   & 1.000 & -0.16 \\
+    Satisfaction   & C1-C2    & 29.0   & 1.000 & 0.15 \\
+    Satisfaction   & C1-C3    & 10.0   & 0.234 & -0.58 \\
+    Satisfaction   & C2-C3    & 2.0    & 0.012$^*$ & -1.16 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}[h]
+  \caption{Mean (SD) SEQ (1--7), NASA-TLX composite and subscales (1--10), and comfort ratings (1--7) per modality.}
+  \label{tab:results-modality}
+  \small
+  \begin{tabular}{p{0.25\columnwidth} p{0.15\columnwidth} p{0.15\columnwidth} p{0.20\columnwidth}}
+    \toprule
+    Metric & M1: Multimodal & M2: Text + Image & M3: Voice-only \\
+    \midrule
+    SEQ (ease, 1--7)     & 4.2 (2.0) & 4.5 (2.1) & 5.4 (1.6) \\
+    TLX composite        & 4.2 (0.6) & 4.1 (0.9) & 4.6 (0.6) \\
+    ~~Mental             & 5.5 (2.6) & 5.7 (2.9) & 5.6 (2.6) \\
+    ~~Physical           & 1.8 (0.9) & 1.8 (0.9) & 2.0 (0.8) \\
+    ~~Temporal           & 2.6 (1.4) & 2.8 (1.7) & 5.0 (1.6) \\
+    ~~Performance        & 7.3 (1.5) & 6.6 (1.5) & 5.8 (2.1) \\
+    ~~Effort             & 3.7 (1.9) & 4.2 (2.1) & 5.6 (1.8) \\
+    ~~Frustration        & 4.5 (1.6) & 3.5 (1.5) & 3.4 (2.1) \\
+    Felt natural (1--7)  & 4.2 (1.1) & 4.9 (1.7) & 4.1 (2.0) \\
+    OK in public (1--7)  & 4.0 (1.6) & 3.3 (1.4) & 2.8 (1.3) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:results-modality} reports on modality comparison (RQ2), showing no single modality dominating with statistical significance. That being said, voice scored highest on SEQ (5.4) and NASA-TLX composite (4.6), but also lowest on being natural (4.1) and appropriate in public (2.8). Text + Image scored highest for being natural (4.9), and Multimodal scored best in public (4.0). Overall, the modalities are complementary and are all kept in the settings (Figure ~\ref{fig:ss-settings}).
+
+\begin{table}[h]
+  \caption{Mean (SD) customisation items (1--7 Likert), RQ3.}
+  \label{tab:results-rq3}
+  \small
+  \begin{tabular}{p{0.45\columnwidth} p{0.45\columnwidth}}
+    \toprule
+    Item & Mean (SD) \\
+    \midrule
+    Discoverability      & 3.8 (1.6) \\
+    Mental Model         & 4.5 (1.8) \\
+    Effectiveness        & 5.2 (1.4) \\
+    Controllability      & 5.7 (1.0) \\
+    Ownership            & 4.8 (1.1) \\
+    Adoption             & 4.2 (1.5) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+For RQ3, a one-sample Wilcoxon showed controllability ($p=.001$), effectiveness ($p=.016$), and ownership ($p=.036$) above neutral. Discoverability ($p=.545$) and adoption ($p=.717$) did not differ from neutral. This suggested the constitution was difficult to find and use. The most trusted feature was the execution graph, while the most important feature missing was an undo functionality.
+
+\subsection{Qualitative Assessment}
+
+Analysis of think-aloud and interviews was grouped into the following.
+
+\textbf{Intervention is powerful with high observability.}
+Participants valued the ability to act while observing the real-time execution of tasks. One participant noted: “The graph reveals wrong directions as they begin'' This directly validates Amershi et al.'s~\cite{amershi2019guidelines} G2 (``support efficient correction'') and G18 (``support efficient dismissal''). This is especially needed in tasks that involve irreversible actions like sending out Slack messages (Figure~\ref{fig:ss-docs}a).
+
+
+\textbf{Multimodal enables mobile.}
+Participants strongly valued voice for on-the-go use but refused to use it in public spaces, supporting findings in past research ~\cite{10.1145/3173574.3174214}. They reported images as useful for quickly capturing notes. Text remains the standard modality for sensitive tasks.
+
+\textbf{ The constitution is confusing while the agent toggles are not.}
+Users struggled with the constitution feature (Figure ~\ref{fig:ss-agents}b) and noted it unfamiliar. However, they found the agent toggles (Figure ~\ref{fig:ss-agents}b) simple and effective to compose teams.
+
+
+
+\begin{figure*}[t]
+  \centering
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[height=7cm]{slack}\\[2pt]
+    \small (a) Slack output (\#general channel)
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[height=7cm]{docs}\\[2pt]
+    \small (b) In-app documentation tab
+  \end{minipage}
+  \caption{Slack meessage posted to \#general by the Slack agent. (b)~The Docs tab.}
+  \label{fig:ss-docs}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[height=7cm]{settings}\\[2pt]
+    \small (a) Settings panel
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.45\textwidth}
+    \centering
+    \includegraphics[height=7cm]{Bulgarian}\\[2pt]
+    \small (b) Bulgarian localisation
+  \end{minipage}
+  \caption{Settings and localisation screens. (a)~Settings exposes all controls, modalities, themes, and languages (EN/AR/ZH/BG). (b)~Bulgarian localisation}
+  \label{fig:ss-settings}
+\end{figure*}
+
+%% ============================================================
+\section{Discussion and Future Work}
+%% ============================================================
+
+\subsection{Ethical, Social, and Value-Related Reflection}
+
+\textbf{Automation vs.\ Control on mobile.} Our findings for mobile reinforce the challenges of designing for both automation and control ~\cite{doi:10.1518/hfes,doi:10.1518/001872097778543886}. Users want the agent to handle work autonomously, but do not want to give up control when critical.
+
+\textbf{Privacy and Security.} We recognize that a centralized, agentic manager introduces risks of data storage and prompt injection ~\cite{10.1145/3605764.3623985} by malicious agents. Thus, we release the tool as an open-source solution so that individual users and organizations can self-host on-premises and own all of their data. Future work should assess the risks and integrate guardrails and safety mechanisms to prevent adversarial attacks by agents in the system.
+
+\textbf{Inclusivity and access.}
+
+MobileAgents is designed for inclusivity and accessibility, supporting multiple languages and themes (Figure ~\ref{ss-settings}, Appendix ~\ref{app:css}]). Going forward, we should expand language coverage, test for accessibility, and lower the technical entry barrier by providing a user interface that connects external agents through MCP ~\cite{anthropic_2024_introducing} and APIs.
+
+\textbf{Limitations.} Our evaluation is preliminary and has many constraints. Our participants are all university students with LLM experience, which does not accurately reflect the full target population. The single research task used in Phase 1 may not generalize to other agentic workflows, such as code execution or data analysis. Finally, the low statistical power $(N=13)$ is insufficient for conclusive results.
+
+\textbf{Conclusion.}  MobileAgents is a mobile agent management platform balancing automation, control, and usability. Our limited evaluation with 13 students shows a tension between control and efficiency. The participants voted the live execution graph as the feature that built the most trust when delivered together with the plan proposal. They also selected voice-input as an unlocking feature for hands-free use, but recognized the necessity for text and the benefits of images. Participants found the agent toggles an easy-to-use and effective feature, while the constitution remains a feature for power users. Ultimately, all control and modality options remain available in settings, with multimodal and transparency modes as defaults, supporting high levels of customization without overwhelming  new users with complex settings. Advanced features, such as the constitution and the bring-your-own-agent architecture, remain essential for power users to enable flexible human oversight and interactivity.
+
+
+
+
+%% ============================================================
+\begin{acks}
+%% Add your acknowledgements here.
+\end{acks}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+%% ============================================================
+\appendix
+%% ============================================================
+
+%% ============================================================
+\section{Project Structure}
+\label{app:structure}
+
+{\small
+\begin{verbatim}
+agentflow/
++-- package.json          # Monorepo scripts
++-- client/
+|   \-- src/
+|       +-- App.tsx       # Root (auth, theme, RTL)
+|       +-- index.css     # Tailwind + animations
+|       +-- state/
+|       |   \-- store.ts  # Zustand (state + API)
+|       +-- types/        # TS interfaces
+|       +-- i18n/         # 4 languages (en/zh/ar/bg)
+|       \-- components/
+|           +-- Chat/     # Chat + markdown + TTS
+|           +-- Agents/   # List + detail + toggle
+|           +-- Graph/    # ReactFlow DAG + nodes
+|           +-- TaskPlan/ # Plan card + approval
+|           +-- Camera/   # Image capture + consent
+|           +-- Voice/    # Recording + consent
+|           +-- Settings/ # Transparency/theme/i18n
+|           +-- Execution/# History + step stream
+|           \-- Privacy/  # Consent dialog
++-- server/
+|   +-- main.py           # FastAPI + CORS + routers
+|   +-- config.py         # Pydantic settings
+|   +-- auth.py           # Supabase JWT auth
+|   +-- routers/
+|   |   +-- chat.py       # POST /api/chat
+|   |   +-- execute.py    # POST /api/execute (SSE)
+|   |   +-- approve.py    # Checkpoint approval
+|   |   +-- agents.py     # Agent CRUD
+|   |   \-- conversations.py # Conversation CRUD
+|   +-- crew/
+|   |   +-- orchestrator.py # Planning + graph
+|   |   +-- agents.py      # Backstories
+|   |   \-- tools.py       # Tool implementations
+|   +-- models/
+|   |   +-- messages.py   # ChatRequest/Response
+|   |   +-- tasks.py      # TaskPlan/TaskStep
+|   |   \-- graph.py      # Graph state models
+|   \-- services/
+|       +-- execution_tracker.py # Dependency exec
+|       +-- image_analyzer.py    # GPT-4.1 vision
+|       +-- audio_transcriber.py # Whisper
+|       +-- agent_store.py       # JSON agent CRUD
+|       +-- db.py                # Supabase DB layer
+|       \-- supabase_client.py   # Supabase client
+\end{verbatim}
+}
+
+%% ============================================================
+\section{System Prompts}
+\label{app:prompts}
+
+\subsection{Orchestrator Backstory}
+\label{app:orchestrator-backstory}
+
+{\small
+\begin{verbatim}
+You are a concise research librarian orchestrating
+an academic team. Keep all outputs brief — this is
+a mobile app with limited screen space.
+
+Break requests into the fewest steps needed.
+Prefer parallel execution.
+Use uncertainty-aware language when appropriate.
+
+Produce structured JSON plans. Do not add
+unnecessary steps.
+
+Available agents:
+- arxiv: ArXiv Research Analyst —
+    capabilities: arxiv_search, arxiv_summarize
+- proposal: Research Proposal Strategist —
+    capabilities: generate_proposal,
+    outline_methodology
+- wikipedia: Background Research Specialist —
+    capabilities: wiki_search, wiki_summarize
+- slack: Slack Messenger —
+    capabilities: slack_send_message
+    [requires_approval]
+- semantic_scholar: Citation Analyst —
+    capabilities: semantic_scholar_search,
+    semantic_scholar_cite
+
+Constitution (user-defined guidelines):
+<user-editable free text appended here>
+\end{verbatim}
+}
+
+\subsection{Planning Task Prompt}
+\label{app:planning-prompt}
+
+{\small
+\begin{verbatim}
+Analyze the following user request and create a
+structured execution plan.
+
+User request: {user_message}
+
+[Image analysis: {image_analysis}]
+[Audio transcript: {audio_transcript}]
+[Conversation history: {history}]
+
+Input modality: {input_modality}
+{modality_note}
+
+Available agents:
+{agent_descriptions}
+
+Rules:
+- Match the user's request to the most appropriate
+  agent(s). Agents are NOT limited to research —
+  some send messages, perform actions, etc.
+- For agents marked [requires_approval], set
+  requires_approval=true on that step. For all
+  other agents, set requires_approval=false.
+- Only return an empty steps list if the request
+  truly cannot be handled by ANY available agent
+  (e.g. "hello", pure casual chat).
+- If steps are independent, leave depends_on empty
+  so they can run in parallel.
+- If a step needs output from another step, add
+  that step's ID to depends_on.
+- Always prefer parallel execution when possible.
+- Use step IDs like "step_1", "step_2", etc.
+- agent_id must be one of: {valid_agent_ids}
+- Use exact param names from tool signatures.
+  For slack_send_message use params:
+  {"channel": "<channel>", "text": "<message>"}
+- If image analysis is provided, use that content
+  to inform search queries and proposal topics.
+- If audio was transcribed, treat the transcript
+  as the primary user intent.
+- If conversation history is provided, use it to
+  resolve ambiguous references.
+\end{verbatim}
+}
+
+\subsection{Synthesis Prompt}
+\label{app:synthesis-prompt}
+
+\textbf{System prompt:}
+
+{\small
+\begin{verbatim}
+You are a research orchestrator synthesizing agent
+results for a MOBILE interface. Responses are read
+on small screens.
+
+Guidelines:
+- Be concise: aim for 150-300 words max
+- Lead with the key finding or answer in 1-2
+  sentences
+- Use short bullet points, not long paragraphs
+- Use markdown: **bold** for emphasis, short
+  headings, compact lists
+- Keep relevant URLs but don't list more than 3-5
+- Do NOT mention the agents or internal execution
+  process
+- Use uncertainty-aware language: 'based on
+  available results' rather than absolute claims
+- End with a one-line disclaimer: '*Results may
+  not be exhaustive — verify for critical
+  decisions.*'
+\end{verbatim}
+}
+
+\textbf{User message template:}
+
+{\small
+\begin{verbatim}
+**User request:** {user_message}
+
+**Plan summary:** {plan_summary}
+
+**Agent results:**
+
+### Agent step: {step_description}
+{step_result}
+
+### Agent step: {step_description}
+{step_result}
+...
+\end{verbatim}
+}
+
+\subsection{Image Analysis Prompt}
+\label{app:image-prompt}
+
+{\small
+\begin{verbatim}
+Analyze this image in the context of a research
+assistant. Describe what you see and what research
+tasks might be relevant (e.g., paper search,
+literature review, proposal generation).
+Be concise.
+\end{verbatim}
+}
+
+%% ============================================================
+\section{Agent Backstories}
+\label{app:backstories}
+
+{\small
+\begin{verbatim}
+[ArXiv Agent]
+You are an expert research analyst who monitors arXiv
+daily. You can search for papers by topic, summarize
+their key findings, and identify trends across recent
+publications. You excel at distilling complex papers
+into clear, actionable summaries.
+
+[Proposal Agent]
+You are a seasoned research strategist who has helped
+write dozens of successful grant proposals and research
+plans. You understand how to identify research gaps,
+formulate compelling research questions, and outline
+rigorous methodologies. You synthesize information from
+literature into coherent proposals.
+
+[Wikipedia Agent]
+You are a thorough background researcher who uses
+Wikipedia to gather foundational knowledge on topics.
+You find relevant articles, extract key concepts and
+definitions, and provide well-structured overviews that
+help contextualize research work.
+
+[Slack Agent]
+You are a communication specialist who sends messages
+to Slack channels on behalf of the team. You craft
+clear, well-formatted messages and deliver them to the
+correct channels. You always confirm which channel to
+post to and summarize what was sent.
+
+[Semantic Scholar Agent]
+You are a citation analyst who uses Semantic Scholar to
+find papers and assess their impact. You search across
+all academic literature (not just arXiv), retrieve
+citation counts and influential citation metrics, and
+help identify the most impactful work in any research
+area.
+\end{verbatim}
+}
+
+%% ============================================================
+\section{Tool Implementations}
+\label{app:tools}
+
+\begin{table*}[t]
+  \caption{Complete tool registry. Each function is mapped to one or more agents and called directly during execution.}
+  \label{tab:tools}
+  \small
+  \begin{tabular}{p{0.18\textwidth} p{0.12\textwidth} p{0.6\textwidth}}
+    \toprule
+    Function & Agent & Parameters \\
+    \midrule
+    \texttt{arxiv\_search} & ArXiv & \texttt{query}: str, \texttt{max\_results}: int (default 5) \\
+    \texttt{arxiv\_summarize} & ArXiv & \texttt{paper\_url}: str \\
+    \texttt{generate\_proposal} & Proposal & \texttt{topic}: str, \texttt{context}: str \\
+    \texttt{outline\_methodology} & Proposal & \texttt{approach}: str, \texttt{domain}: str \\
+    \texttt{wiki\_search} & Wikipedia & \texttt{query}: str \\
+    \texttt{wiki\_summarize} & Wikipedia & \texttt{title}: str \\
+    \texttt{slack\_send\_message} & Slack & \texttt{channel}: str, \texttt{text}: str \\
+    \texttt{semantic\_scholar\_search} & Sem.\ Scholar & \texttt{query}: str, \texttt{max\_results}: int (default 5) \\
+    \texttt{semantic\_scholar\_cite} & Sem.\ Scholar & \texttt{paper\_id}: str \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+
+\subsection{SSE Event Protocol}
+
+Execution updates are streamed as Server-Sent Events.
+
+\begin{table}[h]
+  \caption{SSE event types streamed during execution.}
+  \label{tab:sse}
+  \small
+  \begin{tabular}{p{0.28\columnwidth} p{0.62\columnwidth}}
+    \toprule
+    Event type & Payload and semantics \\
+    \midrule
+    \texttt{graph\_init} & Full \texttt{ExecutionGraphState}. Sent once at the start. \\
+    \texttt{node\_status} & \texttt{nodeId}, \texttt{status} (\texttt{running} $|$ \texttt{completed} $|$ \texttt{failed} $|$ \texttt{awaiting\_approval} $|$ \texttt{approved}), optional \texttt{result} and \texttt{duration} (ms). \\
+    \texttt{edge\_status} & \texttt{edgeId}, \texttt{status} (\texttt{active} $|$ \texttt{completed}). \\
+    \texttt{checkpoint\_reached} & \texttt{nodeId}, \texttt{stepId}. Emitted when an approval-gated step is ready. \\
+    \texttt{execution\_complete} & Updated \texttt{ExecutionGraphState} and synthesised \texttt{summary}. \\
+    \texttt{execution\_failed} & \texttt{error} message string. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+%% ============================================================
+\section{Data Schemas}
+\label{app:schemas}
+
+\subsection{Request and Response Models}
+
+\textbf{ChatRequest} (client $\rightarrow$ server):
+{\small
+\begin{verbatim}
+{
+  "message": "string",
+  "image_base64": "string | null",
+  "audio_base64": "string | null",
+  "input_modality": "text | voice | image",
+  "conversation_history": [
+    {"role": "user|assistant", "content": "..."}
+  ],
+  "conversation_id": "string | null"
+}
+\end{verbatim}
+}
+
+\textbf{ChatResponse} (server $\rightarrow$ client):
+{\small
+\begin{verbatim}
+{
+  "message": "string",
+  "plan": TaskPlan | null,
+  "graph": ExecutionGraphState | null,
+  "image_base64": "string | null"
+}
+\end{verbatim}
+}
+
+\subsection{Task Plan Models}
+
+\textbf{TaskPlan}:
+{\small
+\begin{verbatim}
+{
+  "id": "string",
+  "summary": "string",
+  "steps": [TaskStep],
+  "status": "proposed | executing | completed",
+  "created_at": "ISO 8601"
+}
+\end{verbatim}
+}
+
+\textbf{TaskStep}:
+{\small
+\begin{verbatim}
+{
+  "id": "step_1",
+  "agent_id": "arxiv | proposal | wikipedia
+              | slack | semantic_scholar",
+  "action": "tool function name",
+  "description": "human-readable description",
+  "params": { "key": "value" },
+  "status": "pending | running | completed
+            | failed | awaiting_approval",
+  "result": "string | null",
+  "requires_approval": false,
+  "depends_on": ["step_id"]
+}
+\end{verbatim}
+}
+
+\subsection{Execution Graph Models}
+
+\textbf{ExecutionGraphState}:
+{\small
+\begin{verbatim}
+{
+  "task_id": "string",
+  "nodes": [GraphNode],
+  "edges": [GraphEdge],
+  "current_node_id": "string | null",
+  "status": "planning | executing
+            | completed | failed"
+}
+\end{verbatim}
+}
+
+\textbf{GraphNode}:
+{\small
+\begin{verbatim}
+{
+  "id": "string",
+  "type": "input | orchestrator | agent
+          | checkpoint | output",
+  "data": {
+    "label": "string",
+    "type": "...",
+    "status": "pending | running | completed
+              | failed | awaiting_approval
+              | approved | skipped",
+    "agent_id": "string | null",
+    "agent_color": "#hex | null",
+    "agent_icon": "LucideIconName | null",
+    "result": "string | null",
+    "duration": "milliseconds | null",
+    "input_modality": "text|voice|image | null",
+    "timestamp": "ISO 8601 | null"
+  },
+  "position": { "x": 0, "y": 0 }
+}
+\end{verbatim}
+}
+
+\textbf{GraphEdge}:
+{\small
+\begin{verbatim}
+{
+  "id": "e-source-target",
+  "source": "node_id",
+  "target": "node_id",
+  "data": {
+    "status": "pending | active | completed",
+    "data_preview": "string | null"
+  }
+}
+\end{verbatim}
+}
+
+%% ============================================================
+\section{Agent Registry Schema}
+\label{app:registry}
+
+{\small
+\begin{verbatim}
+{
+  "id": "unique_string",
+  "name": "Display Name",
+  "icon": "LucideIconName",
+  "description": "Short description",
+  "role": "CrewAI role string",
+  "goal": "CrewAI goal string",
+  "backstory": "Full system prompt text",
+  "capabilities": ["tool_1", "tool_2"],
+  "enabled": true,
+  "requiresApproval": false,
+  "color": "#hex",
+  "isOrchestrator": false,
+  "constitution": ""
+}
+\end{verbatim}
+}
+
+
+%% ============================================================
+\section{CSS Animations and Theming}
+\label{app:css}
+
+\subsection{Theme Variables}
+
+\begin{table}[h]
+  \caption{Theme colour tokens (selected).}
+  \label{tab:theme}
+  \small
+  \begin{tabular}{p{0.3\columnwidth} p{0.28\columnwidth} p{0.28\columnwidth}}
+    \toprule
+    Token & Light & Dark \\
+    \midrule
+    \texttt{--surface-0} & \texttt{\#ffffff} & \texttt{\#000000} \\
+    \texttt{--surface-1} & \texttt{\#f2f2f7} & \texttt{\#1c1c1d} \\
+    \texttt{--surface-2} & \texttt{\#e5e5ea} & \texttt{\#121212} \\
+    \texttt{--text-primary} & \texttt{\#000000} & \texttt{\#ffffff} \\
+    \texttt{--text-secondary} & \texttt{\#3c3c43} & \texttt{\#ffffffcc} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+%% ============================================================
+\section{Survey Instrument}
+\label{app:survey}
+
+All Likert items use a 7-point scale (1 = Strongly Disagree, 7 = Strongly Agree) unless otherwise noted.
+
+%% --- S0 ---
+\subsection*{Part 0: Background (before study begins)}
+
+\begin{enumerate}
+  \item Age range. \emph{(18--21 / 22--25 / 26--30 / 31--40 / 40+)}
+  \item Gender. \emph{(Male / Female / Non-binary / Prefer not to say)}
+  \item How often do you use AI assistants (e.g., ChatGPT, Copilot)? \emph{(Daily / Several times a week / Weekly / Monthly / Rarely or Never)}
+  \item Have you used a multi-agent AI system before? \emph{(Yes / No / I'm not sure)}
+  \item Which AI tools do you use regularly? \emph{(Select all: ChatGPT, Copilot, Gemini, Claude, Cursor, Perplexity, Other)}
+\end{enumerate}
+
+%% --- S1 ---
+\subsection*{Part 1: After each transparency condition (C1, C2, C3) --- RQ1}
+
+Completed three times, once per configuration. Items 1--3 are primary metrics; items 4--7 are supplementary.
+
+\begin{enumerate}
+  \item I trusted the system's output enough to act on it. \emph{(Trust)}
+  \item I felt in control of what the system did on my behalf. \emph{(Perceived Control)}
+  \item I am satisfied with this interaction. \emph{(Satisfaction)}
+  \item The system made it clear what it was going to do before doing it. \emph{(Expectation Setting)}
+  \item It was easy to correct or stop the system when needed. \emph{(Repairability)}
+  \item I understood why the system made the decisions it did. \emph{(Explainability)}
+  \item I felt comfortable with the information I shared during this task. \emph{(Privacy Comfort)}
+  \item[--] Any comments about this mode? \emph{(open text, optional)}
+\end{enumerate}
+
+After all three conditions:
+\begin{enumerate}
+  \item[8.] Which transparency mode would you prefer for everyday use? \emph{(C1 Blackbox / C2 Plan Preview / C3 Full Transparency)}
+  \item[9.] Which mode would you prefer for high-stakes tasks (e.g., sending a Slack message on your behalf)? \emph{(C1 / C2 / C3)}
+  \item[10.] Why did you prefer that mode? \emph{(open text, optional)}
+\end{enumerate}
+
+%% --- S2 ---
+\subsection*{Part 2: After each modality condition (M1, M2, M3) --- RQ2}
+
+Completed three times, once per modality (text, image, voice). The NASA-TLX uses a 1--10 scale (Very Low--Very High); Performance is reversed (1 = Perfect, 10 = Failure).
+
+\textbf{Single Ease Question (SEQ):}
+\begin{enumerate}
+  \item Overall, how would you rate the difficulty of this task? \emph{(1 = Very Difficult, 7 = Very Easy)}
+\end{enumerate}
+
+\textbf{NASA Task Load Index~\cite{Hart1988}:}
+\begin{enumerate}
+  \item[2.] Mental Demand --- How much mental and perceptual activity was required? \emph{(1--10)}
+  \item[3.] Physical Demand --- How much physical activity was required? \emph{(1--10)}
+  \item[4.] Temporal Demand --- How much time pressure did you feel? \emph{(1--10)}
+  \item[5.] Performance --- How successful were you in accomplishing the task? \emph{(1 = Perfect, 10 = Failure)}
+  \item[6.] Effort --- How hard did you have to work to accomplish the task? \emph{(1--10)}
+  \item[7.] Frustration --- How irritated, stressed, or annoyed did you feel? \emph{(1--10)}
+\end{enumerate}
+
+\textbf{Modality comfort (7-point Likert):}
+\begin{enumerate}
+  \item[8.] Using this modality felt natural for this type of task. \emph{(Modality Comfort)}
+  \item[9.] I would use this modality in a public or shared space. \emph{(Context Appropriateness)}
+  \item[--] In what situations would you choose or avoid this modality? \emph{(open text, optional)}
+\end{enumerate}
+
+After all three modality conditions:
+\begin{enumerate}
+  \item[10.] Which input modality would you use most often on a mobile device? \emph{(Text / Voice / Image / It depends)}
+  \item[11.] Which modalities felt well-suited to on-the-go use? \emph{(Select all: Text / Voice / Image)}
+  \item[--] Was there a modality that surprised you -- positively or negatively? \emph{(open text, optional)}
+\end{enumerate}
+
+%% --- S3 ---
+\subsection*{Part 3: After the customisation task (Phase 3) --- RQ3}
+
+\begin{enumerate}
+  \item I was able to find the constitution editor without help. \emph{(Discoverability)}
+  \item I understood what the constitution field does. \emph{(Mental Model)}
+  \item Editing the constitution changed the system's behaviour as I expected. \emph{(Effectiveness)}
+  \item The agent on/off toggles were easy to understand and use. \emph{(Controllability)}
+  \item After customising the system, I felt more in control. \emph{(Perceived Ownership)}
+  \item I would use the constitution and agent controls regularly. \emph{(Adoption Intent)}
+  \item[7.] Which type of change did you make to the constitution? \emph{(Constraint / Style / Routing / Did not edit / Other)}
+  \item[--] Describe what you changed and whether the system behaved as expected. \emph{(open text)}
+\end{enumerate}
+
+%% --- S4 ---
+\subsection*{Part 4: Overall post-study feedback}
+
+\begin{enumerate}
+  \item Overall, I would trust this system to act on my behalf on a mobile device. \emph{(Overall Trust)}
+  \item I felt this system respected my privacy. \emph{(Privacy)}
+  \item I would use this application in my day-to-day work. \emph{(Adoption Intent)}
+  \item[4.] Which single feature contributed most to your trust? \emph{(Plan Preview / Checkpoint approval / Live DAG / Agent on/off / Constitution / Multimodal input)}
+  \item[5.] Which single feature caused the most friction or concern? \emph{(Plan approval steps / Live graph overwhelming / Voice risky in shared spaces / Camera awkward / Agent controls hard to find / Constitution unclear)}
+  \item[--] What is the single most important improvement you would make? \emph{(open text)}
+  \item[--] Any other comments or suggestions? \emph{(open text)}
+\end{enumerate}
+
+%% ============================================================
+\section{Semi-Structured Interview Questions}
+\label{app:interview}
+
+After completing all three configurations, participants were asked:
+
+\begin{enumerate}
+  \item You used three different versions of the system. Can you describe how each felt different?
+  \item Which version would you prefer for everyday use? Why?
+  \item Was there a moment where you particularly trusted---or distrusted---the system? What caused that?
+  \item The system showed you a plan before executing. Did that change how you interacted with it? How?
+  \item For the version with the live graph, was seeing the execution progress helpful or distracting?
+  \item The system required approval before sending a Slack message. How did that approval step feel? Too cautious? About right?
+  \item How did you decide whether to use text, voice, or camera input? Were there situations where you avoided a modality? Why?
+  \item Did any of the system's responses feel overconfident or uncertain? How did that affect your trust?
+  \item If this system stored your conversation history across sessions, how would you feel about that? What controls would you want?
+  \item Can you think of a situation where a system like this could cause harm---to you or someone else?
+  \item What is the single most important change you would make to improve this system?
+\end{enumerate}
+
+\end{document}
